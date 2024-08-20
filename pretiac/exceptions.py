@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Copyright 2017 fmnisme@gmail.com, Copyright 2020 christian@jonak.org
 
 Redistribution and use in source and binary forms, with or without
@@ -24,12 +24,13 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Icinga 2 API client exceptions
-'''
+"""
+
 
 class Icinga2ApiException(Exception):
-    '''
+    """
     Icinga 2 API exception class
-    '''
+    """
 
     def __init__(self, error):
         super(Icinga2ApiException, self).__init__(error)
@@ -38,10 +39,12 @@ class Icinga2ApiException(Exception):
     def __str__(self):
         return str(self.error)
 
+
 class Icinga2ApiRequestException(Icinga2ApiException):
-    '''
+    """
     Icinga 2 API Request exception class
-    '''
+    """
+
     response = {}
 
     def __init__(self, error, response):
@@ -49,11 +52,10 @@ class Icinga2ApiRequestException(Icinga2ApiException):
         self.response = response
 
 
-
 class pretiaconfigFileException(Exception):
-    '''
+    """
     Icinga 2 API config file exception class
-    '''
+    """
 
     def __init__(self, error):
         super(pretiaconfigFileException, self).__init__(error)

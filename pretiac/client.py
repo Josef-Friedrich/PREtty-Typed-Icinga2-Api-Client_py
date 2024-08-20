@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-'''
+"""
 Copyright 2017 fmnisme@gmail.com, Copyright 2020 christian@jonak.org
 
 Redistribution and use in source and binary forms, with or without
@@ -27,9 +26,10 @@ Icinga 2 API client
 
 The Icinga 2 API allows you to manage configuration objects and resources in a simple,
 programmatic way using HTTP requests.
-'''
+"""
 
 from __future__ import print_function
+
 import logging
 
 import pretiac
@@ -43,40 +43,41 @@ from pretiac.status import Status
 LOG = logging.getLogger(__name__)
 
 
-class Client(object):
-    '''
+class Client:
+    """
     Icinga 2 Client class
-    '''
+    """
 
-    def __init__(self,
-                 url=None,
-                 username=None,
-                 password=None,
-                 timeout=None,
-                 certificate=None,
-                 key=None,
-                 ca_certificate=None,
-                 config_file=None):
-        '''
+    objects: Objects
+    actions: Actions
+    events: Events
+    status: Status
+    version: str
+
+    def __init__(
+        self,
+        url: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
+        timeout: str | None = None,
+        certificate: str | None = None,
+        key: str | None = None,
+        ca_certificate: str | None = None,
+        config_file: str | None = None,
+    ) -> None:
+        """
         initialize object
-        '''
+        """
         config_from_file = ClientConfigFile(config_file)
         if config_file:
             config_from_file.parse()
-        self.url = url or \
-            config_from_file.url
-        self.username = username or \
-            config_from_file.username
-        self.password = password or \
-            config_from_file.password
-        self.timeout = timeout or \
-            config_from_file.timeout
-        self.certificate = certificate or \
-            config_from_file.certificate
-        self.key = key or \
-            config_from_file.key
-        self.ca_certificate = ca_certificate or \
-            config_from_file.ca_certificate
+        self.url = url or config_from_file.url
+        self.username = username or config_from_file.username
+        self.password = password or config_from_file.password
+        self.timeout = timeout or config_from_file.timeout
+        self.certificate = certificate or config_from_file.certificate
+        self.key = key or config_from_file.key
+        self.ca_certificate = ca_certificate or config_from_file.ca_certificate
         self.objects = Objects(self)
         self.actions = Actions(self)
         self.events = Events(self)
@@ -87,5 +88,5 @@ class Client(object):
             raise Icinga2ApiException('No "url" defined.')
         if not self.username and not self.password and not self.certificate:
             raise Icinga2ApiException(
-                'Neither username/password nor certificate defined.'
+                "Neither username/password nor certificate defined."
             )

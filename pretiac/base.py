@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Copyright 2017 fmnisme@gmail.com, Copyright 2020 christian@jonak.org
 
 Redistribution and use in source and binary forms, with or without
@@ -24,43 +24,92 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Icinga 2 API client base
-'''
+"""
 
-from __future__ import print_function
 import logging
-import sys
+from logging import Logger
+from typing import TYPE_CHECKING, Dict, List, Literal, Type, Union
+from urllib.parse import urljoin
+
 import requests
-# pylint: disable=import-error,no-name-in-module
-if sys.version_info >= (3, 0):
-    from urllib.parse import urljoin
-else:
-    from urlparse import urljoin
-# pylint: enable=import-error,no-name-in-module
 
-from pretiac.exceptions import *
+from pretiac.exceptions import Icinga2ApiRequestException
 
-LOG = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    from pretiac.client import Client
+
+LOG: Logger = logging.getLogger(__name__)
 
 
-class Base(object):
-    '''
+Json = Union[Dict[str, "Json"], List["Json"], int, str, float, bool, Type[None]]
+
+HostService = Literal["Host", "Service"]
+
+HostServiceComment = Union[Literal["Comment"], HostService]
+
+HostServiceDowntime = Union[Literal["Downtime"], HostService]
+
+ObjectType = Literal[
+    "ApiListener",
+    "ApiUser",
+    "CheckCommand",
+    "Arguments",
+    "CheckerComponent",
+    "CheckResultReader",
+    "Comment",
+    "CompatLogger",
+    "Dependency",
+    "Downtime",
+    "Endpoint",
+    "EventCommand",
+    "ExternalCommandListener",
+    "FileLogger",
+    "GelfWriter",
+    "GraphiteWriter",
+    "Host",
+    "HostGroup",
+    "IcingaApplication",
+    "IdoMySqlConnection",
+    "IdoPgSqlConnection",
+    "LiveStatusListener",
+    "Notification",
+    "NotificationCommand",
+    "NotificationComponent",
+    "OpenTsdbWriter",
+    "PerfdataWriter",
+    "ScheduledDowntime",
+    "Service",
+    "ServiceGroup",
+    "StatusDataWriter",
+    "SyslogLogger",
+    "TimePeriod",
+    "User",
+    "UserGroup",
+    "Zone",
+]
+
+
+class Base:
+    """
     Icinga 2 API Base class
-    '''
+    """
 
-    base_url_path = None  # 继承
+    manager: "Client"
 
-    def __init__(self, manager):
-        '''
+    base_url_path = None
+
+    def __init__(self, manager: "Client"):
+        """
         initialize object
-        '''
+        """
 
         self.manager = manager
         self.stream_cache = ""
 
-    def _create_session(self, method='POST'):
-        '''
+    def _create_session(self, method="POST"):
+        """
         create a session object
-        '''
+        """
 
         session = requests.Session()
         # prefer certificate authentification
@@ -74,15 +123,15 @@ class Base(object):
             # use username and password
             session.auth = (self.manager.username, self.manager.password)
         session.headers = {
-            'User-Agent': 'Python-pretiac/{0}'.format(self.manager.version),
-            'X-HTTP-Method-Override': method.upper(),
-            'Accept': 'application/json'
+            "User-Agent": "Python-pretiac/{0}".format(self.manager.version),
+            "X-HTTP-Method-Override": method.upper(),
+            "Accept": "application/json",
         }
 
         return session
 
     def _request(self, method, url_path, payload=None, stream=False):
-        '''
+        """
         make the request and return the body
 
         :param method: the HTTP method
@@ -93,7 +142,7 @@ class Base(object):
         :type payload: dictionary
         :returns: the response as json
         :rtype: dictionary
-        '''
+        """
 
         request_url = urljoin(self.manager.url, url_path)
         LOG.debug("Request URL: %s", request_url)
@@ -102,17 +151,15 @@ class Base(object):
         session = self._create_session(method)
 
         # create arguments for the request
-        request_args = {
-            'url': request_url
-        }
+        request_args = {"url": request_url}
         if payload:
-            request_args['json'] = payload
+            request_args["json"] = payload
         if self.manager.ca_certificate:
-            request_args['verify'] = self.manager.ca_certificate
+            request_args["verify"] = self.manager.ca_certificate
         else:
-            request_args['verify'] = False
+            request_args["verify"] = False
         if stream:
-            request_args['stream'] = True
+            request_args["stream"] = True
 
         # do the request
         response = session.post(**request_args)
@@ -131,7 +178,9 @@ class Base(object):
                     response.url,
                     response.status_code,
                     response.text,
-                ),response.json())
+                ),
+                response.json(),
+            )
 
         if stream:
             return response
@@ -140,20 +189,20 @@ class Base(object):
 
     @staticmethod
     def _get_message_from_stream(stream):
-        '''
+        """
         make the request and return the body
 
         :param stream: the stream
         :type method: request
         :returns: the message
         :rtype: dictionary
-        '''
+        """
 
         # TODO: test iter_lines()
-        message = b''
+        message = b""
         for char in stream.iter_content():
-            if char == b'\n':
-                yield message.decode('unicode_escape')
-                message = b''
+            if char == b"\n":
+                yield message.decode("unicode_escape")
+                message = b""
             else:
                 message += char

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Copyright 2017 fmnisme@gmail.com, Copyright 2020 christian@jonak.org
 
 Redistribution and use in source and binary forms, with or without
@@ -24,9 +24,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Icinga 2 API events
-'''
+"""
 
 from __future__ import print_function
+
 import logging
 
 from pretiac.base import Base
@@ -35,18 +36,14 @@ LOG = logging.getLogger(__name__)
 
 
 class Events(Base):
-    '''
+    """
     Icinga 2 API events class
-    '''
+    """
 
-    base_url_path = 'v1/events'
+    base_url_path = "v1/events"
 
-    def subscribe(self,
-                  types,
-                  queue,
-                  filters=None,
-                  filter_vars=None):
-        '''
+    def subscribe(self, types, queue, filters=None, filter_vars=None):
+        """
         subscribe to an event stream
 
         example 1:
@@ -66,7 +63,7 @@ class Events(Base):
         :type filter_vars: dict
         :returns: the events
         :rtype: string
-        '''
+        """
         payload = {
             "types": types,
             "queue": queue,
@@ -76,11 +73,6 @@ class Events(Base):
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        stream = self._request(
-            'POST',
-            self.base_url_path,
-            payload,
-            stream=True
-        )
+        stream = self._request("POST", self.base_url_path, payload, stream=True)
         for event in self._get_message_from_stream(stream):
             yield event

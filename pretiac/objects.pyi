@@ -2,7 +2,7 @@ from typing import Any, List, Union
 
 from _typeshed import Incomplete as Incomplete
 
-from .base import Base, Json, ObjectType
+from pretiac.base import Base, Json, ObjectType
 
 LOG: Incomplete
 
@@ -41,9 +41,9 @@ class Objects(Base):
         cascade: bool = ...,
     ) -> Json: ...
 
-
 class Attrs:
     """https://github.com/Icinga/icinga2/blob/master/lib/icinga/checkable.ti"""
+
     __name: str
     acknowledgement: int
     acknowledgement_expiry: int
@@ -89,12 +89,14 @@ class Object:
 
 class Service(Object):
     """https://github.com/Icinga/icinga2/blob/master/lib/icinga/service.ti"""
+
     type = "Service"
     name: str
     meta: dict[str, Any]
 
 class CheckResult:
     """https://github.com/Icinga/icinga2/blob/master/lib/icinga/checkresult.ti"""
+
     type = "CheckResult"
     active: bool
     check_source: str

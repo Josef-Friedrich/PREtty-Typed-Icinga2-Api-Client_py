@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2017 fmnisme@gmail.com christian@jonak.org
 
 Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @author: Christian Jonak-Moechel, fmnisme, Tobias von der Krone
 @contact: christian@jonak.org, fmnisme@gmail.com, tobias@vonderkrone.info
 @summary: Python library for the Icinga 2 RESTful API
-'''
+"""
 
-__author__ = 'Christian Jonak-Moechel, fmnisme, Tobias von der Krone'
-__contact__ = 'christian@jonak.org, fmnisme@gmail.com, tobias@vonderkrone.info'
-__version__ = '0.7.4'
+__author__ = "Christian Jonak-Moechel, fmnisme, Tobias von der Krone"
+__contact__ = "christian@jonak.org, fmnisme@gmail.com, tobias@vonderkrone.info"
+__version__ = "0.7.4"

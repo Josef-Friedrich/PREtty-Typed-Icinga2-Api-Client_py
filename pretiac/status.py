@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Copyright 2017 fmnisme@gmail.com, Copyright 2020 christian@jonak.org
 
 Redistribution and use in source and binary forms, with or without
@@ -24,9 +24,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Icinga 2 API status
-'''
+"""
 
 from __future__ import print_function
+
 import logging
 
 from pretiac.base import Base
@@ -35,14 +36,14 @@ LOG = logging.getLogger(__name__)
 
 
 class Status(Base):
-    '''
+    """
     Icinga 2 API status class
-    '''
+    """
 
-    base_url_path = 'v1/status'
+    base_url_path = "v1/status"
 
     def list(self, component=None):
-        '''
+        """
         retrieve status information and statistics for Icinga 2
 
         example 1:
@@ -55,10 +56,10 @@ class Status(Base):
         :type component: string
         :returns: status information
         :rtype: dictionary
-        '''
+        """
 
         url = self.base_url_path
         if component:
             url += "/{}".format(component)
 
-        return self._request('GET', url)
+        return self._request("GET", url)

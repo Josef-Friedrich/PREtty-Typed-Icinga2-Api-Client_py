@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Copyright 2017 fmnisme@gmail.com, Copyright 2020 christian@jonak.org
 
 Redistribution and use in source and binary forms, with or without
@@ -24,9 +24,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Icinga 2 API objects
-'''
+"""
 
 from __future__ import print_function
+
 import logging
 
 from pretiac.base import Base
@@ -36,70 +37,65 @@ LOG = logging.getLogger(__name__)
 
 
 class Objects(Base):
-    '''
+    """
     Icinga 2 API objects class
-    '''
+    """
 
-    base_url_path = 'v1/objects'
+    base_url_path = "v1/objects"
 
     @staticmethod
     def _convert_object_type(object_type=None):
-        '''
+        """
         check if the object_type is a valid Icinga 2 object type
-        '''
+        """
 
         type_conv = {
-            'ApiListener': 'apilisteners',
-            'ApiUser': 'apiusers',
-            'CheckCommand': 'checkcommands',
-            'Arguments': 'argumentss',
-            'CheckerComponent': 'checkercomponents',
-            'CheckResultReader': 'checkresultreaders',
-            'Comment': 'comments',
-            'CompatLogger': 'compatloggers',
-            'Dependency': 'dependencies',
-            'Downtime': 'downtimes',
-            'Endpoint': 'endpoints',
-            'EventCommand': 'eventcommands',
-            'ExternalCommandListener': 'externalcommandlisteners',
-            'FileLogger': 'fileloggers',
-            'GelfWriter': 'gelfwriters',
-            'GraphiteWriter': 'graphitewriters',
-            'Host': 'hosts',
-            'HostGroup': 'hostgroups',
-            'IcingaApplication': 'icingaapplications',
-            'IdoMySqlConnection': 'idomysqlconnections',
-            'IdoPgSqlConnection': 'idopgsqlconnections',
-            'LiveStatusListener': 'livestatuslisteners',
-            'Notification': 'notifications',
-            'NotificationCommand': 'notificationcommands',
-            'NotificationComponent': 'notificationcomponents',
-            'OpenTsdbWriter': 'opentsdbwriters',
-            'PerfdataWriter': 'perfdatawriters',
-            'ScheduledDowntime': 'scheduleddowntimes',
-            'Service': 'services',
-            'ServiceGroup': 'servicegroups',
-            'StatusDataWriter': 'statusdatawriters',
-            'SyslogLogger': 'syslogloggers',
-            'TimePeriod': 'timeperiods',
-            'User': 'users',
-            'UserGroup': 'usergroups',
-            'Zone': 'zones',
+            "ApiListener": "apilisteners",
+            "ApiUser": "apiusers",
+            "CheckCommand": "checkcommands",
+            "Arguments": "argumentss",
+            "CheckerComponent": "checkercomponents",
+            "CheckResultReader": "checkresultreaders",
+            "Comment": "comments",
+            "CompatLogger": "compatloggers",
+            "Dependency": "dependencies",
+            "Downtime": "downtimes",
+            "Endpoint": "endpoints",
+            "EventCommand": "eventcommands",
+            "ExternalCommandListener": "externalcommandlisteners",
+            "FileLogger": "fileloggers",
+            "GelfWriter": "gelfwriters",
+            "GraphiteWriter": "graphitewriters",
+            "Host": "hosts",
+            "HostGroup": "hostgroups",
+            "IcingaApplication": "icingaapplications",
+            "IdoMySqlConnection": "idomysqlconnections",
+            "IdoPgSqlConnection": "idopgsqlconnections",
+            "LiveStatusListener": "livestatuslisteners",
+            "Notification": "notifications",
+            "NotificationCommand": "notificationcommands",
+            "NotificationComponent": "notificationcomponents",
+            "OpenTsdbWriter": "opentsdbwriters",
+            "PerfdataWriter": "perfdatawriters",
+            "ScheduledDowntime": "scheduleddowntimes",
+            "Service": "services",
+            "ServiceGroup": "servicegroups",
+            "StatusDataWriter": "statusdatawriters",
+            "SyslogLogger": "syslogloggers",
+            "TimePeriod": "timeperiods",
+            "User": "users",
+            "UserGroup": "usergroups",
+            "Zone": "zones",
         }
         if object_type not in type_conv:
             raise Icinga2ApiException(
-                'Icinga 2 object type "{}" does not exist.'.format(
-                    object_type
-                ))
+                'Icinga 2 object type "{}" does not exist.'.format(object_type)
+            )
 
         return type_conv[object_type]
 
-    def get(self,
-            object_type,
-            name,
-            attrs=None,
-            joins=None):
-        '''
+    def get(self, object_type, name, attrs=None, joins=None):
+        """
         get object by type or name
 
         :param object_type: type of the object
@@ -122,18 +118,20 @@ class Objects(Base):
 
         example 4:
         get('Service', 'webserver01.domain!ping4', joins=True)
-        '''
+        """
 
         return self.list(object_type, name, attrs, joins=joins)[0]
 
-    def list(self,
-             object_type,
-             name=None,
-             attrs=None,
-             filters=None,
-             filter_vars=None,
-             joins=None):
-        '''
+    def list(
+        self,
+        object_type,
+        name=None,
+        attrs=None,
+        filters=None,
+        filter_vars=None,
+        joins=None,
+    ):
+        """
         get object by type or name
 
         :param object_type: type of the object
@@ -166,33 +164,29 @@ class Objects(Base):
 
         example 6:
         list('Service', joins=True)
-        '''
+        """
 
         object_type_url_path = self._convert_object_type(object_type)
-        url_path = '{}/{}'.format(self.base_url_path, object_type_url_path)
+        url_path = "{}/{}".format(self.base_url_path, object_type_url_path)
         if name:
-            url_path += '/{}'.format(name)
+            url_path += "/{}".format(name)
 
         payload = {}
         if attrs:
-            payload['attrs'] = attrs
+            payload["attrs"] = attrs
         if filters:
-            payload['filter'] = filters
+            payload["filter"] = filters
         if filter_vars:
-            payload['filter_vars'] = filter_vars
+            payload["filter_vars"] = filter_vars
         if isinstance(joins, bool) and joins:
-            payload['all_joins'] = '1'
+            payload["all_joins"] = "1"
         elif joins:
-            payload['joins'] = joins
+            payload["joins"] = joins
 
-        return self._request('GET', url_path, payload)['results']
+        return self._request("GET", url_path, payload)["results"]
 
-    def create(self,
-               object_type,
-               name,
-               templates=None,
-               attrs=None):
-        '''
+    def create(self, object_type, name, templates=None, attrs=None):
+        """
         create an object
 
         :param object_type: type of the object
@@ -212,29 +206,22 @@ class Objects(Base):
                'testhost3!dummy',
                {'check_command': 'dummy'},
                ['generic-service'])
-        '''
+        """
 
         object_type_url_path = self._convert_object_type(object_type)
 
         payload = {}
         if attrs:
-            payload['attrs'] = attrs
+            payload["attrs"] = attrs
         if templates:
-            payload['templates'] = templates
+            payload["templates"] = templates
 
-        url_path = '{}/{}/{}'.format(
-            self.base_url_path,
-            object_type_url_path,
-            name
-        )
+        url_path = "{}/{}/{}".format(self.base_url_path, object_type_url_path, name)
 
-        return self._request('PUT', url_path, payload)
+        return self._request("PUT", url_path, payload)
 
-    def update(self,
-               object_type,
-               name,
-               attrs):
-        '''
+    def update(self, object_type, name, attrs):
+        """
         update an object
 
         :param object_type: type of the object
@@ -249,23 +236,16 @@ class Objects(Base):
 
         example 2:
         update('Service', 'testhost3!dummy', {'check_interval': '10m'})
-        '''
+        """
         object_type_url_path = self._convert_object_type(object_type)
-        url_path = '{}/{}/{}'.format(
-            self.base_url_path,
-            object_type_url_path,
-            name
-        )
+        url_path = "{}/{}/{}".format(self.base_url_path, object_type_url_path, name)
 
-        return self._request('POST', url_path, attrs)
+        return self._request("POST", url_path, attrs)
 
-    def delete(self,
-               object_type,
-               name=None,
-               filters=None,
-               filter_vars=None,
-               cascade=True):
-        '''
+    def delete(
+        self, object_type, name=None, filters=None, filter_vars=None, cascade=True
+    ):
+        """
         delete an object
 
         :param object_type: type of the object
@@ -284,20 +264,20 @@ class Objects(Base):
 
         example 2:
         delete('Service', filters='match("vhost*", service.name)')
-        '''
+        """
 
         object_type_url_path = self._convert_object_type(object_type)
 
         payload = {}
         if filters:
-            payload['filter'] = filters
+            payload["filter"] = filters
         if filter_vars:
-            payload['filter_vars'] = filter_vars
+            payload["filter_vars"] = filter_vars
         if cascade:
-            payload['cascade'] = 1
+            payload["cascade"] = 1
 
-        url = '{}/{}'.format(self.base_url_path, object_type_url_path)
+        url = "{}/{}".format(self.base_url_path, object_type_url_path)
         if name:
-            url += '/{}'.format(name)
+            url += "/{}".format(name)
 
-        return self._request('DELETE', url, payload)
+        return self._request("DELETE", url, payload)

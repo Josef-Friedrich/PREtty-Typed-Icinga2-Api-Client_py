@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Copyright 2017 fmnisme@gmail.com, Copyright 2020 christian@jonak.org
 
 Redistribution and use in source and binary forms, with or without
@@ -24,10 +24,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Icinga 2 API client config file
-'''
+"""
 
 import os
 import sys
+
 # pylint: disable=import-error,no-name-in-module
 if sys.version_info >= (3, 0):
     import configparser as configparser
@@ -39,17 +40,17 @@ from pretiac.exceptions import pretiaconfigFileException
 
 
 class ClientConfigFile(object):
-    '''
+    """
     Icinga 2 API config file
-    '''
+    """
 
     def __init__(self, file_name):
-        '''
+        """
         initialization
-        '''
+        """
 
         self.file_name = file_name
-        self.section = 'api'
+        self.section = "api"
         self.url = None
         self.username = None
         self.password = None
@@ -61,59 +62,47 @@ class ClientConfigFile(object):
             self.check_access()
 
     def check_access(self):
-        '''
+        """
         check access to the config file
 
         :returns: True
         :rtype: bool
-        '''
+        """
 
         if not os.path.exists(self.file_name):
             raise pretiaconfigFileException(
-                'Config file "{0}" doesn\'t exist.'.format(
-                    self.file_name
-                )
+                'Config file "{0}" doesn\'t exist.'.format(self.file_name)
             )
 
         if not os.access(self.file_name, os.R_OK):
             raise pretiaconfigFileException(
-                'No read access for config file "{0}".\n'.format(
-                    self.file_name
-                )
+                'No read access for config file "{0}".\n'.format(self.file_name)
             )
 
         return True
 
     def parse(self):
-        '''
+        """
         parse the config file
-        '''
+        """
 
         cfg = configparser.ConfigParser()
         cfg.read(self.file_name)
 
         if not cfg.has_section(self.section):
             raise pretiaconfigFileException(
-                'Config file is missing "{0}" section.'.format(
-                    self.section
-                )
+                'Config file is missing "{0}" section.'.format(self.section)
             )
 
         # [api]/url
         try:
-            self.url = str(cfg.get(
-                self.section,
-                'url'
-            )).strip()
+            self.url = str(cfg.get(self.section, "url")).strip()
         except configparser.NoOptionError:
             pass
 
         # [api]/username
         try:
-            self.username = str(cfg.get(
-                self.section,
-                'username'
-            )).strip()
+            self.username = str(cfg.get(self.section, "username")).strip()
         except configparser.NoOptionError:
             pass
 
@@ -121,45 +110,30 @@ class ClientConfigFile(object):
         # do we really want to store the password here
         # or use the keyring
         try:
-            self.password = str(cfg.get(
-                self.section,
-                'password'
-            )).strip()
+            self.password = str(cfg.get(self.section, "password")).strip()
         except configparser.NoOptionError:
             pass
 
         # [api]/certificate
         try:
-            self.certificate = str(cfg.get(
-                self.section,
-                'certificate'
-            )).strip()
+            self.certificate = str(cfg.get(self.section, "certificate")).strip()
         except configparser.NoOptionError:
             pass
 
         # [api]/client_key
         try:
-            self.key = str(cfg.get(
-                self.section,
-                'key'
-            )).strip()
+            self.key = str(cfg.get(self.section, "key")).strip()
         except configparser.NoOptionError:
             pass
 
         # [api]/ca_certificate
         try:
-            self.ca_certificate = str(cfg.get(
-                self.section,
-                'ca_certificate'
-            )).strip()
+            self.ca_certificate = str(cfg.get(self.section, "ca_certificate")).strip()
         except configparser.NoOptionError:
             pass
 
         # [api]/timeout
         try:
-            self.timeout = str(cfg.get(
-                self.section,
-                'timeout'
-            )).strip()
+            self.timeout = str(cfg.get(self.section, "timeout")).strip()
         except configparser.NoOptionError:
             pass
