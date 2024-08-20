@@ -1,6 +1,6 @@
 from logging import Logger
 
-from pretiac.objects import Objects
+from icinga2apic.objects import Objects
 
 from .actions import Actions
 

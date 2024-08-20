@@ -2,14 +2,9 @@ from typing import Literal
 
 from _typeshed import Incomplete
 
-from pretiac.base import (
-    Base,
-    HostService,
-    HostServiceComment,
-    HostServiceDowntime,
-    Json,
-)
-from pretiac.exceptions import Icinga2ApiException as Icinga2ApiException
+from .base import (Base, HostService, HostServiceComment, HostServiceDowntime,
+                   Json)
+from .exceptions import Icinga2ApiException as Icinga2ApiException
 
 LOG: Incomplete
 
@@ -39,7 +34,7 @@ class Actions(Base):
         filter_vars: Incomplete | None = ...,
         next_check: Incomplete | None = ...,
         force_check: bool = ...,
-    ): ...
+    ) -> Json: ...
     def send_custom_notification(
         self,
         object_type: HostService,
@@ -48,14 +43,14 @@ class Actions(Base):
         comment,
         filter_vars: Incomplete | None = ...,
         force: bool = ...,
-    ): ...
+    ) -> Json: ...
     def delay_notification(
         self,
         object_type: HostService,
         filters,
         timestamp,
         filter_vars: Incomplete | None = ...,
-    ): ...
+    ) -> Json: ...
     def acknowledge_problem(
         self,
         object_type: HostService,
@@ -67,10 +62,10 @@ class Actions(Base):
         sticky: Incomplete | None = ...,
         notify: Incomplete | None = ...,
         persistent: Incomplete | None = ...,
-    ): ...
+    ) -> Json: ...
     def remove_acknowledgement(
         self, object_type: ObjectType, filters, filter_vars: Incomplete | None = ...
-    ): ...
+    ) -> Json: ...
     def add_comment(
         self,
         object_type: HostService,
@@ -78,14 +73,14 @@ class Actions(Base):
         author,
         comment,
         filter_vars: Incomplete | None = ...,
-    ): ...
+    ) -> Json: ...
     def remove_comment(
         self,
         object_type: HostServiceComment,
         name: Incomplete | None = ...,
         filters: Incomplete | None = ...,
         filter_vars: Incomplete | None = ...,
-    ): ...
+    ) -> Json: ...
     def schedule_downtime(
         self,
         object_type: HostService,
@@ -100,14 +95,14 @@ class Actions(Base):
         all_services: Incomplete | None = ...,
         trigger_name: Incomplete | None = ...,
         child_options: Incomplete | None = ...,
-    ): ...
+    ) -> Json: ...
     def remove_downtime(
         self,
         object_type: HostServiceDowntime,
         name: Incomplete | None = ...,
         filters: Incomplete | None = ...,
         filter_vars: Incomplete | None = ...,
-    ): ...
-    def shutdown_process(self): ...
-    def restart_process(self): ...
-    def generate_ticket(self, host_common_name): ...
+    ) -> Json: ...
+    def shutdown_process(self) -> Json: ...
+    def restart_process(self) -> Json: ...
+    def generate_ticket(self, host_common_name) -> Json: ...
