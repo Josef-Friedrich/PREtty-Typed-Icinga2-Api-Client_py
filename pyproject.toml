@@ -1,3 +1,21 @@
+[tool.poetry]
+name = "pretiac"
+version = "0.1.0"
+description = "pretiac: A PREtty Typed Icinga2 Api Client."
+authors = ["Josef Friedrich <josef@friedrich.rocks>"]
+readme = "README.rst"
+repository = "https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py"
+license = "GPL-3.0-only"
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3",
+    "Topic :: Utilities",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+]
+
 [build-system]
-requires = ["setuptools>=42","wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
