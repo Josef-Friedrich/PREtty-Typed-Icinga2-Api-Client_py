@@ -26,17 +26,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Icinga 2 API client config file
 """
 
+import configparser as configparser
 import os
-import sys
 
-# pylint: disable=import-error,no-name-in-module
-if sys.version_info >= (3, 0):
-    import configparser as configparser
-else:
-    import ConfigParser as configparser
-# pylint: enable=import-error,no-name-in-module
-
-from pretiac.exceptions import pretiaconfigFileException
+from pretiac.exceptions import Icinga2ApiConfigFileException
 
 
 class ClientConfigFile(object):
@@ -70,12 +63,12 @@ class ClientConfigFile(object):
         """
 
         if not os.path.exists(self.file_name):
-            raise pretiaconfigFileException(
+            raise Icinga2ApiConfigFileException(
                 'Config file "{0}" doesn\'t exist.'.format(self.file_name)
             )
 
         if not os.access(self.file_name, os.R_OK):
-            raise pretiaconfigFileException(
+            raise Icinga2ApiConfigFileException(
                 'No read access for config file "{0}".\n'.format(self.file_name)
             )
 
@@ -90,7 +83,7 @@ class ClientConfigFile(object):
         cfg.read(self.file_name)
 
         if not cfg.has_section(self.section):
-            raise pretiaconfigFileException(
+            raise Icinga2ApiConfigFileException(
                 'Config file is missing "{0}" section.'.format(self.section)
             )
 
