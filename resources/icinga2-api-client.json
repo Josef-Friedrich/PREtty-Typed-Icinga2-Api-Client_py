@@ -1,0 +1,6 @@
+{
+  "domain": "localhost",
+  "port": 5665,
+  "user": "api",
+  "password": "password"
+}
