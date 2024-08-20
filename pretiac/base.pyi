@@ -2,8 +2,8 @@ import sys
 from logging import Logger
 from typing import Dict, List, Literal, Type, Union
 
-from icinga2apic.client import Client
-from icinga2apic.exceptions import *
+from pretiac.client import Client
+from pretiac.exceptions import *
 
 if sys.version_info >= (3, 0): ...
 else: ...

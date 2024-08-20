@@ -50,13 +50,13 @@ class Icinga2ApiRequestException(Icinga2ApiException):
 
 
 
-class Icinga2ApiConfigFileException(Exception):
+class pretiaconfigFileException(Exception):
     '''
     Icinga 2 API config file exception class
     '''
 
     def __init__(self, error):
-        super(Icinga2ApiConfigFileException, self).__init__(error)
+        super(pretiaconfigFileException, self).__init__(error)
         self.error = error
 
     def __str__(self):

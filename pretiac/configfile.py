@@ -35,7 +35,7 @@ else:
     import ConfigParser as configparser
 # pylint: enable=import-error,no-name-in-module
 
-from icinga2apic.exceptions import Icinga2ApiConfigFileException
+from pretiac.exceptions import pretiaconfigFileException
 
 
 class ClientConfigFile(object):
@@ -69,14 +69,14 @@ class ClientConfigFile(object):
         '''
 
         if not os.path.exists(self.file_name):
-            raise Icinga2ApiConfigFileException(
+            raise pretiaconfigFileException(
                 'Config file "{0}" doesn\'t exist.'.format(
                     self.file_name
                 )
             )
 
         if not os.access(self.file_name, os.R_OK):
-            raise Icinga2ApiConfigFileException(
+            raise pretiaconfigFileException(
                 'No read access for config file "{0}".\n'.format(
                     self.file_name
                 )
@@ -93,7 +93,7 @@ class ClientConfigFile(object):
         cfg.read(self.file_name)
 
         if not cfg.has_section(self.section):
-            raise Icinga2ApiConfigFileException(
+            raise pretiaconfigFileException(
                 'Config file is missing "{0}" section.'.format(
                     self.section
                 )

@@ -32,13 +32,13 @@ programmatic way using HTTP requests.
 from __future__ import print_function
 import logging
 
-import icinga2apic
-from icinga2apic.actions import Actions
-from icinga2apic.configfile import ClientConfigFile
-from icinga2apic.events import Events
-from icinga2apic.exceptions import Icinga2ApiException
-from icinga2apic.objects import Objects
-from icinga2apic.status import Status
+import pretiac
+from pretiac.actions import Actions
+from pretiac.configfile import ClientConfigFile
+from pretiac.events import Events
+from pretiac.exceptions import Icinga2ApiException
+from pretiac.objects import Objects
+from pretiac.status import Status
 
 LOG = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ class Client(object):
         self.actions = Actions(self)
         self.events = Events(self)
         self.status = Status(self)
-        self.version = icinga2apic.__version__
+        self.version = pretiac.__version__
 
         if not self.url:
             raise Icinga2ApiException('No "url" defined.')

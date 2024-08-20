@@ -23,64 +23,42 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Icinga 2 API events
+Icinga 2 API status
 '''
 
 from __future__ import print_function
 import logging
 
-from icinga2apic.base import Base
+from pretiac.base import Base
 
 LOG = logging.getLogger(__name__)
 
 
-class Events(Base):
+class Status(Base):
     '''
-    Icinga 2 API events class
+    Icinga 2 API status class
     '''
 
-    base_url_path = 'v1/events'
+    base_url_path = 'v1/status'
 
-    def subscribe(self,
-                  types,
-                  queue,
-                  filters=None,
-                  filter_vars=None):
+    def list(self, component=None):
         '''
-        subscribe to an event stream
+        retrieve status information and statistics for Icinga 2
 
         example 1:
-        types = ["CheckResult"]
-        queue = "monitor"
-        filters = "event.check_result.exit_status==2"
-        for event in subscribe(types, queue, filters):
-            print event
+        list()
 
-        :param types: the event types to return
-        :type types: array
-        :param queue: the queue name to subscribe to
-        :type queue: string
-        :param filters: filters matched object(s)
-        :type filters: string
-        :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
-        :returns: the events
-        :rtype: string
+        example 2:
+        list('IcingaApplication')
+
+        :param component: only list the status of this component
+        :type component: string
+        :returns: status information
+        :rtype: dictionary
         '''
-        payload = {
-            "types": types,
-            "queue": queue,
-        }
-        if filters:
-            payload["filter"] = filters
-        if filter_vars:
-            payload["filter_vars"] = filter_vars
 
-        stream = self._request(
-            'POST',
-            self.base_url_path,
-            payload,
-            stream=True
-        )
-        for event in self._get_message_from_stream(stream):
-            yield event
+        url = self.base_url_path
+        if component:
+            url += "/{}".format(component)
+
+        return self._request('GET', url)

@@ -2,7 +2,7 @@ from typing import List, Union
 
 from _typeshed import Incomplete as Incomplete
 
-from icinga2apic.base import Base, Json, ObjectType
+from pretiac.base import Base, Json, ObjectType
 
 LOG: Incomplete
 

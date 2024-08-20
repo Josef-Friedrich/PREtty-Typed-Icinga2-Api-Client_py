@@ -2,14 +2,14 @@ from typing import Literal
 
 from _typeshed import Incomplete
 
-from icinga2apic.base import (
+from pretiac.base import (
     Base,
     HostService,
     HostServiceComment,
     HostServiceDowntime,
     Json,
 )
-from icinga2apic.exceptions import Icinga2ApiException as Icinga2ApiException
+from pretiac.exceptions import Icinga2ApiException as Icinga2ApiException
 
 LOG: Incomplete
 

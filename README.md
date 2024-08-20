@@ -1,6 +1,6 @@
-# <a id="about-icinga2"></a> About icinga2apic
+# <a id="about-icinga2"></a> About pretiac
 
-icinga2apic is a [Python](http://www.python.org) module to interact with the [Icinga 2 RESTful API](https://www.icinga.com/docs/icinga2/latest/doc/12-icinga2-api/).
+pretiac is a [Python](http://www.python.org) module to interact with the [Icinga 2 RESTful API](https://www.icinga.com/docs/icinga2/latest/doc/12-icinga2-api/).
 
 # Features
 

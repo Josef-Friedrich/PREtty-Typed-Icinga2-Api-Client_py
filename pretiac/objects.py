@@ -29,8 +29,8 @@ Icinga 2 API objects
 from __future__ import print_function
 import logging
 
-from icinga2apic.base import Base
-from icinga2apic.exceptions import Icinga2ApiException
+from pretiac.base import Base
+from pretiac.exceptions import Icinga2ApiException
 
 LOG = logging.getLogger(__name__)
 

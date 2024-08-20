@@ -37,7 +37,7 @@ else:
     from urlparse import urljoin
 # pylint: enable=import-error,no-name-in-module
 
-from icinga2apic.exceptions import *
+from pretiac.exceptions import *
 
 LOG = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class Base(object):
             # use username and password
             session.auth = (self.manager.username, self.manager.password)
         session.headers = {
-            'User-Agent': 'Python-icinga2apic/{0}'.format(self.manager.version),
+            'User-Agent': 'Python-pretiac/{0}'.format(self.manager.version),
             'X-HTTP-Method-Override': method.upper(),
             'Accept': 'application/json'
         }
