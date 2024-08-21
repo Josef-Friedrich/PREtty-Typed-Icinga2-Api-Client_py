@@ -31,6 +31,7 @@ programmatic way using HTTP requests.
 from __future__ import print_function
 
 import logging
+from typing import Optional
 
 import pretiac
 from pretiac.actions import Actions
@@ -48,22 +49,40 @@ class Client:
     Icinga 2 Client class
     """
 
+    url: str
+
+    username: Optional[str]
+
+    password: Optional[str]
+
+    timeout: Optional[int]
+
+    certificate: Optional[str]
+
+    key: Optional[str]
+
+    ca_certificate: Optional[str]
+
     objects: Objects
+
     actions: Actions
+
     events: Events
+
     status: Status
+
     version: str
 
     def __init__(
         self,
-        url: str | None = None,
-        username: str | None = None,
-        password: str | None = None,
-        timeout: str | None = None,
-        certificate: str | None = None,
-        key: str | None = None,
-        ca_certificate: str | None = None,
-        config_file: str | None = None,
+        url: Optional[str] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        timeout: Optional[int] = None,
+        certificate: Optional[str] = None,
+        key: Optional[str] = None,
+        ca_certificate: Optional[str] = None,
+        config_file: Optional[str] = None,
     ) -> None:
         """
         initialize object

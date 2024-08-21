@@ -25,6 +25,8 @@ types-requests = "^2"
 pytest = "^8"
 tox = "^4"
 ruff = "^0"
+Sphinx = "^7"
+sphinx-rtd-theme = "^2"
 
 [build-system]
 requires = ["poetry-core"]

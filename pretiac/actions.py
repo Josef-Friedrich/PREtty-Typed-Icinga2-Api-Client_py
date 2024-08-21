@@ -1,41 +1,39 @@
-# -*- coding: utf-8 -*-
-"""
-Copyright 2017 fmnisme@gmail.com, Copyright 2020 christian@jonak.org
+# Copyright 2017 fmnisme@gmail.com christian@jonak.org
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
 
-1. Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
 
-2. Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation
-and/or other materials provided with the distribution.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Icinga 2 API client
-
-The Icinga 2 API allows you to manage configuration objects and resources in a simple,
-programmatic way using HTTP requests.
-"""
+# @author: Christian Jonak-Moechel, fmnisme, Tobias von der Krone
+# @contact: christian@jonak.org, fmnisme@gmail.com, tobias@vonderkrone.info
+# @summary: Python library for the Icinga 2 RESTful API
 
 from __future__ import print_function
 
 import logging
+from dataclasses import dataclass
 from typing import Literal, Optional
 
 from pretiac.base import (
     Base,
+    FilterVars,
     HostOrService,
     Payload,
 )
@@ -53,9 +51,19 @@ https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/58515
 
 State = HostState | ServiceState
 
-FilterVars = Optional[Payload]
-
 LOG = logging.getLogger(__name__)
+
+
+@dataclass
+class Result:
+    code: int
+
+    status: str
+
+
+@dataclass
+class ResultContainer:
+    results: list[Result]
 
 
 class Actions(Base):
@@ -80,44 +88,37 @@ class Actions(Base):
         filters: Optional[str] = None,
         filter_vars: FilterVars = None,
     ):
-        """
-        Process a check result for a host or a service.
+        """Process a check result for a host or a service.
+
+        Send a ``POST`` request to the URL endpoint ``/v1/actions/process-check-result``.
 
         :param object_type: Host or Service
-
         :param name: name of the object
-
-        :param exit_status: services: 0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN;
-                            hosts: 0=OK, 1=CRITICAL
-
-        :param plugin_output: plugins main ouput
-
+        :param exit_status: For services: ``0=OK``, ``1=WARNING``, ``2=CRITICAL``, ``3=UNKNOWN``, for hosts: ``0=UP``, ``1=DOWN``.
+        :param plugin_output: One or more lines of the plugin main output. Does not contain the performance data.
         :param check_command: check command path followed by its arguments
-
         :param check_source: name of the command_endpoint
-
         :param execution_start: timestamp where a script/process started its execution
-
         :param execution_end: timestamp where a script/process finished its execution
-
         :param ttl: time-to-live duration in seconds for this check result
-
         :param filters: filters matched object(s)
-
         :param filter_vars: variables used in the filters expression
 
         :returns: the response as json
-        :rtype: dictionary
 
-        expample 1:
-        process_check_result('Service',
-                             'myhost.domain!ping4',
-                             'exit_status': 2,
-                             'plugin_output': 'PING CRITICAL - Packet loss = 100%',
-                             'performance_data': [
-                                 'rta=5000.000000ms;3000.000000;5000.000000;0.000000',
-                                 'pl=100%;80;100;0'],
-                             'check_source': 'python client'})
+        .. code-block:: python
+
+            process_check_result('Service',
+                                'myhost.domain!ping4',
+                                'exit_status': 2,
+                                'plugin_output': 'PING CRITICAL - Packet loss = 100%',
+                                'performance_data': [
+                                    'rta=5000.000000ms;3000.000000;5000.000000;0.000000',
+                                    'pl=100%;80;100;0'],
+                                'check_source': 'python client'})
+
+
+        :see: https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#process-check-result
         """
         if not name and not filters:
             raise Icinga2ApiException("name and filters is empty or none")
@@ -128,7 +129,7 @@ class Actions(Base):
         if object_type not in ["Host", "Service"]:
             raise Icinga2ApiException('object_type needs to be "Host" or "Service".')
 
-        url = "{}/{}".format(self.base_url_path, "process-check-result")
+        url = f"{self.base_url}/process-check-result"
 
         payload: Payload = {
             "type": object_type,
@@ -169,16 +170,21 @@ class Actions(Base):
         Reschedule a check for hosts and services.
 
         example 1:
-        reschedule_check('Service'
-                         'service.name=="ping4")
+
+        .. code-block:: python
+
+            reschedule_check('Service'
+                            'service.name=="ping4")
 
         example 2:
-        reschedule_check('Host',
-                         'host.name=="localhost"',
-                         '1577833200')
+
+        .. code-block:: python
+
+            reschedule_check('Host',
+                            'host.name=="localhost"',
+                            '1577833200')
 
         :param object_type: Host or Service
-
         :param filters: filters matched object(s)
         :type filters: string
         :param filter_vars: variables used in the for filters expression
@@ -217,10 +223,13 @@ class Actions(Base):
         Send a custom notification for hosts and services.
 
         example 1:
-        send_custom_notification('Host',
-                                 'host.name==localhost',
-                                 'icingaadmin',
-                                 'test comment')
+
+        .. code-block:: python
+
+            send_custom_notification('Host',
+                                    'host.name==localhost',
+                                    'icingaadmin',
+                                    'test comment')
 
         :param object_type: Host or Service
         :param filters: filters matched object
@@ -258,12 +267,15 @@ class Actions(Base):
         Delay notifications for a host or a service.
 
         example 1:
-        delay_notification('Service',
-                           '1446389894')
 
-        delay_notification('Host',
-                           'host.name=="localhost"',
-                           '1446389894')
+        .. code-block:: python
+
+            delay_notification('Service',
+                            '1446389894')
+
+            delay_notification('Host',
+                            'host.name=="localhost"',
+                            '1446389894')
 
         :param object_type: Host or Service
         :param filters: filters matched object(s)
@@ -343,8 +355,10 @@ class Actions(Base):
         Remove the acknowledgement for services or hosts.
 
         example 1:
-        remove_acknowledgement(object_type='Service',
-                               'service.state==2')
+        .. code-block:: python
+
+            remove_acknowledgement(object_type='Service',
+                                'service.state==2')
 
         :param object_type: Host or Service
         :type object_type: string
@@ -376,10 +390,13 @@ class Actions(Base):
         Add a comment from an author to services or hosts.
 
         example 1:
-        add_comment('Service',
-                    'service.name=="ping4"',
-                    'icingaadmin',
-                    'Incident ticket #12345 opened.')
+
+        .. code-block:: python
+
+            add_comment('Service',
+                        'service.name=="ping4"',
+                        'icingaadmin',
+                        'Incident ticket #12345 opened.')
 
         :param object_type: Host or Service
         :param filters: filters matched object(s)
@@ -416,12 +433,18 @@ class Actions(Base):
         Remove a comment using its name or filters.
 
         example 1:
-        remove_comment('Comment'
-                       'localhost!localhost-1458202056-25')
+
+        .. code-block:: python
+
+            remove_comment('Comment'
+                        'localhost!localhost-1458202056-25')
 
         example 2:
-        remove_comment('Service'
-                       filters='service.name=="ping4"')
+
+        .. code-block:: python
+
+            remove_comment('Service'
+                        filters='service.name=="ping4"')
 
         :param object_type: Host, Service or Comment
         :param name: name of the Comment
@@ -466,26 +489,32 @@ class Actions(Base):
         Schedule a downtime for hosts and services.
 
         example 1:
-        schedule_downtime(
-            'object_type': 'Service',
-            'filters': r'service.name=="ping4"',
-            'author': 'icingaadmin',
-            'comment': 'IPv4 network maintenance',
-            'start_time': 1446388806,
-            'end_time': 1446389806,
-            'duration': 1000
-        )
+
+        .. code-block:: python
+
+            schedule_downtime(
+                'object_type': 'Service',
+                'filters': r'service.name=="ping4"',
+                'author': 'icingaadmin',
+                'comment': 'IPv4 network maintenance',
+                'start_time': 1446388806,
+                'end_time': 1446389806,
+                'duration': 1000
+            )
 
         example 2:
-        schedule_downtime(
-            'object_type': 'Host',
-            'filters': r'match("*", host.name)',
-            'author': 'icingaadmin',
-            'comment': 'IPv4 network maintenance',
-            'start_time': 1446388806,
-            'end_time': 1446389806,
-            'duration': 1000
-        )
+
+        .. code-block:: python
+
+            schedule_downtime(
+                'object_type': 'Host',
+                'filters': r'match("*", host.name)',
+                'author': 'icingaadmin',
+                'comment': 'IPv4 network maintenance',
+                'start_time': 1446388806,
+                'end_time': 1446389806,
+                'duration': 1000
+            )
 
         :param object_type: Host or Service
         :param filters: filters matched object(s)
@@ -539,12 +568,18 @@ class Actions(Base):
         Remove the downtime using its name or filters.
 
         example 1:
-        remove_downtime('Downtime',
-                        'localhost!ping4!localhost-1458148978-14')
+
+        .. code-block:: python
+
+            remove_downtime('Downtime',
+                            'localhost!ping4!localhost-1458148978-14')
 
         example 2:
-        remove_downtime('Service',
-                        filters='service.name=="ping4"')
+
+        .. code-block:: python
+
+            remove_downtime('Service',
+                            filters='service.name=="ping4"')
 
         :param object_type: Host, Service or Downtime
         :param name: name of the downtime
@@ -575,7 +610,10 @@ class Actions(Base):
         Shuts down Icinga2. May or may not return.
 
         example 1:
-        shutdown_process()
+
+        .. code-block:: python
+
+            shutdown_process()
         """
 
         url = "{}/{}".format(self.base_url_path, "shutdown-process")
@@ -587,7 +625,10 @@ class Actions(Base):
         Restarts Icinga2. May or may not return.
 
         example 1:
-        restart_process()
+
+        .. code-block:: python
+
+            restart_process()
         """
 
         url = "{}/{}".format(self.base_url_path, "restart-process")
@@ -601,7 +642,10 @@ class Actions(Base):
         setups requesting this ticket number.
 
         example 1:
-        generate_ticket("my-server-name")
+
+        .. code-block:: python
+
+            generate_ticket("my-server-name")
 
         :param host_common_name: the host's common name for which the ticket should be generated.
         """

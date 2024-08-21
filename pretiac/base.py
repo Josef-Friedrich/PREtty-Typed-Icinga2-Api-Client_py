@@ -33,7 +33,7 @@ from urllib.parse import urljoin
 
 import requests
 
-from pretiac.exceptions import Icinga2ApiRequestException
+from pretiac.exceptions import Icinga2ApiException, Icinga2ApiRequestException
 
 if TYPE_CHECKING:
     from pretiac.client import Client
@@ -90,6 +90,8 @@ ObjectType = Literal[
 
 Payload = dict[str, Any]
 
+FilterVars = Optional[Payload]
+
 RequestMethod = Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
 """
 https://github.com/psf/requests/blob/a3ce6f007597f14029e6b6f54676c34196aa050e/src/requests/api.py#L17
@@ -114,6 +116,12 @@ class Base:
 
         self.manager = manager
         self.stream_cache = ""
+
+    @property
+    def base_url(self) -> str:
+        if not self.base_url_path:
+            raise Icinga2ApiException("Specify self.base_url_path")
+        return self.base_url_path
 
     def _create_session(self, method: RequestMethod = "POST") -> requests.Session:
         """
@@ -145,7 +153,7 @@ class Base:
         url_path: str,
         payload: Optional[dict[str, Any]] = None,
         stream: bool = False,
-    ) -> requests.Response | Any:
+    ) -> Any:
         """
         make the request and return the body
 
@@ -166,7 +174,7 @@ class Base:
         session = self._create_session(method)
 
         # create arguments for the request
-        request_args = {"url": request_url}
+        request_args: Payload = {"url": request_url}
         if payload:
             request_args["json"] = payload
         if self.manager.ca_certificate:
