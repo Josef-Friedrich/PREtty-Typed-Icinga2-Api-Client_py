@@ -1,4 +1,4 @@
-test: docker_stop docker_start test_all docker_stop
+test: docker_stop docker_start test_all
 
 test_all:
 	poetry run tox
@@ -61,5 +61,37 @@ docker_start:
 docker_stop:
 	-sudo docker stop icinga-master
 	-sudo docker rm icinga-master
+
+docker_login:
+	sudo docker exec -it icinga-master /bin/bash
+
+docker_create_api_certs:
+	# https://icinga.com/blog/2022/11/16/authenticating-icinga-2-api-users-with-tls-client-certificates/
+
+	sudo docker exec icinga-master /usr/sbin/icinga2 pki new-cert \
+		--cn my-api-client \
+		--key /data/my-api-client.key.pem \
+		--csr /data/my-api-client.csr.pem
+
+	sudo docker exec icinga-master /usr/sbin/icinga2 pki sign-csr \
+		--csr /data/my-api-client.csr.pem \
+		--cert /data/my-api-client.cert.pem
+
+	sudo docker cp icinga-master:/var/lib/icinga2/certs/ca.crt .
+	sudo docker cp icinga-master:/data/my-api-client.cert.pem .
+	sudo docker cp icinga-master:/data/my-api-client.key.pem .
+
+	sudo chown jf:jf ca.crt
+	sudo chown jf:jf my-api-client.cert.pem
+	sudo chown jf:jf my-api-client.key.pem
+
+	curl \
+		--cacert ca.crt \
+		--cert my-api-client.cert.pem \
+		--key my-api-client.key.pem \
+		--header 'Accept: application/json' \
+		--insecure \
+		'https://localhost:5665/v1/?pretty=1'
+
 
 .PHONY: test install install_editable update build publish format docs lint pin_docs_requirements docker_start docker_stop
