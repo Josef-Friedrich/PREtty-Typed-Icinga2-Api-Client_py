@@ -43,11 +43,11 @@ LOG: Logger = logging.getLogger(__name__)
 
 Json = Union[Dict[str, "Json"], List["Json"], int, str, float, bool, Type[None]]
 
-HostService = Literal["Host", "Service"]
+HostOrService = Literal["Host", "Service"]
 
-HostServiceComment = Union[Literal["Comment"], HostService]
+HostServiceComment = Union[Literal["Comment"], HostOrService]
 
-HostServiceDowntime = Union[Literal["Downtime"], HostService]
+HostServiceDowntime = Union[Literal["Downtime"], HostOrService]
 
 ObjectType = Literal[
     "ApiListener",
@@ -88,6 +88,7 @@ ObjectType = Literal[
     "Zone",
 ]
 
+Payload = dict[str, Any]
 
 RequestMethod = Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
 """

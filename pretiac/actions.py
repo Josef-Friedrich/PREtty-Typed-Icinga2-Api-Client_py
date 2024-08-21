@@ -32,9 +32,28 @@ programmatic way using HTTP requests.
 from __future__ import print_function
 
 import logging
+from typing import Literal, Optional
 
-from pretiac.base import Base
+from pretiac.base import (
+    Base,
+    HostOrService,
+    Payload,
+)
 from pretiac.exceptions import Icinga2ApiException
+
+ServiceState = Literal[0, 1, 2, 3]
+"""
+https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/5851548b204c1728c57d22be68bbb3a67a02401b/src/object-types.ts#L113-L123
+"""
+
+HostState = Literal[0, 1, 2, 3]
+"""
+https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/5851548b204c1728c57d22be68bbb3a67a02401b/src/object-types.ts#L125-L131
+"""
+
+State = HostState | ServiceState
+
+FilterVars = Optional[Payload]
 
 LOG = logging.getLogger(__name__)
 
@@ -48,47 +67,47 @@ class Actions(Base):
 
     def process_check_result(
         self,
-        object_type,
-        name,
-        exit_status,
-        plugin_output,
-        performance_data=None,
-        check_command=None,
-        check_source=None,
-        execution_start=None,
-        execution_end=None,
-        ttl=None,
-        filters=None,
-        filter_vars=None,
+        object_type: HostOrService,
+        name: str,
+        exit_status: State,
+        plugin_output: str,
+        performance_data: Optional[list[str] | str] = None,
+        check_command: Optional[list[str] | str] = None,
+        check_source: Optional[str] = None,
+        execution_start: Optional[int] = None,
+        execution_end: Optional[int] = None,
+        ttl: Optional[int] = None,
+        filters: Optional[str] = None,
+        filter_vars: FilterVars = None,
     ):
         """
         Process a check result for a host or a service.
 
         :param object_type: Host or Service
-        :type object_type: string
+
         :param name: name of the object
-        :type name: string
+
         :param exit_status: services: 0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN;
                             hosts: 0=OK, 1=CRITICAL
-        :type filter: integer
+
         :param plugin_output: plugins main ouput
-        :type plugin_output: string
+
         :param check_command: check command path followed by its arguments
-        :type check_command: list
+
         :param check_source: name of the command_endpoint
-        :type check_source: string
+
         :param execution_start: timestamp where a script/process started its execution
-        :type execution_start: int
+
         :param execution_end: timestamp where a script/process finished its execution
-        :type execution_end: int
+
         :param ttl: time-to-live duration in seconds for this check result
-        :type ttl: int
+
+        :param filters: filters matched object(s)
+
+        :param filter_vars: variables used in the filters expression
+
         :returns: the response as json
         :rtype: dictionary
-        :param filters: filters matched object(s)
-        :type filters: string
-        :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
 
         expample 1:
         process_check_result('Service',
@@ -111,7 +130,7 @@ class Actions(Base):
 
         url = "{}/{}".format(self.base_url_path, "process-check-result")
 
-        payload = {
+        payload: Payload = {
             "type": object_type,
             "exit_status": exit_status,
             "plugin_output": plugin_output,
@@ -139,7 +158,12 @@ class Actions(Base):
         return self._request("POST", url, payload)
 
     def reschedule_check(
-        self, object_type, filters, filter_vars=None, next_check=None, force_check=True
+        self,
+        object_type: HostOrService,
+        filters: str,
+        filter_vars: FilterVars = None,
+        next_check: Optional[int] = None,
+        force_check: Optional[bool] = True,
     ):
         """
         Reschedule a check for hosts and services.
@@ -154,11 +178,10 @@ class Actions(Base):
                          '1577833200')
 
         :param object_type: Host or Service
-        :type object_type: string
+
         :param filters: filters matched object(s)
         :type filters: string
         :param filter_vars: variables used in the for filters expression
-        :type filter_vars: dict
         :param next_check: timestamp to run the check
         :type next_check: int
         :param force: ignore period restrictions and disabled checks
@@ -169,7 +192,11 @@ class Actions(Base):
 
         url = "{}/{}".format(self.base_url_path, "reschedule-check")
 
-        payload = {"type": object_type, "filter": filters, "force_check": force_check}
+        payload: Payload = {
+            "type": object_type,
+            "filter": filters,
+            "force_check": force_check,
+        }
         if next_check:
             payload["next_check"] = next_check
         if filter_vars:
@@ -178,7 +205,13 @@ class Actions(Base):
         return self._request("POST", url, payload)
 
     def send_custom_notification(
-        self, object_type, filters, author, comment, filter_vars=None, force=False
+        self,
+        object_type: HostOrService,
+        filters: str,
+        author: str,
+        comment: str,
+        filter_vars: FilterVars = None,
+        force: Optional[int] = False,
     ):
         """
         Send a custom notification for hosts and services.
@@ -190,24 +223,19 @@ class Actions(Base):
                                  'test comment')
 
         :param object_type: Host or Service
-        :type object_type: string
         :param filters: filters matched object
-        :type filters: string
         :param author: name of the author
-        :type author: string
         :param comment: comment text
-        :type comment: string
         :param force: ignore downtimes and notification settings
-        :type force: bool
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
+
         :returns: the response as json
         :rtype: dictionary
         """
 
         url = "{}/{}".format(self.base_url_path, "send-custom-notification")
 
-        payload = {
+        payload: Payload = {
             "type": object_type,
             "filter": filters,
             "author": author,
@@ -219,7 +247,13 @@ class Actions(Base):
 
         return self._request("POST", url, payload)
 
-    def delay_notification(self, object_type, filters, timestamp, filter_vars=None):
+    def delay_notification(
+        self,
+        object_type: HostOrService,
+        filters: str,
+        timestamp: int,
+        filter_vars: FilterVars = None,
+    ):
         """
         Delay notifications for a host or a service.
 
@@ -232,20 +266,21 @@ class Actions(Base):
                            '1446389894')
 
         :param object_type: Host or Service
-        :type object_type: string
         :param filters: filters matched object(s)
-        :type filters: string
         :param timestamp: timestamp to delay the notifications to
-        :type timestamp: int
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
+
         :returns: the response as json
         :rtype: dictionary
         """
 
         url = "{}/{}".format(self.base_url_path, "delay-notification")
 
-        payload = {"type": object_type, "filter": filters, "timestamp": timestamp}
+        payload: Payload = {
+            "type": object_type,
+            "filter": filters,
+            "timestamp": timestamp,
+        }
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
@@ -253,44 +288,36 @@ class Actions(Base):
 
     def acknowledge_problem(
         self,
-        object_type,
-        filters,
-        author,
-        comment,
-        filter_vars=None,
-        expiry=None,
-        sticky=None,
-        notify=None,
-        persistent=None,
+        object_type: HostOrService,
+        filters: str,
+        author: str,
+        comment: str,
+        filter_vars: FilterVars = None,
+        expiry: Optional[int] = None,
+        sticky: Optional[bool] = None,
+        notify: Optional[bool] = None,
+        persistent: Optional[bool] = None,
     ):
         """
         Acknowledge a Service or Host problem.
 
         :param object_type: Host or Service
-        :type object_type: string
         :param filters: filters matched object(s)
-        :type filters: string
         :param author: name of the author
-        :type author: string
         :param comment: comment text
-        :type comment: string
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
         :param expiry: acknowledgement expiry timestamp
-        :type expiry: int
         :param sticky: stay till full problem recovery
-        :type sticky: bool
         :param notify: send notification
-        :type notify: bool
         :param persistent: the comment will remain after the acknowledgement recovers or expires
-        :type persistent: bool
+
         :returns: the response as json
         :rtype: dictionary
         """
 
         url = "{}/{}".format(self.base_url_path, "acknowledge-problem")
 
-        payload = {
+        payload: Payload = {
             "type": object_type,
             "filter": filters,
             "author": author,
@@ -309,7 +336,9 @@ class Actions(Base):
 
         return self._request("POST", url, payload)
 
-    def remove_acknowledgement(self, object_type, filters, filter_vars=None):
+    def remove_acknowledgement(
+        self, object_type: HostOrService, filters: str, filter_vars: FilterVars = None
+    ):
         """
         Remove the acknowledgement for services or hosts.
 
@@ -322,20 +351,27 @@ class Actions(Base):
         :param filters: filters matched object(s)
         :type filters: string
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
+
         :returns: the response as json
         :rtype: dictionary
         """
 
         url = "{}/{}".format(self.base_url_path, "remove-acknowledgement")
 
-        payload = {"type": object_type, "filter": filters}
+        payload: Payload = {"type": object_type, "filter": filters}
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
         return self._request("POST", url, payload)
 
-    def add_comment(self, object_type, filters, author, comment, filter_vars=None):
+    def add_comment(
+        self,
+        object_type: HostOrService,
+        filters: str,
+        author: str,
+        comment: str,
+        filter_vars: FilterVars = None,
+    ):
         """
         Add a comment from an author to services or hosts.
 
@@ -346,22 +382,19 @@ class Actions(Base):
                     'Incident ticket #12345 opened.')
 
         :param object_type: Host or Service
-        :type object_type: string
         :param filters: filters matched object(s)
-        :type filters: string
         :param author: name of the author
-        :type author: string
         :param comment: comment text
         :type comment: string
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
+
         :returns: the response as json
         :rtype: dictionary
         """
 
         url = "{}/{}".format(self.base_url_path, "add-comment")
 
-        payload = {
+        payload: Payload = {
             "type": object_type,
             "filter": filters,
             "author": author,
@@ -372,7 +405,13 @@ class Actions(Base):
 
         return self._request("POST", url, payload)
 
-    def remove_comment(self, object_type, name=None, filters=None, filter_vars=None):
+    def remove_comment(
+        self,
+        object_type: HostOrService,
+        name: Optional[str] = None,
+        filters: Optional[str] = None,
+        filter_vars: FilterVars = None,
+    ):
         """
         Remove a comment using its name or filters.
 
@@ -385,13 +424,10 @@ class Actions(Base):
                        filters='service.name=="ping4"')
 
         :param object_type: Host, Service or Comment
-        :type object_type: string
         :param name: name of the Comment
-        :type name: string
         :param filters: filters matched object(s)
-        :type filters: string
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
+
         :returns: the response as json
         :rtype: dictionary
         """
@@ -401,7 +437,7 @@ class Actions(Base):
 
         url = "{}/{}".format(self.base_url_path, "remove-comment")
 
-        payload = {"type": object_type}
+        payload: Payload = {"type": object_type}
         if name:
             payload[object_type.lower()] = name
         if filters:
@@ -413,18 +449,18 @@ class Actions(Base):
 
     def schedule_downtime(
         self,
-        object_type,
-        filters,
-        author,
-        comment,
-        start_time,
-        end_time,
-        duration,
-        filter_vars=None,
-        fixed=None,
-        all_services=None,
-        trigger_name=None,
-        child_options=None,
+        object_type: HostOrService,
+        filters: str,
+        author: str,
+        comment: str,
+        start_time: int,
+        end_time: int,
+        duration: int,
+        filter_vars: FilterVars = None,
+        fixed: Optional[bool] = None,
+        all_services: Optional[bool] = None,
+        trigger_name: Optional[str] = None,
+        child_options: Optional[str] = None,
     ):
         """
         Schedule a downtime for hosts and services.
@@ -452,36 +488,25 @@ class Actions(Base):
         )
 
         :param object_type: Host or Service
-        :type object_type: string
         :param filters: filters matched object(s)
-        :type filters: string
         :param author: name of the author
-        :type author: string
         :param comment: comment text
-        :type comment: string
         :param start_time: timestamp marking the beginning
-        :type start_time: int
         :param end_time: timestamp marking the end
-        :type end_time: int
         :param duration: duration of the downtime in seconds
-        :type duration: int
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
         :param fixed: fixed or flexible downtime
-        :type fixed: bool
         :param all_services: sets downtime for all services for the matched host objects
-        :type all_services: bool
         :param trigger_name: trigger for the downtime
-        :type trigger_name: string
         :param child_options: schedule child downtimes.
-        :type child_options: string
+
         :returns: the response as json
         :rtype: dictionary
         """
 
         url = "{}/{}".format(self.base_url_path, "schedule-downtime")
 
-        payload = {
+        payload: Payload = {
             "type": object_type,
             "filter": filters,
             "author": author,
@@ -503,7 +528,13 @@ class Actions(Base):
 
         return self._request("POST", url, payload)
 
-    def remove_downtime(self, object_type, name=None, filters=None, filter_vars=None):
+    def remove_downtime(
+        self,
+        object_type: HostOrService,
+        name: Optional[str] = None,
+        filters: Optional[str] = None,
+        filter_vars: FilterVars = None,
+    ):
         """
         Remove the downtime using its name or filters.
 
@@ -516,13 +547,10 @@ class Actions(Base):
                         filters='service.name=="ping4"')
 
         :param object_type: Host, Service or Downtime
-        :type object_type: string
         :param name: name of the downtime
-        :type name: string
         :param filters: filters matched object(s)
-        :type filters: string
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
+
         :returns: the response as json
         :rtype: dictionary
         """
@@ -532,7 +560,7 @@ class Actions(Base):
 
         url = "{}/{}".format(self.base_url_path, "remove-downtime")
 
-        payload = {"type": object_type}
+        payload: Payload = {"type": object_type}
         if name:
             payload[object_type.lower()] = name
         if filters:
@@ -566,7 +594,7 @@ class Actions(Base):
 
         return self._request("POST", url)
 
-    def generate_ticket(self, host_common_name):
+    def generate_ticket(self, host_common_name: str):
         """
         Generates a PKI ticket for CSR auto-signing.
         This can be used in combination with satellite/client
@@ -576,7 +604,6 @@ class Actions(Base):
         generate_ticket("my-server-name")
 
         :param host_common_name: the host's common name for which the ticket should be generated.
-        :type host_common_name: string
         """
 
         if not host_common_name:

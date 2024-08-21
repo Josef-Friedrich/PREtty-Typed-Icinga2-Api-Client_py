@@ -27,6 +27,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @summary: Python library for the Icinga 2 RESTful API
 """
 
-__author__ = "Christian Jonak-Moechel, fmnisme, Tobias von der Krone"
-__contact__ = "christian@jonak.org, fmnisme@gmail.com, tobias@vonderkrone.info"
-__version__ = "0.7.4"
+__author__: str = "Christian Jonak-Moechel, fmnisme, Tobias von der Krone"
+__contact__: str = "christian@jonak.org, fmnisme@gmail.com, tobias@vonderkrone.info"
+__version__: str = "0.7.4"
