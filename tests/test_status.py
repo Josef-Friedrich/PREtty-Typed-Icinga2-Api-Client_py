@@ -3,7 +3,8 @@ from pretiac.client import Client
 
 def test_without_args(client: Client) -> None:
     result = client.status.list()
-    assert isinstance(result["results"][0]["name"], str)
+    for status in result["results"]:
+        assert isinstance(status["name"], str)
 
 
 def test_icinga_application(client: Client) -> None:

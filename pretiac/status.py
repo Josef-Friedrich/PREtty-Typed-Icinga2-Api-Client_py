@@ -34,11 +34,32 @@ https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#status-and-statistic
 from __future__ import print_function
 
 import logging
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from pretiac.base import Base
 
 LOG = logging.getLogger(__name__)
+
+
+Component = Literal[
+    "ApiListener",
+    "CIB",
+    "CheckerComponent",
+    "ElasticsearchWriter",
+    "FileLogger",
+    "GelfWriter",
+    "GraphiteWriter",
+    "IcingaApplication",
+    "IdoMysqlConnection",
+    "IdoPgsqlConnection",
+    "Influxdb2Writer",
+    "InfluxdbWriter",
+    "JournaldLogger",
+    "NotificationComponent",
+    "OpenTsdbWriter",
+    "PerfdataWriter",
+    "SyslogLogger",
+]
 
 
 class Status(Base):
@@ -48,18 +69,24 @@ class Status(Base):
 
     base_url_path = "v1/status"
 
-    def list(self, component: Optional[str] = None) -> Any:
+    def list(self, component: Optional[Component | str] = None) -> Any:
         """
-        retrieve status information and statistics for Icinga 2
+        Retrieve status information and statistics for Icinga 2
 
-        example 1:
-        list()
+        Example 1:
 
-        example 2:
-        list('IcingaApplication')
+        .. code-block:: python
+
+            list()
+
+        Example 2:
+
+        .. code-block:: python
+
+            list('IcingaApplication')
 
         :param component: only list the status of this component
-        :type component: string
+
         :returns: status information
         :rtype: dictionary
         """
