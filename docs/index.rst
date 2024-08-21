@@ -9,11 +9,11 @@ Welcome to pretiac's documentation!
 .. automodule:: pretiac
 .. automodule:: pretiac.actions
 .. automodule:: pretiac.status
+.. automodule:: pretiac.config
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
 
 
 Indices and tables
