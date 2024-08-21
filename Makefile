@@ -1,4 +1,6 @@
-test:
+test: docker_stop docker_start test_all docker_stop
+
+test_all:
 	poetry run tox
 
 test_quick:
@@ -42,8 +44,6 @@ type_check:
 pin_docs_requirements:
 	pip-compile --output-file=docs/requirements.txt docs/requirements.in pyproject.toml
 
-
-
 docker_start:
 	sudo chmod -R 777 ./resources/etc-icinga2
 	sudo docker run \
@@ -53,8 +53,9 @@ docker_start:
 		--publish 5665:5665 \
 		--env ICINGA_MASTER=1 \
 		--detach \
+		--rm \
 		icinga/icinga2
-	sleep 5
+	sleep 1
 	sudo docker logs icinga-master
 
 docker_stop:
