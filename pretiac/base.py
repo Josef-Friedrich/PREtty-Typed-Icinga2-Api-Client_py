@@ -28,7 +28,7 @@ Icinga 2 API client base
 
 import logging
 from logging import Logger
-from typing import TYPE_CHECKING, Dict, List, Literal, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Type, Union
 from urllib.parse import urljoin
 
 import requests
@@ -89,6 +89,14 @@ ObjectType = Literal[
 ]
 
 
+RequestMethod = Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
+"""
+https://github.com/psf/requests/blob/a3ce6f007597f14029e6b6f54676c34196aa050e/src/requests/api.py#L17
+
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
+"""
+
+
 class Base:
     """
     Icinga 2 API Base class
@@ -96,9 +104,9 @@ class Base:
 
     manager: "Client"
 
-    base_url_path = None
+    base_url_path: Optional[str] = None
 
-    def __init__(self, manager: "Client"):
+    def __init__(self, manager: "Client") -> None:
         """
         initialize object
         """
@@ -106,7 +114,7 @@ class Base:
         self.manager = manager
         self.stream_cache = ""
 
-    def _create_session(self, method="POST"):
+    def _create_session(self, method: RequestMethod = "POST") -> requests.Session:
         """
         create a session object
         """
@@ -130,7 +138,13 @@ class Base:
 
         return session
 
-    def _request(self, method, url_path, payload=None, stream=False):
+    def _request(
+        self,
+        method: RequestMethod,
+        url_path: str,
+        payload: Optional[dict[str, Any]] = None,
+        stream: bool = False,
+    ) -> requests.Response | Any:
         """
         make the request and return the body
 

@@ -19,12 +19,13 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+types-requests = "^2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8"
 tox = "^4"
 ruff = "^0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
