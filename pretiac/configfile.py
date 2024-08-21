@@ -29,7 +29,7 @@ Icinga 2 API client config file
 import configparser as configparser
 import os
 
-from pretiac.exceptions import Icinga2ApiConfigFileException
+from pretiac.exceptions import PretiacConfigFileException
 
 
 class ClientConfigFile(object):
@@ -63,12 +63,12 @@ class ClientConfigFile(object):
         """
 
         if not os.path.exists(self.file_name):
-            raise Icinga2ApiConfigFileException(
+            raise PretiacConfigFileException(
                 'Config file "{0}" doesn\'t exist.'.format(self.file_name)
             )
 
         if not os.access(self.file_name, os.R_OK):
-            raise Icinga2ApiConfigFileException(
+            raise PretiacConfigFileException(
                 'No read access for config file "{0}".\n'.format(self.file_name)
             )
 
@@ -83,7 +83,7 @@ class ClientConfigFile(object):
         cfg.read(self.file_name)
 
         if not cfg.has_section(self.section):
-            raise Icinga2ApiConfigFileException(
+            raise PretiacConfigFileException(
                 'Config file is missing "{0}" section.'.format(self.section)
             )
 

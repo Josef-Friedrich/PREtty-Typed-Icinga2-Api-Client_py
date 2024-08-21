@@ -1,6 +1,7 @@
 import pytest
+
 from pretiac.client import Client
-from pretiac.exceptions import Icinga2ApiException
+from pretiac.exceptions import PretiacException
 
 
 class TestProcessCheckResult:
@@ -15,7 +16,7 @@ class TestProcessCheckResult:
         )
 
     def test_failure(self, client: Client) -> None:
-        with pytest.raises(Icinga2ApiException, match="No objects found."):
+        with pytest.raises(PretiacException, match="No objects found."):
             client.actions.process_check_result(
                 "Service", "Host1!unknown_service", 3, "Unknown Service"
             )

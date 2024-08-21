@@ -37,7 +37,7 @@ import pretiac
 from pretiac.actions import Actions
 from pretiac.configfile import ClientConfigFile
 from pretiac.events import Events
-from pretiac.exceptions import Icinga2ApiException
+from pretiac.exceptions import PretiacException
 from pretiac.objects import Objects
 from pretiac.status import Status
 
@@ -104,8 +104,6 @@ class Client:
         self.version = pretiac.__version__
 
         if not self.url:
-            raise Icinga2ApiException('No "url" defined.')
+            raise PretiacException('No "url" defined.')
         if not self.username and not self.password and not self.certificate:
-            raise Icinga2ApiException(
-                "Neither username/password nor certificate defined."
-            )
+            raise PretiacException("Neither username/password nor certificate defined.")

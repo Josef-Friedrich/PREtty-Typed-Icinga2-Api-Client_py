@@ -37,7 +37,7 @@ from pretiac.base import (
     HostOrService,
     Payload,
 )
-from pretiac.exceptions import Icinga2ApiException
+from pretiac.exceptions import PretiacException
 
 ServiceState = Literal[0, 1, 2, 3]
 """
@@ -121,13 +121,13 @@ class Actions(Base):
         :see: https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#process-check-result
         """
         if not name and not filters:
-            raise Icinga2ApiException("name and filters is empty or none")
+            raise PretiacException("name and filters is empty or none")
 
         if name and (filters or filter_vars):
-            raise Icinga2ApiException("name and filters are mutually exclusive")
+            raise PretiacException("name and filters are mutually exclusive")
 
         if object_type not in ["Host", "Service"]:
-            raise Icinga2ApiException('object_type needs to be "Host" or "Service".')
+            raise PretiacException('object_type needs to be "Host" or "Service".')
 
         url = f"{self.base_url}/process-check-result"
 
@@ -456,7 +456,7 @@ class Actions(Base):
         """
 
         if not name and not filters:
-            raise Icinga2ApiException("name and filters is empty or none")
+            raise PretiacException("name and filters is empty or none")
 
         url = "{}/{}".format(self.base_url_path, "remove-comment")
 
@@ -591,7 +591,7 @@ class Actions(Base):
         """
 
         if not name and not filters:
-            raise Icinga2ApiException("name and filters is empty or none")
+            raise PretiacException("name and filters is empty or none")
 
         url = "{}/{}".format(self.base_url_path, "remove-downtime")
 
@@ -651,7 +651,7 @@ class Actions(Base):
         """
 
         if not host_common_name:
-            raise Icinga2ApiException("host_common_name is empty or none")
+            raise PretiacException("host_common_name is empty or none")
 
         url = "{}/{}".format(self.base_url_path, "generate-ticket")
 

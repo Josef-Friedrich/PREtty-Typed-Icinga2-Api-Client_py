@@ -26,40 +26,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Icinga 2 API client exceptions
 """
 
+from typing import TYPE_CHECKING
 
-class Icinga2ApiException(Exception):
+if TYPE_CHECKING:
+    from pretiac.base import Payload
+
+
+class PretiacException(Exception):
     """
     Icinga 2 API exception class
     """
 
-    def __init__(self, error):
-        super(Icinga2ApiException, self).__init__(error)
-        self.error = error
 
-    def __str__(self):
-        return str(self.error)
-
-
-class Icinga2ApiRequestException(Icinga2ApiException):
+class PretiacRequestException(PretiacException):
     """
     Icinga 2 API Request exception class
     """
 
-    response = {}
+    response: "Payload" = {}
 
-    def __init__(self, error, response):
-        super(Icinga2ApiRequestException, self).__init__(error)
+    def __init__(self, message: str, response: "Payload") -> None:
+        super(PretiacRequestException, self).__init__(message)
         self.response = response
 
 
-class Icinga2ApiConfigFileException(Exception):
+class PretiacConfigFileException(Exception):
     """
     Icinga 2 API config file exception class
     """
-
-    def __init__(self, error):
-        super(Icinga2ApiConfigFileException, self).__init__(error)
-        self.error = error
-
-    def __str__(self):
-        return str(self.error)

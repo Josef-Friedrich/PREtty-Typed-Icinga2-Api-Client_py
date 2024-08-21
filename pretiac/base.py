@@ -33,7 +33,7 @@ from urllib.parse import urljoin
 
 import requests
 
-from pretiac.exceptions import Icinga2ApiException, Icinga2ApiRequestException
+from pretiac.exceptions import PretiacException, PretiacRequestException
 
 if TYPE_CHECKING:
     from pretiac.client import Client
@@ -120,7 +120,7 @@ class Base:
     @property
     def base_url(self) -> str:
         if not self.base_url_path:
-            raise Icinga2ApiException("Specify self.base_url_path")
+            raise PretiacException("Specify self.base_url_path")
         return self.base_url_path
 
     def _create_session(self, method: RequestMethod = "POST") -> requests.Session:
@@ -196,7 +196,7 @@ class Base:
         # pprint(response)
 
         if not 200 <= response.status_code <= 299:
-            raise Icinga2ApiRequestException(
+            raise PretiacRequestException(
                 'Request "{}" failed with status {}: {}'.format(
                     response.url,
                     response.status_code,

@@ -33,7 +33,7 @@ from collections.abc import Sequence
 from typing import Any, Optional, Union
 
 from pretiac.base import Base, FilterVars, ObjectType, Payload
-from pretiac.exceptions import Icinga2ApiException
+from pretiac.exceptions import PretiacException
 
 LOG = logging.getLogger(__name__)
 
@@ -174,7 +174,7 @@ class Objects(Base):
             "Zone": "zones",
         }
         if object_type not in type_conv:
-            raise Icinga2ApiException(
+            raise PretiacException(
                 'Icinga 2 object type "{}" does not exist.'.format(object_type)
             )
 
