@@ -87,23 +87,25 @@ class Client:
         """
         initialize object
         """
-        config_from_file = ClientConfigFile(config_file)
+        config = ClientConfigFile(config_file)
         if config_file:
-            config_from_file.parse()
-        self.url = url or config_from_file.url
-        self.username = username or config_from_file.username
-        self.password = password or config_from_file.password
-        self.timeout = timeout or config_from_file.timeout
-        self.certificate = certificate or config_from_file.certificate
-        self.key = key or config_from_file.key
-        self.ca_certificate = ca_certificate or config_from_file.ca_certificate
+            config.parse()
+        url = url or config.url
+        self.username = username or config.username
+        self.password = password or config.password
+        self.timeout = timeout or config.timeout
+        self.certificate = certificate or config.certificate
+        self.key = key or config.key
+        self.ca_certificate = ca_certificate or config.ca_certificate
         self.objects = Objects(self)
         self.actions = Actions(self)
         self.events = Events(self)
         self.status = Status(self)
         self.version = pretiac.__version__
 
-        if not self.url:
+        if url:
+            self.url = url
+        else:
             raise PretiacException('No "url" defined.')
         if not self.username and not self.password and not self.certificate:
             raise PretiacException("Neither username/password nor certificate defined.")

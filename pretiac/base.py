@@ -28,7 +28,17 @@ Icinga 2 API client base
 
 import logging
 from logging import Logger
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generator,
+    List,
+    Literal,
+    Optional,
+    Type,
+    Union,
+)
 from urllib.parse import urljoin
 
 import requests
@@ -185,7 +195,7 @@ class Base:
             request_args["stream"] = True
 
         # do the request
-        response = session.post(**request_args)
+        response: requests.Response = session.post(**request_args)
 
         if not stream:
             session.close()
@@ -211,7 +221,9 @@ class Base:
             return response.json()
 
     @staticmethod
-    def _get_message_from_stream(stream):
+    def _get_message_from_stream(
+        stream: requests.Response,
+    ) -> Generator[str | Any, Any, None]:
         """
         make the request and return the body
 

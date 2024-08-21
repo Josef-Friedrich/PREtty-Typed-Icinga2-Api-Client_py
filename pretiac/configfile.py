@@ -28,6 +28,7 @@ Icinga 2 API client config file
 
 import configparser as configparser
 import os
+from typing import Optional
 
 from pretiac.exceptions import PretiacConfigFileException
 
@@ -37,7 +38,25 @@ class ClientConfigFile(object):
     Icinga 2 API config file
     """
 
-    def __init__(self, file_name):
+    file_name: Optional[str]
+
+    section: str
+
+    url: Optional[str]
+
+    username: Optional[str]
+
+    password: Optional[str]
+
+    timeout: Optional[int]
+
+    certificate: Optional[str]
+
+    key: Optional[str]
+
+    ca_certificate: Optional[str]
+
+    def __init__(self, file_name: Optional[str]) -> None:
         """
         initialization
         """
@@ -62,6 +81,9 @@ class ClientConfigFile(object):
         :rtype: bool
         """
 
+        if not self.file_name:
+            return False
+
         if not os.path.exists(self.file_name):
             raise PretiacConfigFileException(
                 'Config file "{0}" doesn\'t exist.'.format(self.file_name)
@@ -74,10 +96,13 @@ class ClientConfigFile(object):
 
         return True
 
-    def parse(self):
+    def parse(self) -> None:
         """
         parse the config file
         """
+
+        if not self.file_name:
+            raise PretiacConfigFileException("Config file isn't specifieds.")
 
         cfg = configparser.ConfigParser()
         cfg.read(self.file_name)
@@ -127,6 +152,6 @@ class ClientConfigFile(object):
 
         # [api]/timeout
         try:
-            self.timeout = str(cfg.get(self.section, "timeout")).strip()
+            self.timeout = int(str(cfg.get(self.section, "timeout")).strip())
         except configparser.NoOptionError:
             pass
