@@ -26,12 +26,15 @@
 # @summary: Python library for the Icinga 2 RESTful API
 
 """
-Icinga 2 API status
+Retrieve status information and statistics for Icinga 2.
+
+https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#status-and-statistics
 """
 
 from __future__ import print_function
 
 import logging
+from typing import Any, Optional
 
 from pretiac.base import Base
 
@@ -45,7 +48,7 @@ class Status(Base):
 
     base_url_path = "v1/status"
 
-    def list(self, component=None):
+    def list(self, component: Optional[str] = None) -> Any:
         """
         retrieve status information and statistics for Icinga 2
 
@@ -61,8 +64,8 @@ class Status(Base):
         :rtype: dictionary
         """
 
-        url = self.base_url_path
+        url = self.base_url
         if component:
-            url += "/{}".format(component)
+            url += f"/{component}"
 
         return self._request("GET", url)
