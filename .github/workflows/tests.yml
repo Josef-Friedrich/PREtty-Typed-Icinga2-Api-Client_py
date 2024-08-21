@@ -21,6 +21,22 @@ jobs:
     steps:
       # https://github.com/marketplace/actions/checkout
       - uses: actions/checkout@v4
+
+      - run: chmod -R 777 ./resources/etc-icinga2
+      - name: Start docker container
+        uses: docker://docker
+        with:
+          args: run --name icinga-master -v ${{ github.workspace }}/resources/etc-icinga2:/data/etc/icinga2 -h icinga-master -p 5665:5665 -e ICINGA_MASTER=1 -d icinga/icinga2
+
+      - run: sleep 10
+
+      - name: logs docker container
+        uses: docker://docker
+        with:
+          args: logs icinga-master
+
+      - run: curl -k -s -S -i -u apiuser:password 'https://localhost:5665/v1'
+
       # https://github.com/marketplace/actions/setup-python
       - uses: actions/setup-python@v5
         with:
