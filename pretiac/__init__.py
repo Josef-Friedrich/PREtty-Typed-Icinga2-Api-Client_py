@@ -30,6 +30,34 @@ pretiac is a `Python <http://www.python.org>`_ module to interact with the
 `Icinga 2 RESTful API <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/>`_.
 """
 
-__author__: str = "Christian Jonak-Moechel, fmnisme, Tobias von der Krone"
-__contact__: str = "christian@jonak.org, fmnisme@gmail.com, tobias@vonderkrone.info"
-__version__: str = "0.7.4"
+from pathlib import Path
+from typing import Optional
+
+from pretiac.client import Client
+
+__client: Optional[Client] = None
+
+
+def get_client(
+    domain: Optional[str] = None,
+    port: Optional[int] = None,
+    api_user: Optional[str] = None,
+    password: Optional[str] = None,
+    certificate: Optional[str] = None,
+    key: Optional[str] = None,
+    ca_certificate: Optional[str] = None,
+    config_file: Optional[str | Path] = None,
+) -> Client:
+    global __client
+    if not __client:
+        __client = Client(
+            domain=domain,
+            port=port,
+            api_user=api_user,
+            password=password,
+            certificate=certificate,
+            key=key,
+            ca_certificate=ca_certificate,
+            config_file=config_file,
+        )
+    return __client

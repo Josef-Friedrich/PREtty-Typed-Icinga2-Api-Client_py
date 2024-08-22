@@ -35,10 +35,10 @@ programmatic way using HTTP requests.
 from __future__ import print_function
 
 import logging
+from importlib.metadata import version as get_version
 from pathlib import Path
 from typing import Optional
 
-import pretiac
 from pretiac.actions import Actions
 from pretiac.config import Config, load_config
 from pretiac.events import Events
@@ -70,15 +70,15 @@ class Client:
 
     ca_certificate: Optional[str]
 
-    objects: Objects
+    version: str
 
     actions: Actions
 
     events: Events
 
-    status: Status
+    objects: Objects
 
-    version: str
+    status: Status
 
     def __init__(
         self,
@@ -112,11 +112,12 @@ class Client:
         self.key = key or config.key
         self.ca_certificate = ca_certificate or config.ca_certificate
 
-        self.objects = Objects(self)
+        self.version = get_version("pretiac")
+
         self.actions = Actions(self)
         self.events = Events(self)
+        self.objects = Objects(self)
         self.status = Status(self)
-        self.version = pretiac.__version__
 
         if not self.api_user and not self.password and not self.certificate:
             raise PretiacException("Neither username/password nor certificate defined.")

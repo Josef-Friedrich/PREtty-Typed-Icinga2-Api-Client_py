@@ -1,16 +1,22 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pytest
 
 from pretiac.client import Client
 
+config_file_path: Path = (
+    Path(__file__).parent / ".." / "resources" / "icinga-api-client.json"
+).resolve()
+
+os.environ["ICINGA_API_CLIENT"] = str(config_file_path)
+
 
 @pytest.fixture
 def config_file() -> Path:
-    path = Path(__file__).parent / ".." / "resources" / "icinga-api-client.json"
-    return path.resolve()
+    return config_file_path
 
 
 @pytest.fixture
