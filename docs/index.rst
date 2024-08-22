@@ -8,8 +8,9 @@ Welcome to pretiac's documentation!
 
 .. automodule:: pretiac
 .. automodule:: pretiac.actions
-.. automodule:: pretiac.status
 .. automodule:: pretiac.config
+.. automodule:: pretiac.events
+.. automodule:: pretiac.status
 
 .. toctree::
    :maxdepth: 2

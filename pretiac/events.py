@@ -32,10 +32,30 @@ Icinga 2 API events
 from __future__ import print_function
 
 import logging
+from collections.abc import Sequence
+from typing import Any, Generator, Literal, Optional
 
-from pretiac.base import Base
+from pretiac.base import Base, FilterVars, Payload
 
 LOG = logging.getLogger(__name__)
+
+
+EventStreamType = Literal[
+    "CheckResult",  # Check results for hosts and services.
+    "StateChange",  # Host/service state changes.
+    "Notification",  # Notification events including notified users for hosts and services.
+    "AcknowledgementSet",  # Acknowledgement set on hosts and services.
+    "AcknowledgementCleared",  # Acknowledgement cleared on hosts and services.
+    "CommentAdded",  # Comment added for hosts and services.
+    "CommentRemoved",  # Comment removed for hosts and services.
+    "DowntimeAdded",  # Downtime added for hosts and services.
+    "DowntimeRemoved",  # Downtime removed for hosts and services.
+    "DowntimeStarted",  # Downtime started for hosts and services.
+    "DowntimeTriggered",  # Downtime triggered for hosts and services.
+    "ObjectCreated",  # Object created for all Icinga 2 objects.
+    "ObjectDeleted",  # Object deleted for all Icinga 2 objects.
+    "ObjectModified",  # Object modified for all Icinga 2 objects.
+]
 
 
 class Events(Base):
@@ -45,29 +65,34 @@ class Events(Base):
 
     base_url_path = "v1/events"
 
-    def subscribe(self, types, queue, filters=None, filter_vars=None):
+    def subscribe(
+        self,
+        types: Sequence[EventStreamType],
+        queue: str,
+        filters: Optional[str] = None,
+        filter_vars: FilterVars = None,
+    ) -> Generator[str | Any, Any, None]:
         """
         subscribe to an event stream
 
         example 1:
-        types = ["CheckResult"]
-        queue = "monitor"
-        filters = "event.check_result.exit_status==2"
-        for event in subscribe(types, queue, filters):
-            print event
 
-        :param types: the event types to return
-        :type types: array
-        :param queue: the queue name to subscribe to
-        :type queue: string
-        :param filters: filters matched object(s)
-        :type filters: string
+        .. code-block:: python
+
+            types = ["CheckResult"]
+            queue = "monitor"
+            filters = "event.check_result.exit_status==2"
+            for event in subscribe(types, queue, filters):
+                print event
+
+        :param types: Event type(s). Multiple types as URL parameters are supported.
+        :param queue: Unique queue name. Multiple HTTP clients can use the same queue as long as they use the same event types and filter.
+        :param filters: Filter for specific event attributes using filter expressions.
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
+
         :returns: the events
-        :rtype: string
         """
-        payload = {
+        payload: Payload = {
             "types": types,
             "queue": queue,
         }
@@ -76,6 +101,6 @@ class Events(Base):
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        stream = self._request("POST", self.base_url_path, payload, stream=True)
+        stream = self._request("POST", self.base_url, payload, stream=True)
         for event in self._get_message_from_stream(stream):
             yield event
