@@ -166,18 +166,15 @@ class Base:
         url_path: str,
         payload: Optional[dict[str, Any]] = None,
         stream: bool = False,
+        suppress_exception: bool = False,
     ) -> Any:
         """
         make the request and return the body
 
         :param method: the HTTP method
-        :type method: string
         :param url_path: the requested url path
-        :type url_path: string
         :param payload: the payload to send
-        :type payload: dictionary
         :returns: the response as json
-        :rtype: dictionary
         """
 
         request_url = urljoin(self.client.url, url_path)
@@ -202,13 +199,8 @@ class Base:
 
         if not stream:
             session.close()
-        # # for debugging
-        # from pprint import pprint
-        # pprint(request_url)
-        # pprint(payload)
-        # pprint(response)
 
-        if not 200 <= response.status_code <= 299:
+        if not suppress_exception and not 200 <= response.status_code <= 299:
             raise PretiacRequestException(
                 'Request "{}" failed with status {}: {}'.format(
                     response.url,

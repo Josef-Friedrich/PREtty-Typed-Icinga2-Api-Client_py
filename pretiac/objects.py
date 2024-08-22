@@ -193,8 +193,10 @@ class Objects(Base):
         """
         get object by type or name
 
-        :param object_type: type of the object
-        :param name: list object with this name
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+        :param name: The full object name, for example ``example.localdomain``
+            or ``example.localdomain!http``.
         :param attrs: only return these attributes
         :param joins: show joined object
 
@@ -237,18 +239,14 @@ class Objects(Base):
         """
         get object by type or name
 
-        :param object_type: type of the object
-        :type object_type: string
-        :param name: list object with this name
-        :type name: string
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+        :param name: The full object name, for example ``example.localdomain``
+            or ``example.localdomain!http``.
         :param attrs: only return these attributes
-        :type attrs: list
         :param filters: filters matched object(s)
-        :type filters: string
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
         :param joins: show joined object
-        :type joins: list
 
         example 1:
 
@@ -266,7 +264,7 @@ class Objects(Base):
 
         .. code-block:: python
 
-            list('Host', attrs='["address", "state"])
+            list('Host', attrs=["address", "state"])
 
         example 4:
 
@@ -285,6 +283,8 @@ class Objects(Base):
         .. code-block:: python
 
             list('Service', joins=True)
+
+        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
         """
 
         object_type_url_path = self._convert_object_type(object_type)
@@ -311,30 +311,36 @@ class Objects(Base):
         object_type: ObjectType,
         name: str,
         templates: Optional[Sequence[str]] = None,
-        attrs: Optional[Sequence[str]] = None,
+        attrs: Optional[Payload] = None,
     ) -> Any:
         """
         create an object
 
-        :param object_type: type of the object
-        :param name: the name of the object
-        :param templates: templates used
-        :param attrs: object's attributes
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+        :param name: The full object name, for example ``example.localdomain``
+            or ``example.localdomain!http``.
+        :param templates: Import existing configuration templates for this
+            object type. Note: These templates must either be statically
+            configured or provided in config packages.
+        :param attrs: Set specific object attributes for this object type.
 
         example 1:
 
         .. code-block:: python
 
-            create('Host', 'localhost', ['generic-host'], {'address': '127.0.0.1'})
+            client.objects.create('Host', 'localhost', ['generic-host'], {'address': '127.0.0.1'})
 
         example 2:
 
         .. code-block:: python
 
-            create('Service',
+            client.objects.create('Service',
                'testhost3!dummy',
                {'check_command': 'dummy'},
                ['generic-service'])
+
+        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#creating-config-objects>`__
         """
 
         object_type_url_path = self._convert_object_type(object_type)
@@ -353,8 +359,8 @@ class Objects(Base):
         """
         update an object
 
-        :param object_type: type of the object
-        :type object_type: string
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
         :param name: the name of the object
         :type name: string
         :param attrs: object's attributes to change
@@ -371,6 +377,8 @@ class Objects(Base):
         .. code-block:: python
 
             update('Service', 'testhost3!dummy', {'check_interval': '10m'})
+
+        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#modifying-objects>`__
         """
         object_type_url_path = self._convert_object_type(object_type)
         url_path = "{}/{}/{}".format(self.base_url_path, object_type_url_path, name)
@@ -384,20 +392,18 @@ class Objects(Base):
         filters: Optional[str] = None,
         filter_vars: FilterVars = None,
         cascade: bool = True,
+        suppress_exception: bool = False,
     ) -> Any:
-        """
-        delete an object
+        """delete an object
 
-        :param object_type: type of the object
-        :type object_type: string
-        :param name: the name of the object
-        :type name: string
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+        :param name: The full object name, for example ``example.localdomain``
+            or ``example.localdomain!http``.
         :param filters: filters matched object(s)
-        :type filters: string
         :param filter_vars: variables used in the filters expression
-        :type filter_vars: dict
-        :param cascade: deleted dependent objects
-        :type joins: bool
+        :param cascade: Delete objects depending on the deleted objects (e.g. services on a host).
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
         example 1:
 
@@ -410,6 +416,8 @@ class Objects(Base):
         .. code-block:: python
 
             delete('Service', filters='match("vhost*", service.name)')
+
+        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-objects>`_
         """
 
         object_type_url_path = self._convert_object_type(object_type)
@@ -426,4 +434,6 @@ class Objects(Base):
         if name:
             url += "/{}".format(name)
 
-        return self._request("DELETE", url, payload)
+        return self._request(
+            "DELETE", url, payload, suppress_exception=suppress_exception
+        )
