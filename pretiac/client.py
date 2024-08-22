@@ -70,6 +70,11 @@ class Client:
 
     ca_certificate: Optional[str]
 
+    suppress_exception: Optional[bool] = None
+    """
+    If set to ``True``, no exceptions are thrown.
+    """
+
     version: str
 
     actions: Actions
@@ -90,9 +95,12 @@ class Client:
         key: Optional[str] = None,
         ca_certificate: Optional[str] = None,
         config_file: Optional[str | Path] = None,
+        suppress_exception: Optional[bool] = None,
     ) -> None:
         """
         initialize object
+
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
         """
         config: Config = load_config(config_file)
 
@@ -111,6 +119,7 @@ class Client:
         self.certificate = certificate or config.certificate
         self.key = key or config.key
         self.ca_certificate = ca_certificate or config.ca_certificate
+        self.suppress_exception = suppress_exception or config.suppress_exception
 
         self.version = get_version("pretiac")
 

@@ -54,6 +54,11 @@ class Config(BaseModel):
 
     ca_certificate: Optional[str] = None
 
+    suppress_exception: Optional[bool] = None
+    """
+    If set to ``True``, no exceptions are thrown.
+    """
+
 
 def load_config(config_file: str | Path | None = None) -> Config:
     """

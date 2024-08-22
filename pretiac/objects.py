@@ -183,12 +183,99 @@ class Objects(Base):
 
         return type_conv[object_type]
 
+    def list(
+        self,
+        object_type: ObjectType,
+        name: Optional[str] = None,
+        attrs: Optional[Sequence[str]] = None,
+        filters: Optional[str] = None,
+        filter_vars: FilterVars = None,
+        joins: Optional[Union[bool, Sequence[str]]] = None,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        get object by type or name
+
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+        :param name: The full object name, for example ``example.localdomain``
+            or ``example.localdomain!http``.
+        :param attrs: only return these attributes
+        :param filters: filters matched object(s)
+        :param filter_vars: variables used in the filters expression
+        :param joins: show joined object
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+
+        example 1:
+
+        .. code-block:: python
+
+            client.objects.list('Host')
+
+        example 2:
+
+        .. code-block:: python
+
+            client.objects.list('Service', 'webserver01.domain!ping4')
+
+        example 3:
+
+        .. code-block:: python
+
+            client.objects.list('Host', attrs=["address", "state"])
+
+        example 4:
+
+        .. code-block:: python
+
+            client.objects.list('Host', filters='match("webserver*", host.name)')
+
+        example 5:
+
+        .. code-block:: python
+
+            client.objects.list('Service', joins=['host.name'])
+
+        example 6:
+
+        .. code-block:: python
+
+            client.objects.list('Service', joins=True)
+
+        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
+        """
+
+        object_type_url_path = self._convert_object_type(object_type)
+        url_path = "{}/{}".format(self.base_url_path, object_type_url_path)
+        if name:
+            url_path += "/{}".format(name)
+
+        payload: Payload = {}
+        if attrs:
+            payload["attrs"] = attrs
+        if filters:
+            payload["filter"] = filters
+        if filter_vars:
+            payload["filter_vars"] = filter_vars
+        if isinstance(joins, bool) and joins:
+            payload["all_joins"] = "1"
+        elif joins:
+            payload["joins"] = joins
+
+        result = self._request(
+            "GET", url_path, payload, suppress_exception=suppress_exception
+        )
+        if "results" in result:
+            return result["results"]
+        return result
+
     def get(
         self,
         object_type: ObjectType,
         name: str,
         attrs: Optional[Sequence[str]] = None,
         joins: Optional[Union[bool, Sequence[str]]] = None,
+        suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
         get object by type or name
@@ -199,6 +286,7 @@ class Objects(Base):
             or ``example.localdomain!http``.
         :param attrs: only return these attributes
         :param joins: show joined object
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
         example 1:
 
@@ -225,86 +313,9 @@ class Objects(Base):
             get('Service', 'webserver01.domain!ping4', joins=True)
         """
 
-        return self.list(object_type, name, attrs, joins=joins)[0]
-
-    def list(
-        self,
-        object_type: ObjectType,
-        name: Optional[str] = None,
-        attrs: Optional[Sequence[str]] = None,
-        filters: Optional[str] = None,
-        filter_vars: FilterVars = None,
-        joins: Optional[Union[bool, Sequence[str]]] = None,
-    ) -> Any:
-        """
-        get object by type or name
-
-        :param object_type: The type of the object, for example ``Service``,
-            ``Host`` or ``User``.
-        :param name: The full object name, for example ``example.localdomain``
-            or ``example.localdomain!http``.
-        :param attrs: only return these attributes
-        :param filters: filters matched object(s)
-        :param filter_vars: variables used in the filters expression
-        :param joins: show joined object
-
-        example 1:
-
-        .. code-block:: python
-
-            list('Host')
-
-        example 2:
-
-        .. code-block:: python
-
-            list('Service', 'webserver01.domain!ping4')
-
-        example 3:
-
-        .. code-block:: python
-
-            list('Host', attrs=["address", "state"])
-
-        example 4:
-
-        .. code-block:: python
-
-            list('Host', filters='match("webserver*", host.name)')
-
-        example 5:
-
-        .. code-block:: python
-
-            list('Service', joins=['host.name'])
-
-        example 6:
-
-        .. code-block:: python
-
-            list('Service', joins=True)
-
-        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
-        """
-
-        object_type_url_path = self._convert_object_type(object_type)
-        url_path = "{}/{}".format(self.base_url_path, object_type_url_path)
-        if name:
-            url_path += "/{}".format(name)
-
-        payload: Payload = {}
-        if attrs:
-            payload["attrs"] = attrs
-        if filters:
-            payload["filter"] = filters
-        if filter_vars:
-            payload["filter_vars"] = filter_vars
-        if isinstance(joins, bool) and joins:
-            payload["all_joins"] = "1"
-        elif joins:
-            payload["joins"] = joins
-
-        return self._request("GET", url_path, payload)["results"]
+        return self.list(
+            object_type, name, attrs, joins=joins, suppress_exception=suppress_exception
+        )[0]
 
     def create(
         self,
@@ -312,6 +323,7 @@ class Objects(Base):
         name: str,
         templates: Optional[Sequence[str]] = None,
         attrs: Optional[Payload] = None,
+        suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
         create an object
@@ -324,6 +336,7 @@ class Objects(Base):
             object type. Note: These templates must either be statically
             configured or provided in config packages.
         :param attrs: Set specific object attributes for this object type.
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
         example 1:
 
@@ -353,9 +366,17 @@ class Objects(Base):
 
         url_path = "{}/{}/{}".format(self.base_url_path, object_type_url_path, name)
 
-        return self._request("PUT", url_path, payload)
+        return self._request(
+            "PUT", url_path, payload, suppress_exception=suppress_exception
+        )
 
-    def update(self, object_type: ObjectType, name: str, attrs: dict[str, Any]) -> Any:
+    def update(
+        self,
+        object_type: ObjectType,
+        name: str,
+        attrs: dict[str, Any],
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
         """
         update an object
 
@@ -365,6 +386,7 @@ class Objects(Base):
         :type name: string
         :param attrs: object's attributes to change
         :type attrs: dictionary
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
         example 1:
 
@@ -383,7 +405,9 @@ class Objects(Base):
         object_type_url_path = self._convert_object_type(object_type)
         url_path = "{}/{}/{}".format(self.base_url_path, object_type_url_path, name)
 
-        return self._request("POST", url_path, attrs)
+        return self._request(
+            "POST", url_path, attrs, suppress_exception=suppress_exception
+        )
 
     def delete(
         self,
@@ -392,7 +416,7 @@ class Objects(Base):
         filters: Optional[str] = None,
         filter_vars: FilterVars = None,
         cascade: bool = True,
-        suppress_exception: bool = False,
+        suppress_exception: Optional[bool] = None,
     ) -> Any:
         """delete an object
 

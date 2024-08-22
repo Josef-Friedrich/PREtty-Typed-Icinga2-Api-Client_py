@@ -160,13 +160,20 @@ class Base:
 
         return session
 
+    def _throw_exception(self, suppress_exception: Optional[bool] = None) -> bool:
+        if isinstance(suppress_exception, bool):
+            return not suppress_exception
+        if isinstance(self.client.suppress_exception, bool):
+            return not self.client.suppress_exception
+        return True
+
     def _request(
         self,
         method: RequestMethod,
         url_path: str,
         payload: Optional[dict[str, Any]] = None,
         stream: bool = False,
-        suppress_exception: bool = False,
+        suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
         make the request and return the body
@@ -174,6 +181,8 @@ class Base:
         :param method: the HTTP method
         :param url_path: the requested url path
         :param payload: the payload to send
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+
         :returns: the response as json
         """
 
@@ -200,7 +209,10 @@ class Base:
         if not stream:
             session.close()
 
-        if not suppress_exception and not 200 <= response.status_code <= 299:
+        if (
+            self._throw_exception(suppress_exception)
+            and not 200 <= response.status_code <= 299
+        ):
             raise PretiacRequestException(
                 'Request "{}" failed with status {}: {}'.format(
                     response.url,
