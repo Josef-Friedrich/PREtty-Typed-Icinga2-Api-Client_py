@@ -118,16 +118,16 @@ class Base:
     Icinga 2 API Base class
     """
 
-    manager: "Client"
+    client: "Client"
 
     base_url_path: Optional[str] = None
 
-    def __init__(self, manager: "Client") -> None:
+    def __init__(self, client: "Client") -> None:
         """
         initialize object
         """
 
-        self.manager = manager
+        self.client = client
         self.stream_cache = ""
 
     @property
@@ -143,17 +143,17 @@ class Base:
 
         session = requests.Session()
         # prefer certificate authentification
-        if self.manager.certificate and self.manager.key:
+        if self.client.certificate and self.client.key:
             # certificate and key are in different files
-            session.cert = (self.manager.certificate, self.manager.key)
-        elif self.manager.certificate:
+            session.cert = (self.client.certificate, self.client.key)
+        elif self.client.certificate:
             # certificate and key are in the same file
-            session.cert = self.manager.certificate
-        elif self.manager.api_user and self.manager.password:
+            session.cert = self.client.certificate
+        elif self.client.api_user and self.client.password:
             # use username and password
-            session.auth = (self.manager.api_user, self.manager.password)
+            session.auth = (self.client.api_user, self.client.password)
         session.headers = {
-            "User-Agent": "Python-pretiac/{0}".format(self.manager.version),
+            "User-Agent": "Python-pretiac/{0}".format(self.client.version),
             "X-HTTP-Method-Override": method.upper(),
             "Accept": "application/json",
         }
@@ -180,7 +180,7 @@ class Base:
         :rtype: dictionary
         """
 
-        request_url = urljoin(self.manager.url, url_path)
+        request_url = urljoin(self.client.url, url_path)
         LOG.debug("Request URL: %s", request_url)
 
         # create session
@@ -190,8 +190,8 @@ class Base:
         request_args: Payload = {"url": request_url}
         if payload:
             request_args["json"] = payload
-        if self.manager.ca_certificate:
-            request_args["verify"] = self.manager.ca_certificate
+        if self.client.ca_certificate:
+            request_args["verify"] = self.client.ca_certificate
         else:
             request_args["verify"] = False
         if stream:
