@@ -29,27 +29,17 @@ from __future__ import print_function
 
 import logging
 from dataclasses import dataclass
-from typing import Literal, Optional
+from typing import Optional
 
 from pretiac.base import (
     Base,
     FilterVars,
     HostOrService,
     Payload,
+    State,
+    normalize_state,
 )
 from pretiac.exceptions import PretiacException
-
-ServiceState = Literal[0, 1, 2, 3]
-"""
-https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/5851548b204c1728c57d22be68bbb3a67a02401b/src/object-types.ts#L113-L123
-"""
-
-HostState = Literal[0, 1, 2, 3]
-"""
-https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/5851548b204c1728c57d22be68bbb3a67a02401b/src/object-types.ts#L125-L131
-"""
-
-State = HostState | ServiceState
 
 LOG = logging.getLogger(__name__)
 
@@ -75,7 +65,7 @@ class Actions(Base):
 
     def process_check_result(
         self,
-        object_type: HostOrService,
+        type: HostOrService,
         name: str,
         exit_status: State,
         plugin_output: str,
@@ -85,24 +75,34 @@ class Actions(Base):
         execution_start: Optional[int] = None,
         execution_end: Optional[int] = None,
         ttl: Optional[int] = None,
-        filters: Optional[str] = None,
+        filter: Optional[str] = None,
         filter_vars: FilterVars = None,
+        suppress_exception: Optional[bool] = None,
     ):
         """Process a check result for a host or a service.
 
         Send a ``POST`` request to the URL endpoint ``/v1/actions/process-check-result``.
 
-        :param object_type: Host or Service
+        :param type: ``Host`` or ``Service``.
         :param name: name of the object
-        :param exit_status: For services: ``0=OK``, ``1=WARNING``, ``2=CRITICAL``, ``3=UNKNOWN``, for hosts: ``0=UP``, ``1=DOWN``.
-        :param plugin_output: One or more lines of the plugin main output. Does not contain the performance data.
-        :param check_command: check command path followed by its arguments
-        :param check_source: name of the command_endpoint
-        :param execution_start: timestamp where a script/process started its execution
-        :param execution_end: timestamp where a script/process finished its execution
-        :param ttl: time-to-live duration in seconds for this check result
-        :param filters: filters matched object(s)
+        :param exit_status: For services: ``0=OK``, ``1=WARNING``, ``2=CRITICAL``,
+            ``3=UNKNOWN``, for hosts: ``0=UP``, ``1=DOWN``.
+        :param plugin_output: One or more lines of the plugin main output. Does **not**
+            contain the performance data.
+        :param check_command: The first entry should be the check commands path, then
+            one entry for each command line option followed by an entry for each of its
+            argument. Alternativly a single string can be used.
+        :param check_source: Usually the name of the ``command_endpoint``.
+        :param execution_start: The timestamp where a script/process started its
+            execution.
+        :param execution_end: The timestamp where a script/process ended its execution.
+            This timestamp is used in features to determine e.g. the metric timestamp.
+        :param ttl: Time-to-live duration in seconds for this check result. The next
+            expected check result is ``now + ttl`` where freshness checks are executed.
+        :param filter: filters matched object(s)
         :param filter_vars: variables used in the filters expression
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions
+            are thrown.
 
         :returns: the response as json
 
@@ -120,25 +120,25 @@ class Actions(Base):
 
         :see: https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#process-check-result
         """
-        if not name and not filters:
+        if not name and not filter:
             raise PretiacException("name and filters is empty or none")
 
-        if name and (filters or filter_vars):
+        if name and (filter or filter_vars):
             raise PretiacException("name and filters are mutually exclusive")
 
-        if object_type not in ["Host", "Service"]:
-            raise PretiacException('object_type needs to be "Host" or "Service".')
+        if type not in ["Host", "Service"]:
+            raise PretiacException('type needs to be "Host" or "Service".')
 
         url = f"{self.base_url}/process-check-result"
 
         payload: Payload = {
-            "type": object_type,
-            "exit_status": exit_status,
+            "type": type,
+            "exit_status": normalize_state(exit_status),
             "plugin_output": plugin_output,
         }
 
         if name:
-            payload[object_type.lower()] = name
+            payload[type.lower()] = name
         if performance_data:
             payload["performance_data"] = performance_data
         if check_command:
@@ -151,12 +151,14 @@ class Actions(Base):
             payload["execution_end"] = execution_end
         if ttl:
             payload["ttl"] = ttl
-        if filters:
-            payload["filter"] = filters
+        if filter:
+            payload["filter"] = filter
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        return self._request("POST", url, payload)
+        return self._request(
+            "POST", url, payload, suppress_exception=suppress_exception
+        )
 
     def reschedule_check(
         self,

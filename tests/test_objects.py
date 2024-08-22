@@ -127,13 +127,22 @@ class TestCreate:
         assert result["results"][0]["code"] == 200
         assert result["results"][0]["status"] == "Object was created"
 
-    def test_create_minimal(self, client: Client) -> None:
-        """Create with minimal arguments"""
+    def test_create_minimal_service(self, client: Client) -> None:
+        """Create a service with minimal arguments"""
         client.objects.delete("Service", "Host1!custom-load", suppress_exception=True)
         result = client.objects.create(
             "Service",
             "Host1!custom-load",
             attrs={"check_command": "load"},
+        )
+        assert result["results"][0]["code"] == 200
+        assert result["results"][0]["status"] == "Object was created"
+
+    def test_create_minimal_host(self, client: Client) -> None:
+        """Create a host with minimal arguments"""
+        client.objects.delete("Host", "NewHost", suppress_exception=True)
+        result = client.objects.create(
+            "Host", "NewHost", attrs={"check_command": "load"}, suppress_exception=True
         )
         assert result["results"][0]["code"] == 200
         assert result["results"][0]["status"] == "Object was created"

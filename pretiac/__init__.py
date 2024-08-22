@@ -33,6 +33,7 @@ pretiac is a `Python <http://www.python.org>`_ module to interact with the
 from pathlib import Path
 from typing import Optional
 
+from pretiac.base import State
 from pretiac.client import Client
 
 __client: Optional[Client] = None
@@ -61,3 +62,21 @@ def get_client(
             config_file=config_file,
         )
     return __client
+
+
+def send_service_check_result(
+    host: str, service: str, exit_status: State, plugin_output: str
+):
+    client = get_client()
+
+    result = client.actions.process_check_result(
+        type="Service",
+        name=f"{host}!{service}",
+        exit_status=exit_status,
+        plugin_output=plugin_output,
+        suppress_exception=True,
+    )
+
+    if "error" in result:
+        client.objects.create("Host", host, suppress_exception=True)
+        client.objects.create("Service", service, suppress_exception=True)
