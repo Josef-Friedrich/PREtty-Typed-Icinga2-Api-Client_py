@@ -15,4 +15,6 @@ def config_file() -> Path:
 
 @pytest.fixture
 def client() -> Client:
-    return Client("https://localhost:5665", "apiuser", "password")
+    return Client(
+        domain="localhost", port=5665, api_user="apiuser", password="password"
+    )

@@ -149,9 +149,9 @@ class Base:
         elif self.manager.certificate:
             # certificate and key are in the same file
             session.cert = self.manager.certificate
-        elif self.manager.username and self.manager.password:
+        elif self.manager.api_user and self.manager.password:
             # use username and password
-            session.auth = (self.manager.username, self.manager.password)
+            session.auth = (self.manager.api_user, self.manager.password)
         session.headers = {
             "User-Agent": "Python-pretiac/{0}".format(self.manager.version),
             "X-HTTP-Method-Override": method.upper(),

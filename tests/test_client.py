@@ -3,7 +3,7 @@ from pretiac.client import Client
 
 def test_client(client: Client) -> None:
     assert client.url == "https://localhost:5665"
-    assert client.username == "apiuser"
+    assert client.api_user == "apiuser"
     assert client.password == "password"
 
 

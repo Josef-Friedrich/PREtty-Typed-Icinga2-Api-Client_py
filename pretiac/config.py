@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from pretiac.exceptions import PretiacConfigFileException
 
@@ -18,9 +18,12 @@ class Config(BaseModel):
     """
 
     port: int = 5665
-    """The TCP port, by default ``5665``"""
+    """The TCP port, by default ``5665``
 
-    user: str
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apilistener
+    """
+
+    api_user: str = Field(alias="apiUser")
     """
     The name of the API user, e. g. ``apiuser``.
 
@@ -29,6 +32,8 @@ class Config(BaseModel):
         object ApiUser "apiuser" {
             ...
         }
+
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser
     """
 
     password: str
@@ -40,6 +45,8 @@ class Config(BaseModel):
         object ApiUser "apiuser" {
             password = "password"
         }
+
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser
     """
 
 
