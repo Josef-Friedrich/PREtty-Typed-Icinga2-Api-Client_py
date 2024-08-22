@@ -8,8 +8,12 @@ Welcome to pretiac's documentation!
 
 .. automodule:: pretiac
 .. automodule:: pretiac.actions
+.. automodule:: pretiac.base
+.. automodule:: pretiac.client
 .. automodule:: pretiac.config
 .. automodule:: pretiac.events
+.. automodule:: pretiac.exceptions
+.. automodule:: pretiac.objects
 .. automodule:: pretiac.status
 
 .. toctree::

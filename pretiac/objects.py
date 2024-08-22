@@ -199,16 +199,28 @@ class Objects(Base):
         :param joins: show joined object
 
         example 1:
-        get('Host', 'webserver01.domain')
+
+        .. code-block:: python
+
+            get('Host', 'webserver01.domain')
 
         example 2:
-        get('Service', 'webserver01.domain!ping4')
+
+        .. code-block:: python
+
+            get('Service', 'webserver01.domain!ping4')
 
         example 3:
-        get('Host', 'webserver01.domain', attrs=["address", "state"])
+
+        .. code-block:: python
+
+            get('Host', 'webserver01.domain', attrs=["address", "state"])
 
         example 4:
-        get('Service', 'webserver01.domain!ping4', joins=True)
+
+        .. code-block:: python
+
+            get('Service', 'webserver01.domain!ping4', joins=True)
         """
 
         return self.list(object_type, name, attrs, joins=joins)[0]
@@ -239,22 +251,40 @@ class Objects(Base):
         :type joins: list
 
         example 1:
-        list('Host')
+
+        .. code-block:: python
+
+            list('Host')
 
         example 2:
-        list('Service', 'webserver01.domain!ping4')
+
+        .. code-block:: python
+
+            list('Service', 'webserver01.domain!ping4')
 
         example 3:
-        list('Host', attrs='["address", "state"])
+
+        .. code-block:: python
+
+            list('Host', attrs='["address", "state"])
 
         example 4:
-        list('Host', filters='match("webserver*", host.name)')
+
+        .. code-block:: python
+
+            list('Host', filters='match("webserver*", host.name)')
 
         example 5:
-        list('Service', joins=['host.name'])
+
+        .. code-block:: python
+
+            list('Service', joins=['host.name'])
 
         example 6:
-        list('Service', joins=True)
+
+        .. code-block:: python
+
+            list('Service', joins=True)
         """
 
         object_type_url_path = self._convert_object_type(object_type)
@@ -292,10 +322,16 @@ class Objects(Base):
         :param attrs: object's attributes
 
         example 1:
-        create('Host', 'localhost', ['generic-host'], {'address': '127.0.0.1'})
+
+        .. code-block:: python
+
+            create('Host', 'localhost', ['generic-host'], {'address': '127.0.0.1'})
 
         example 2:
-        create('Service',
+
+        .. code-block:: python
+
+            create('Service',
                'testhost3!dummy',
                {'check_command': 'dummy'},
                ['generic-service'])
@@ -325,10 +361,16 @@ class Objects(Base):
         :type attrs: dictionary
 
         example 1:
-        update('Host', 'localhost', {'address': '127.0.1.1'})
+
+        .. code-block:: python
+
+            update('Host', 'localhost', {'address': '127.0.1.1'})
 
         example 2:
-        update('Service', 'testhost3!dummy', {'check_interval': '10m'})
+
+        .. code-block:: python
+
+            update('Service', 'testhost3!dummy', {'check_interval': '10m'})
         """
         object_type_url_path = self._convert_object_type(object_type)
         url_path = "{}/{}/{}".format(self.base_url_path, object_type_url_path, name)
@@ -358,10 +400,16 @@ class Objects(Base):
         :type joins: bool
 
         example 1:
-        delete('Host', 'localhost')
+
+        .. code-block:: python
+
+            delete('Host', 'localhost')
 
         example 2:
-        delete('Service', filters='match("vhost*", service.name)')
+
+        .. code-block:: python
+
+            delete('Service', filters='match("vhost*", service.name)')
         """
 
         object_type_url_path = self._convert_object_type(object_type)
