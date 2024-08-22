@@ -35,10 +35,12 @@ programmatic way using HTTP requests.
 from __future__ import print_function
 
 import logging
+from pathlib import Path
 from typing import Optional
 
 import pretiac
 from pretiac.actions import Actions
+from pretiac.config import Config, load_config
 from pretiac.events import Events
 from pretiac.exceptions import PretiacException
 from pretiac.objects import Objects
@@ -62,8 +64,6 @@ class Client:
 
     password: Optional[str]
 
-    timeout: Optional[int]
-
     certificate: Optional[str]
 
     key: Optional[str]
@@ -82,25 +82,36 @@ class Client:
 
     def __init__(
         self,
-        domain: str,
-        port: int = 5665,
+        domain: Optional[str] = None,
+        port: Optional[int] = None,
         api_user: Optional[str] = None,
         password: Optional[str] = None,
         certificate: Optional[str] = None,
         key: Optional[str] = None,
         ca_certificate: Optional[str] = None,
+        config_file: Optional[str | Path] = None,
     ) -> None:
         """
         initialize object
         """
+        config: Config = load_config(config_file)
+
+        domain = domain or config.domain
+        if not domain:
+            raise PretiacException("no domain")
         self.domain = domain
+
+        port = port or config.port or 5665
         self.port = port
+
         self.url = f"https://{domain}:{port}"
-        self.api_user = api_user
-        self.password = password
-        self.certificate = certificate
-        self.key = key
-        self.ca_certificate = ca_certificate
+
+        self.api_user = api_user or config.api_user
+        self.password = password or config.password
+        self.certificate = certificate or config.certificate
+        self.key = key or config.key
+        self.ca_certificate = ca_certificate or config.ca_certificate
+
         self.objects = Objects(self)
         self.actions = Actions(self)
         self.events = Events(self)

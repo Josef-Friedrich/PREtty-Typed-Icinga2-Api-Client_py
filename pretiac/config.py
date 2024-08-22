@@ -1,10 +1,9 @@
 import json
 import os
 from pathlib import Path
+from typing import Optional
 
 from pydantic import BaseModel, Field
-
-from pretiac.exceptions import PretiacConfigFileException
 
 
 class Config(BaseModel):
@@ -12,18 +11,18 @@ class Config(BaseModel):
     https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/722c6308d79f603a9ad7678609cd907b932c64ab/src/client.ts#L7-L15
     """
 
-    domain: str
+    domain: Optional[str] = None
     """
     The domain, e. g. ``icinga.example.com`` or ``localhost``.
     """
 
-    port: int = 5665
-    """The TCP port, by default ``5665``
+    port: Optional[int] = None
+    """The TCP port`
 
     https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apilistener
     """
 
-    api_user: str = Field(alias="apiUser")
+    api_user: Optional[str] = Field(alias="apiUser", default=None)
     """
     The name of the API user, e. g. ``apiuser``.
 
@@ -36,7 +35,7 @@ class Config(BaseModel):
     https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser
     """
 
-    password: str
+    password: Optional[str] = None
     """
     The password of the API user, e. g. ``password``.
 
@@ -48,6 +47,12 @@ class Config(BaseModel):
 
     https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser
     """
+
+    certificate: Optional[str] = None
+
+    key: Optional[str] = None
+
+    ca_certificate: Optional[str] = None
 
 
 def load_config(config_file: str | Path | None = None) -> Config:
@@ -76,7 +81,7 @@ def load_config(config_file: str | Path | None = None) -> Config:
             break
 
     if not config_file:
-        raise PretiacConfigFileException("The configuration file could not be found.")
+        return Config()
 
     with open(config_file, "r") as stream:
         config_raw = json.load(stream)
