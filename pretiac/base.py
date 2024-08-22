@@ -193,6 +193,10 @@ class Base:
 
         return session
 
+    @staticmethod
+    def _pluralize(object_type: ObjectType) -> str:
+        return f"{object_type.lower()}s"
+
     def _throw_exception(self, suppress_exception: Optional[bool] = None) -> bool:
         if isinstance(suppress_exception, bool):
             return not suppress_exception

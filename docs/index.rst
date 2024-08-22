@@ -15,6 +15,7 @@ Welcome to pretiac's documentation!
 .. automodule:: pretiac.exceptions
 .. automodule:: pretiac.objects
 .. automodule:: pretiac.status
+.. automodule:: pretiac.templates
 
 .. toctree::
    :maxdepth: 2

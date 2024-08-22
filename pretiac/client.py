@@ -45,6 +45,7 @@ from pretiac.events import Events
 from pretiac.exceptions import PretiacException
 from pretiac.objects import Objects
 from pretiac.status import Status
+from pretiac.templates import Templates
 
 LOG = logging.getLogger(__name__)
 
@@ -84,6 +85,8 @@ class Client:
     objects: Objects
 
     status: Status
+
+    templates: Templates
 
     def __init__(
         self,
@@ -127,6 +130,7 @@ class Client:
         self.events = Events(self)
         self.objects = Objects(self)
         self.status = Status(self)
+        self.templates = Templates(self)
 
         if not self.api_user and not self.password and not self.certificate:
             raise PretiacException("Neither username/password nor certificate defined.")
