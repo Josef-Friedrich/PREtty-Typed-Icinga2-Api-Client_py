@@ -34,7 +34,6 @@ programmatic way using HTTP requests.
 
 from __future__ import print_function
 
-import logging
 from importlib.metadata import version as get_version
 from pathlib import Path
 from typing import Optional
@@ -47,13 +46,13 @@ from pretiac.objects import Objects
 from pretiac.status import Status
 from pretiac.templates import Templates
 
-LOG = logging.getLogger(__name__)
-
 
 class Client:
     """
     Icinga 2 Client class
     """
+
+    config: Config
 
     domain: str
 
@@ -106,6 +105,7 @@ class Client:
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
         """
         config: Config = load_config(config_file)
+        self.config = config
 
         domain = domain or config.domain
         if not domain:

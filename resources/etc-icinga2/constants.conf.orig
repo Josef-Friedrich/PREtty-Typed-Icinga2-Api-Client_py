@@ -19,10 +19,10 @@ const PluginContribDir = "/usr/lib/nagios/plugins"
 /* Our local instance name. By default this is the server's hostname as returned by `hostname --fqdn`.
  * This should be the common name from the API certificate.
  */
-//const NodeName = "localhost"
+const NodeName = "icinga-master"
 
 /* Our local zone name. */
-const ZoneName = NodeName
+const ZoneName = "master"
 
 /* Secret key for remote node tickets */
-const TicketSalt = ""
+const TicketSalt = "bdfd126ba4c3c932115aceb9421e7a53"

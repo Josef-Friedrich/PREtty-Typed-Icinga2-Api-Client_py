@@ -147,7 +147,16 @@ class TestCreate:
         assert result["results"][0]["code"] == 200
         assert result["results"][0]["status"] == "Object was created"
 
-    def test_error(self, client: Client) -> None:
+    def test_create_minimal_host2(self, client: Client) -> None:
+        """Create a host with minimal arguments (only templates)"""
+        client.objects.delete("Host", "NewHost", suppress_exception=True)
+        result = client.objects.create(
+            "Host", "NewHost", templates=["passive-host"], suppress_exception=True
+        )
+        assert result["results"][0]["code"] == 200
+        assert result["results"][0]["status"] == "Object was created"
+
+    def test_error_attribute_not_empty(self, client: Client) -> None:
         result = client.objects.create(
             "Service",
             "Host1!xxx",
@@ -160,3 +169,15 @@ class TestCreate:
             error["errors"][0],
         )
         assert error["status"] == "Object could not be created."
+
+    def test_error_unknown_attr(self, client: Client) -> None:
+        result = client.objects.create(
+            "Service",
+            "Host1!xxx",
+            attrs={"unknown": "unknown"},
+            suppress_exception=True,
+        )
+        assert (
+            result["results"][0]["errors"][0]
+            == "Error: Invalid attribute specified: unknown\n"
+        )

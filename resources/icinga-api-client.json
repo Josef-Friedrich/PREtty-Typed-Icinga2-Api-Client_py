@@ -2,5 +2,14 @@
   "domain": "localhost",
   "port": 5665,
   "apiUser": "apiuser",
-  "password": "password"
+  "password": "password",
+  "serviceDefaults": {
+    "template": "passive-service",
+    "attrs": {
+      "check_interval": "monthly"
+    }
+  },
+  "hostDefaults": {
+    "template": "passive-host"
+  }
 }

@@ -1,9 +1,15 @@
 import json
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
+
+
+class ObjectConfig(BaseModel):
+    template: Optional[str] = None
+
+    attrs: Optional[dict[str, Any]] = None
 
 
 class Config(BaseModel):
@@ -58,6 +64,12 @@ class Config(BaseModel):
     """
     If set to ``True``, no exceptions are thrown.
     """
+
+    host_defaults: Optional[ObjectConfig] = Field(alias="hostDefaults", default=None)
+
+    service_defaults: Optional[ObjectConfig] = Field(
+        alias="serviceDefaults", default=None
+    )
 
 
 def load_config(config_file: str | Path | None = None) -> Config:
