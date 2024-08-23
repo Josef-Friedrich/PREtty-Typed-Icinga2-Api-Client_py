@@ -47,6 +47,7 @@ from urllib.parse import urljoin
 
 import requests
 
+from pretiac.config import Config
 from pretiac.exceptions import PretiacException, PretiacRequestException
 
 if TYPE_CHECKING:
@@ -169,6 +170,10 @@ class Base:
             raise PretiacException("Specify self.base_url_path")
         return self.base_url_path
 
+    @property
+    def config(self) -> Config:
+        return self.client.config
+
     def _create_session(self, method: RequestMethod = "POST") -> requests.Session:
         """
         create a session object
@@ -176,15 +181,15 @@ class Base:
 
         session = requests.Session()
         # prefer certificate authentification
-        if self.client.certificate and self.client.key:
+        if self.config.certificate and self.config.key:
             # certificate and key are in different files
-            session.cert = (self.client.certificate, self.client.key)
-        elif self.client.certificate:
+            session.cert = (self.config.certificate, self.config.key)
+        elif self.config.certificate:
             # certificate and key are in the same file
-            session.cert = self.client.certificate
-        elif self.client.api_user and self.client.password:
+            session.cert = self.config.certificate
+        elif self.config.api_user and self.config.password:
             # use username and password
-            session.auth = (self.client.api_user, self.client.password)
+            session.auth = (self.config.api_user, self.config.password)
         session.headers = {
             "User-Agent": "Python-pretiac/{0}".format(self.client.version),
             "X-HTTP-Method-Override": method.upper(),
@@ -200,8 +205,8 @@ class Base:
     def _throw_exception(self, suppress_exception: Optional[bool] = None) -> bool:
         if isinstance(suppress_exception, bool):
             return not suppress_exception
-        if isinstance(self.client.suppress_exception, bool):
-            return not self.client.suppress_exception
+        if isinstance(self.config.suppress_exception, bool):
+            return not self.config.suppress_exception
         return True
 
     def _request(
@@ -233,8 +238,8 @@ class Base:
         request_args: Payload = {"url": request_url}
         if payload:
             request_args["json"] = payload
-        if self.client.ca_certificate:
-            request_args["verify"] = self.client.ca_certificate
+        if self.config.ca_certificate:
+            request_args["verify"] = self.config.ca_certificate
         else:
             request_args["verify"] = False
         if stream:

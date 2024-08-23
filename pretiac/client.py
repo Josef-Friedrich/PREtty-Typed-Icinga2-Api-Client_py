@@ -54,26 +54,7 @@ class Client:
 
     config: Config
 
-    domain: str
-
-    port: int
-
     url: str
-
-    api_user: Optional[str]
-
-    password: Optional[str]
-
-    certificate: Optional[str]
-
-    key: Optional[str]
-
-    ca_certificate: Optional[str]
-
-    suppress_exception: Optional[bool] = None
-    """
-    If set to ``True``, no exceptions are thrown.
-    """
 
     version: str
 
@@ -107,22 +88,37 @@ class Client:
         config: Config = load_config(config_file)
         self.config = config
 
-        domain = domain or config.domain
-        if not domain:
-            raise PretiacException("no domain")
-        self.domain = domain
+        if domain is not None:
+            config.domain = domain
 
-        port = port or config.port or 5665
-        self.port = port
+        if config.domain is None:
+            raise PretiacException("no domain")
+
+        if port is not None:
+            config.port = port
+
+        if config.port is None:
+            config.port = 5665
 
         self.url = f"https://{domain}:{port}"
 
-        self.api_user = api_user or config.api_user
-        self.password = password or config.password
-        self.certificate = certificate or config.certificate
-        self.key = key or config.key
-        self.ca_certificate = ca_certificate or config.ca_certificate
-        self.suppress_exception = suppress_exception or config.suppress_exception
+        if api_user is not None:
+            config.api_user = api_user
+
+        if password is not None:
+            config.password = password
+
+        if certificate is not None:
+            config.certificate = certificate
+
+        if key is not None:
+            config.key = key
+
+        if ca_certificate is not None:
+            config.ca_certificate = ca_certificate
+
+        if suppress_exception is not None:
+            config.suppress_exception = suppress_exception
 
         self.version = get_version("pretiac")
 
@@ -132,5 +128,9 @@ class Client:
         self.status = Status(self)
         self.templates = Templates(self)
 
-        if not self.api_user and not self.password and not self.certificate:
+        if (
+            not self.config.api_user
+            and not self.config.password
+            and not self.config.certificate
+        ):
             raise PretiacException("Neither username/password nor certificate defined.")

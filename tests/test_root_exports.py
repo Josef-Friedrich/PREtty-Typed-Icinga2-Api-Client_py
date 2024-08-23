@@ -5,4 +5,4 @@ from pretiac import get_client
 
 def test_get_client() -> None:
     client = get_client()
-    assert client.api_user == "apiuser"
+    assert client.config.api_user == "apiuser"
