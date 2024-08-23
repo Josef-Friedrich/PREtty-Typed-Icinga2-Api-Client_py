@@ -24,11 +24,21 @@ def test_create_host(client: Client) -> None:
     assert host["name"] == "MyNewHost"
 
 
-def test_create_service(client: Client) -> None:
-    client.objects.delete("Service", "MyNewService", suppress_exception=True)
-    create_service("MyNewService", "Host1")
-    host = client.objects.get("Service", "Host1!MyNewService")
-    assert host["name"] == "Host1!MyNewService"
+class TestCreateService:
+    def test_create_service(self, client: Client) -> None:
+        client.objects.delete("Service", "MyNewService", suppress_exception=True)
+        create_service("MyNewService", "Host1")
+        service = client.objects.get("Service", "Host1!MyNewService")
+        assert service["name"] == "Host1!MyNewService"
+        client.objects.delete("Service", "MyNewService", suppress_exception=True)
+
+    def test_name_with_spaces(self, client: Client) -> None:
+        name = "rsync host:/data/ssd/ /ssd/"
+        client.objects.delete("Service", name, suppress_exception=True)
+        create_service(name, "Host1")
+        service = client.objects.get("Service", f"Host1!{name}")
+        assert service["name"] == f"Host1!{name}"
+        client.objects.delete("Service", name, suppress_exception=True)
 
 
 class TestSendServiceCheckResult:

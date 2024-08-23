@@ -32,6 +32,8 @@ Icinga 2 API objects
 from __future__ import print_function
 
 import logging
+import urllib
+import urllib.parse
 from collections.abc import Sequence
 from typing import Any, Optional, Union
 
@@ -40,6 +42,11 @@ from pretiac.exceptions import PretiacException
 from pretiac.object_types import FilterVars, ObjectType, Payload
 
 LOG = logging.getLogger(__name__)
+
+
+def _normalize_name(name: str) -> str:
+    """To be able to send names with spaces or special characters to the REST API."""
+    return urllib.parse.quote(name, safe="")
 
 
 class Attrs:
@@ -246,10 +253,11 @@ class Objects(Base):
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
         """
 
-        object_type_url_path = self._convert_object_type(object_type)
-        url_path = "{}/{}".format(self.base_url_path, object_type_url_path)
+        url_path = "{}/{}".format(
+            self.base_url_path, self._convert_object_type(object_type)
+        )
         if name:
-            url_path += "/{}".format(name)
+            url_path += "/{}".format(_normalize_name(name))
 
         payload: Payload = {}
         if attrs:
@@ -357,18 +365,21 @@ class Objects(Base):
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#creating-config-objects>`__
         """
 
-        object_type_url_path = self._convert_object_type(object_type)
-
         payload: Payload = {}
         if attrs:
             payload["attrs"] = attrs
         if templates:
             payload["templates"] = templates
 
-        url_path = "{}/{}/{}".format(self.base_url_path, object_type_url_path, name)
-
         return self._request(
-            "PUT", url_path, payload, suppress_exception=suppress_exception
+            "PUT",
+            "{}/{}/{}".format(
+                self.base_url,
+                self._convert_object_type(object_type),
+                _normalize_name(name),
+            ),
+            payload,
+            suppress_exception=suppress_exception,
         )
 
     def update(
@@ -403,11 +414,13 @@ class Objects(Base):
 
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#modifying-objects>`__
         """
-        object_type_url_path = self._convert_object_type(object_type)
-        url_path = "{}/{}/{}".format(self.base_url_path, object_type_url_path, name)
-
         return self._request(
-            "POST", url_path, attrs, suppress_exception=suppress_exception
+            "POST",
+            "{}/{}/{}".format(
+                self.base_url, self._convert_object_type(object_type), name
+            ),
+            attrs,
+            suppress_exception=suppress_exception,
         )
 
     def delete(
@@ -457,7 +470,7 @@ class Objects(Base):
 
         url = "{}/{}".format(self.base_url_path, object_type_url_path)
         if name:
-            url += "/{}".format(name)
+            url += "/{}".format(_normalize_name(name))
 
         return self._request(
             "DELETE", url, payload, suppress_exception=suppress_exception
