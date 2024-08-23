@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pretiac"
-version = "0.1.0"
+version = "0.2.0"
 description = "pretiac: A PREtty Typed Icinga2 Api Client."
 authors = ["Josef Friedrich <josef@friedrich.rocks>"]
 readme = "README.rst"
