@@ -98,6 +98,11 @@ class TestList:
             ]
         )
 
+    def test_commands(self, client: Client) -> None:
+        results = client.objects.list("CheckCommand")
+        command = results[0]
+        assert isinstance(command["attrs"]["name"], str)
+
     def test_exception(self, client: Client) -> None:
         with pytest.raises(PretiacRequestException, match="No objects found."):
             client.objects.list("Host", "XXX")

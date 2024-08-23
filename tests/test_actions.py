@@ -9,6 +9,7 @@ class TestProcessCheckResult:
         result = client.actions.process_check_result(
             "Service", "Host1!ssh", 2, "SSH failed"
         )
+        assert len(result["results"]) == 1
         assert result["results"][0]["code"] == 200
         assert (
             result["results"][0]["status"]

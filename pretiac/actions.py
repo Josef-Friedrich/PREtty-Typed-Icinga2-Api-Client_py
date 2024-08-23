@@ -84,7 +84,7 @@ class Actions(Base):
         Send a ``POST`` request to the URL endpoint ``/v1/actions/process-check-result``.
 
         :param type: ``Host`` or ``Service``.
-        :param name: name of the object
+        :param name: The name of the object.
         :param exit_status: For services: ``0=OK``, ``1=WARNING``, ``2=CRITICAL``,
             ``3=UNKNOWN``, for hosts: ``0=UP``, ``1=DOWN``.
         :param plugin_output: One or more lines of the plugin main output. Does **not**

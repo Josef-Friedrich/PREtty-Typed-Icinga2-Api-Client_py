@@ -11,7 +11,12 @@ config_file_path: Path = (
     Path(__file__).parent / ".." / "resources" / "icinga-api-client.json"
 ).resolve()
 
-os.environ["ICINGA_API_CLIENT"] = str(config_file_path)
+
+def set_env_var() -> None:
+    os.environ["ICINGA_API_CLIENT"] = str(config_file_path)
+
+
+set_env_var()
 
 
 @pytest.fixture

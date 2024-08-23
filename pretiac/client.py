@@ -100,7 +100,7 @@ class Client:
         if config.port is None:
             config.port = 5665
 
-        self.url = f"https://{domain}:{port}"
+        self.url = f"https://{config.domain}:{config.port}"
 
         if api_user is not None:
             config.api_user = api_user

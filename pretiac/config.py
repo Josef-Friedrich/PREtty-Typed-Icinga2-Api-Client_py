@@ -1,13 +1,13 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 from pydantic import BaseModel, Field
 
 
 class ObjectConfig(BaseModel):
-    template: Optional[str] = None
+    templates: Optional[Sequence[str]] = None
 
     attrs: Optional[dict[str, Any]] = None
 
