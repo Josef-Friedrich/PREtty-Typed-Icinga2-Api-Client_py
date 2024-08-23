@@ -35,8 +35,9 @@ import logging
 from collections.abc import Sequence
 from typing import Any, Optional, Union
 
-from pretiac.base import Base, FilterVars, ObjectType, Payload
+from pretiac.base import Base
 from pretiac.exceptions import PretiacException
+from pretiac.object_types import FilterVars, ObjectType, Payload
 
 LOG = logging.getLogger(__name__)
 
@@ -326,7 +327,7 @@ class Objects(Base):
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
-        create an object
+        Create an object.
 
         :param object_type: The type of the object, for example ``Service``,
             ``Host`` or ``User``.

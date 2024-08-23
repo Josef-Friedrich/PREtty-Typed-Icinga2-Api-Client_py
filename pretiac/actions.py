@@ -33,13 +33,15 @@ from typing import Optional
 
 from pretiac.base import (
     Base,
-    FilterVars,
-    HostOrService,
     Payload,
     State,
     normalize_state,
 )
 from pretiac.exceptions import PretiacException
+from pretiac.object_types import (
+    FilterVars,
+    HostOrService,
+)
 
 LOG = logging.getLogger(__name__)
 

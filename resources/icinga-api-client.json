@@ -3,13 +3,13 @@
   "port": 5665,
   "apiUser": "apiuser",
   "password": "password",
-  "serviceDefaults": {
+  "newServiceDefaults": {
     "template": "passive-service",
     "attrs": {
       "check_interval": "monthly"
     }
   },
-  "hostDefaults": {
+  "newHostDefaults": {
     "template": "passive-host"
   }
 }
