@@ -1,33 +1,4 @@
-# <a id="objects"></a> Objects
 
-## <a id="objects-get"></a> objects.get()
-
-To get a single object (`Host`, `Service`, ...) use the funtion `objects.get()`.
-
-  Parameter      | Type      | Description
-  ---------------|-----------|------------
-  object\_type   | string    | **Required.** The object type to get, e.g. `Host`, `Service`.
-  name           | string    | **Required.** The objects name.
-  attrs          | list      | **Optional.** Get only the specified objects attributes.
-  joins          | bool      | **Optional.** Also get the joined object, e.g. for a `Service` the `Host` object.
-
-Examples:
-
-Get host `webserver01.domain`:
-
-    client.objects.get('Host', 'webserver01.domain')
-
-Get service `ping4` of host `webserver01.domain`:
-
-    client.objects.get('Service', 'webserver01.domain!ping4')
-
-Get host `webserver01.domain` but the attributes `address` and `state`:
-
-    client.objects.get('Host', 'webserver01.domain', attrs=['address', 'state'])
-
-Get service `ping4` of host `webserver01.domain` and the host attributes:
-
-    client.objects.get('Service', 'webserver01.domain!ping4', joins=True)
 
 ## <a id="objects-list"></a> objects.list()
 
@@ -42,31 +13,6 @@ To get a list of objects (`Host`, `Service`, ...) use the funtion `objects.list(
   filter\_vars  | dictionary | **Optional.** Variables which are available to your filter expression.
   joins         | bool       | **Optional.** Also get the joined object, e.g. for a `Service` the `Host` object.
 
-Examples:
-
-Get all hosts:
-
-    client.objects.list('Host')
-
-Get all hosts but limit attributes to `address` and `state`
-
-    client.objects.list('Host', attrs=['address', 'state'])
-
-Get all hosts which have "webserver" in their host name
-
-    client.objects.list('Host', filters='match("webserver\*", host.name)')
-
-Get all services which names start with "vHost" and are assigned to hosts named "webserver\*" using `filter_vars`
-
-    hostname_pattern = 'webserver\*'
-    service_pattern = 'vHost\*'
-    client.objects.list('Service',
-                        filters='match(hpattern, host.name) && match(spattern, service.name)',
-                        filter_vars={'hpattern': hostname_pattern, 'spattern': service_pattern})
-
-Get all services and the joined host name:
-
-    client.objects.list('Service', joins=['host.name'])
 
 
 ## <a id="objects-create"></a> objects.create()

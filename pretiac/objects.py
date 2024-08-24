@@ -214,41 +214,54 @@ class Objects(Base):
         :param joins: show joined object
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
-        example 1:
+        Get all hosts:
 
         .. code-block:: python
 
             client.objects.list("Host")
 
-        example 2:
+        List the service ``ping4`` of host ``webserver01.domain!ping4``:
 
         .. code-block:: python
 
             client.objects.list("Service", "webserver01.domain!ping4")
 
-        example 3:
+        Get all hosts but limit attributes to `address` and `state`:
 
         .. code-block:: python
 
             client.objects.list("Host", attrs=["address", "state"])
 
-        example 4:
+        Get all hosts which have ``webserver`` in their host name:
 
         .. code-block:: python
 
             client.objects.list("Host", filters='match("webserver*", host.name)')
 
-        example 5:
+        Get all services and the joined host name:
 
         .. code-block:: python
 
             client.objects.list("Service", joins=["host.name"])
 
-        example 6:
+        Get all services and all supported joins:
 
         .. code-block:: python
 
             client.objects.list("Service", joins=True)
+
+        Get all services which names start with ``vHost`` and are assigned to hosts named ``webserver*`` using ``filter_vars``
+
+        .. code-block:: python
+
+            hostname_pattern = "webserver*"
+            service_pattern = "vHost*"
+            client.objects.list(
+                "Service",
+                filters="match(hpattern, host.name) && match(spattern, service.name)",
+                filter_vars={"hpattern": hostname_pattern, "spattern": service_pattern},
+            )
+
 
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
         """
@@ -287,39 +300,40 @@ class Objects(Base):
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
-        get object by type or name
+        Get a single object (``Host``, ``Service``, ...).
 
         :param object_type: The type of the object, for example ``Service``,
             ``Host`` or ``User``.
         :param name: The full object name, for example ``example.localdomain``
             or ``example.localdomain!http``.
-        :param attrs: only return these attributes
-        :param joins: show joined object
+        :param attrs:  Get only the specified objects attributes.
+        :param joins: Also get the joined object, e.g. for a `Service` the `Host` object.
+
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
-        example 1:
+        Get host ``webserver01.domain``:
 
         .. code-block:: python
 
-            get("Host", "webserver01.domain")
+            client.objects.get("Host", "webserver01.domain")
 
-        example 2:
-
-        .. code-block:: python
-
-            get("Service", "webserver01.domain!ping4")
-
-        example 3:
+        Get service ``ping4`` of host ``webserver01.domain``:
 
         .. code-block:: python
 
-            get("Host", "webserver01.domain", attrs=["address", "state"])
+            client.objects.get("Service", "webserver01.domain!ping4")
 
-        example 4:
+        Get host ``webserver01.domain`` but the attributes ``address`` and ``state``:
 
         .. code-block:: python
 
-            get("Service", "webserver01.domain!ping4", joins=True)
+            client.objects.get("Host", "webserver01.domain", attrs=["address", "state"])
+
+        Get service ``ping4`` of host ``webserver01.domain`` and the host attributes:
+
+        .. code-block:: python
+
+            client.objects.get("Service", "webserver01.domain!ping4", joins=True)
         """
 
         return self.list(
