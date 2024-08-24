@@ -1,15 +1,27 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Optional, Sequence
 
 from pydantic import BaseModel, Field
 
+from pretiac.object_types import Payload
+
 
 class ObjectConfig(BaseModel):
-    templates: Optional[Sequence[str]] = None
+    """
+    Bundles all configuration required to create an object.
+    """
 
-    attrs: Optional[dict[str, Any]] = None
+    templates: Optional[Sequence[str]] = None
+    """
+    Import existing configuration templates for this
+    object type. Note: These templates must either be statically
+    configured or provided in config packages.
+    """
+
+    attrs: Optional["Payload"] = None
+    """Set specific object attributes for this object type."""
 
 
 class Config(BaseModel):
@@ -65,11 +77,15 @@ class Config(BaseModel):
     If set to ``True``, no exceptions are thrown.
     """
 
-    host_defaults: Optional[ObjectConfig] = Field(alias="hostDefaults", default=None)
-
-    service_defaults: Optional[ObjectConfig] = Field(
-        alias="serviceDefaults", default=None
+    new_host_defaults: Optional[ObjectConfig] = Field(
+        alias="newHostDefaults", default=None
     )
+    """If a new host needs to be created, use this defaults."""
+
+    new_service_defaults: Optional[ObjectConfig] = Field(
+        alias="newServiceDefaults", default=None
+    )
+    """If a new service needs to be created, use this defaults."""
 
 
 def load_config(config_file: str | Path | None = None) -> Config:

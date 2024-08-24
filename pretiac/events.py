@@ -35,7 +35,8 @@ import logging
 from collections.abc import Sequence
 from typing import Any, Generator, Literal, Optional
 
-from pretiac.base import Base, FilterVars, Payload
+from pretiac.base import Base
+from pretiac.object_types import FilterVars, Payload
 
 LOG = logging.getLogger(__name__)
 
