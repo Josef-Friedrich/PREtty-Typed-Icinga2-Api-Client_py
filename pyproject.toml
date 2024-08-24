@@ -32,3 +32,6 @@ sphinx-rtd-theme = "^2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff.format]
+docstring-code-format = true

@@ -50,6 +50,46 @@ from pretiac.templates import Templates
 class Client:
     """
     Icinga 2 Client class
+
+    You can use the client with either username/password combination or using certificates.
+
+    Example using username and password:
+
+    .. code-block:: python
+
+        from pretiac.client import Client
+
+        client = Client("localhost", 5665, "username", "password")
+
+    Example using certificates:
+
+    .. code-block:: python
+
+        client = Client(
+            "localhost",
+            5665,
+            certificate="/etc/ssl/certs/myhostname.crt",
+            key="/etc/ssl/keys/myhostname.key",
+        )
+
+    If your public and private are in the same file, just use the `certificate` parameter.
+
+
+    To verify the server certificate specify a ca file as `ca_file` parameter.
+
+    Example:
+
+    .. code-block:: python
+
+        from pretiac.client import Client
+
+        client = Client(
+            "https://icinga2:5665",
+            certificate="/etc/ssl/certs/myhostname.crt",
+            key="/etc/ssl/keys/myhostname.key",
+            ca_file="/etc/ssl/certs/my_ca.crt",
+        )
+
     """
 
     config: Config

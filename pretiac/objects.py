@@ -210,37 +210,37 @@ class Objects(Base):
 
         .. code-block:: python
 
-            client.objects.list('Host')
+            client.objects.list("Host")
 
         example 2:
 
         .. code-block:: python
 
-            client.objects.list('Service', 'webserver01.domain!ping4')
+            client.objects.list("Service", "webserver01.domain!ping4")
 
         example 3:
 
         .. code-block:: python
 
-            client.objects.list('Host', attrs=["address", "state"])
+            client.objects.list("Host", attrs=["address", "state"])
 
         example 4:
 
         .. code-block:: python
 
-            client.objects.list('Host', filters='match("webserver*", host.name)')
+            client.objects.list("Host", filters='match("webserver*", host.name)')
 
         example 5:
 
         .. code-block:: python
 
-            client.objects.list('Service', joins=['host.name'])
+            client.objects.list("Service", joins=["host.name"])
 
         example 6:
 
         .. code-block:: python
 
-            client.objects.list('Service', joins=True)
+            client.objects.list("Service", joins=True)
 
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
         """
@@ -292,25 +292,25 @@ class Objects(Base):
 
         .. code-block:: python
 
-            get('Host', 'webserver01.domain')
+            get("Host", "webserver01.domain")
 
         example 2:
 
         .. code-block:: python
 
-            get('Service', 'webserver01.domain!ping4')
+            get("Service", "webserver01.domain!ping4")
 
         example 3:
 
         .. code-block:: python
 
-            get('Host', 'webserver01.domain', attrs=["address", "state"])
+            get("Host", "webserver01.domain", attrs=["address", "state"])
 
         example 4:
 
         .. code-block:: python
 
-            get('Service', 'webserver01.domain!ping4', joins=True)
+            get("Service", "webserver01.domain!ping4", joins=True)
         """
 
         return self.list(
@@ -342,16 +342,20 @@ class Objects(Base):
 
         .. code-block:: python
 
-            client.objects.create('Host', 'localhost', ['generic-host'], {'address': '127.0.0.1'})
+            client.objects.create(
+                "Host", "localhost", ["generic-host"], {"address": "127.0.0.1"}
+            )
 
         example 2:
 
         .. code-block:: python
 
-            client.objects.create('Service',
-               'testhost3!dummy',
-               {'check_command': 'dummy'},
-               ['generic-service'])
+            client.objects.create(
+                "Service",
+                "testhost3!dummy",
+                {"check_command": "dummy"},
+                ["generic-service"],
+            )
 
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#creating-config-objects>`__
         """
@@ -392,13 +396,13 @@ class Objects(Base):
 
         .. code-block:: python
 
-            update('Host', 'localhost', {'address': '127.0.1.1'})
+            update("Host", "localhost", {"address": "127.0.1.1"})
 
         example 2:
 
         .. code-block:: python
 
-            update('Service', 'testhost3!dummy', {'check_interval': '10m'})
+            update("Service", "testhost3!dummy", {"check_interval": "10m"})
 
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#modifying-objects>`__
         """
@@ -433,13 +437,13 @@ class Objects(Base):
 
         .. code-block:: python
 
-            delete('Host', 'localhost')
+            delete("Host", "localhost")
 
         example 2:
 
         .. code-block:: python
 
-            delete('Service', filters='match("vhost*", service.name)')
+            delete("Service", filters='match("vhost*", service.name)')
 
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-objects>`_
         """

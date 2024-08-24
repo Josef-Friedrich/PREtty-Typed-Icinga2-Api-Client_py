@@ -1,22 +1,3 @@
-# <a id="basics"></a> Basics
-
-## <a id="authentication"></a> Authentication
-
-You can use the client with either username/password combination or using certificates.
-
-Example using username and password:
-
-    from pretiac.client import Client
-    client = Client('https://localhost:5665', 'username', 'password')
-
-Example using certificates:
-
-    from pretiac.client import Client
-    client = Client('https://icinga2:5665',
-                    certificate='/etc/ssl/certs/myhostname.crt',
-                    key='/etc/ssl/keys/myhostname.key')
-
-If your public and private are in the same file, just use the `certificate` parameter.
 
 
 ## <a id="config-file"></a> Config file
@@ -37,13 +18,3 @@ The config file looks like:
 
 
 ## <a id="server-verification"></a> Server verification
-
-To verify the server certificate specify a ca file as `ca_file` parameter.
-
-Example:
-
-    from pretiac.client import Client
-    client = Client('https://icinga2:5665',
-                    certificate='/etc/ssl/certs/myhostname.crt',
-                    key='/etc/ssl/keys/myhostname.key',
-                    ca_file='/etc/ssl/certs/my_ca.crt')

@@ -182,9 +182,7 @@ class Actions(Base):
 
         .. code-block:: python
 
-            reschedule_check('Host',
-                            'host.name=="localhost"',
-                            '1577833200')
+            reschedule_check("Host", 'host.name=="localhost"', "1577833200")
 
         :param object_type: Host or Service
         :param filters: filters matched object(s)
@@ -228,10 +226,9 @@ class Actions(Base):
 
         .. code-block:: python
 
-            send_custom_notification('Host',
-                                    'host.name==localhost',
-                                    'icingaadmin',
-                                    'test comment')
+            send_custom_notification(
+                "Host", "host.name==localhost", "icingaadmin", "test comment"
+            )
 
         :param object_type: Host or Service
         :param filters: filters matched object
@@ -272,12 +269,9 @@ class Actions(Base):
 
         .. code-block:: python
 
-            delay_notification('Service',
-                            '1446389894')
+            delay_notification("Service", "1446389894")
 
-            delay_notification('Host',
-                            'host.name=="localhost"',
-                            '1446389894')
+            delay_notification("Host", 'host.name=="localhost"', "1446389894")
 
         :param object_type: Host or Service
         :param filters: filters matched object(s)
@@ -395,10 +389,12 @@ class Actions(Base):
 
         .. code-block:: python
 
-            add_comment('Service',
-                        'service.name=="ping4"',
-                        'icingaadmin',
-                        'Incident ticket #12345 opened.')
+            add_comment(
+                "Service",
+                'service.name=="ping4"',
+                "icingaadmin",
+                "Incident ticket #12345 opened.",
+            )
 
         :param object_type: Host or Service
         :param filters: filters matched object(s)
@@ -438,8 +434,7 @@ class Actions(Base):
 
         .. code-block:: python
 
-            remove_comment('Comment'
-                        'localhost!localhost-1458202056-25')
+            remove_comment("Comment" "localhost!localhost-1458202056-25")
 
         example 2:
 
@@ -573,15 +568,13 @@ class Actions(Base):
 
         .. code-block:: python
 
-            remove_downtime('Downtime',
-                            'localhost!ping4!localhost-1458148978-14')
+            remove_downtime("Downtime", "localhost!ping4!localhost-1458148978-14")
 
         example 2:
 
         .. code-block:: python
 
-            remove_downtime('Service',
-                            filters='service.name=="ping4"')
+            remove_downtime("Service", filters='service.name=="ping4"')
 
         :param object_type: Host, Service or Downtime
         :param name: name of the downtime

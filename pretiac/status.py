@@ -83,7 +83,7 @@ class Status(Base):
 
         .. code-block:: python
 
-            list('IcingaApplication')
+            list("IcingaApplication")
 
         :param component: only list the status of this component
 
