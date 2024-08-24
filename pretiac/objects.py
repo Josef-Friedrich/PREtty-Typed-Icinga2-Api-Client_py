@@ -250,7 +250,7 @@ class Objects(Base):
 
             client.objects.list("Service", joins=True)
 
-        Get all services which names start with ``vHost`` and are assigned to hosts named ``webserver*`` using ``filter_vars``
+        Get all services which names start with ``vHost`` and are assigned to hosts named ``webserver*`` using ``filter_vars``:
 
         .. code-block:: python
 
@@ -349,7 +349,7 @@ class Objects(Base):
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
-        Create an object.
+        Create an object using ``templates`` and specify attributes (``attrs``).
 
         :param object_type: The type of the object, for example ``Service``,
             ``Host`` or ``User``.
@@ -361,7 +361,7 @@ class Objects(Base):
         :param attrs: Set specific object attributes for this object type.
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
-        example 1:
+        Create a host:
 
         .. code-block:: python
 
@@ -369,7 +369,7 @@ class Objects(Base):
                 "Host", "localhost", ["generic-host"], {"address": "127.0.0.1"}
             )
 
-        example 2:
+        Create a service for Host ``localhost``:
 
         .. code-block:: python
 
@@ -408,7 +408,7 @@ class Objects(Base):
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
-        update an object
+        Update an object with the specified attributes.
 
         :param object_type: The type of the object, for example ``Service``,
             ``Host`` or ``User``.
@@ -418,17 +418,17 @@ class Objects(Base):
         :type attrs: dictionary
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
-        example 1:
+        Change the ip address of a host:
 
         .. code-block:: python
 
-            update("Host", "localhost", {"address": "127.0.1.1"})
+            client.objects.update("Host", "localhost", {"address": "127.0.1.1"})
 
-        example 2:
+        Update a service and change the check interval:
 
         .. code-block:: python
 
-            update("Service", "testhost3!dummy", {"check_interval": "10m"})
+            client.objects.update("Service", "testhost3!dummy", {"check_interval": "10m"})
 
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#modifying-objects>`__
         """
@@ -450,7 +450,7 @@ class Objects(Base):
         cascade: bool = True,
         suppress_exception: Optional[bool] = None,
     ) -> Any:
-        """delete an object
+        """Delete an object.
 
         :param object_type: The type of the object, for example ``Service``,
             ``Host`` or ``User``.
@@ -461,13 +461,13 @@ class Objects(Base):
         :param cascade: Delete objects depending on the deleted objects (e.g. services on a host).
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
-        example 1:
+        Delete the ``localhost``:
 
         .. code-block:: python
 
             delete("Host", "localhost")
 
-        example 2:
+        Delete all services matching ``vhost*``:
 
         .. code-block:: python
 
