@@ -8,13 +8,13 @@ https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#config-templates
 
 from typing import Any, Optional
 
-from pretiac.base import Base, ObjectType, Payload
+from pretiac.base import Base, ObjectTypeName, Payload
 
 
 class Templates(Base):
     base_url_path = "v1/templates"
 
-    def list(self, object_type: ObjectType, filter: Optional[str] = None) -> Any:
+    def list(self, object_type: ObjectTypeName, filter: Optional[str] = None) -> Any:
         """Request information about configuration templates.
 
         :param object_type: The type of the object, for example ``Service``,

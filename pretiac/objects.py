@@ -39,7 +39,7 @@ from typing import Any, Optional, Union
 
 from pretiac.base import Base
 from pretiac.exceptions import PretiacException
-from pretiac.object_types import FilterVars, ObjectType, Payload
+from pretiac.object_types import FilterVars, ObjectTypeName, Payload
 
 LOG = logging.getLogger(__name__)
 
@@ -141,7 +141,7 @@ class Objects(Base):
     base_url_path = "v1/objects"
 
     @staticmethod
-    def _convert_object_type(object_type: Optional[ObjectType] = None) -> str:
+    def _convert_object_type(object_type: Optional[ObjectTypeName] = None) -> str:
         """
         check if the object_type is a valid Icinga 2 object type
         """
@@ -193,7 +193,7 @@ class Objects(Base):
 
     def list(
         self,
-        object_type: ObjectType,
+        object_type: ObjectTypeName,
         name: Optional[str] = None,
         attrs: Optional[Sequence[str]] = None,
         filters: Optional[str] = None,
@@ -293,7 +293,7 @@ class Objects(Base):
 
     def get(
         self,
-        object_type: ObjectType,
+        object_type: ObjectTypeName,
         name: str,
         attrs: Optional[Sequence[str]] = None,
         joins: Optional[Union[bool, Sequence[str]]] = None,
@@ -342,7 +342,7 @@ class Objects(Base):
 
     def create(
         self,
-        object_type: ObjectType,
+        object_type: ObjectTypeName,
         name: str,
         templates: Optional[Sequence[str]] = None,
         attrs: Optional[Payload] = None,
@@ -402,7 +402,7 @@ class Objects(Base):
 
     def update(
         self,
-        object_type: ObjectType,
+        object_type: ObjectTypeName,
         name: str,
         attrs: dict[str, Any],
         suppress_exception: Optional[bool] = None,
@@ -443,7 +443,7 @@ class Objects(Base):
 
     def delete(
         self,
-        object_type: ObjectType,
+        object_type: ObjectTypeName,
         name: Optional[str] = None,
         filters: Optional[str] = None,
         filter_vars: FilterVars = None,

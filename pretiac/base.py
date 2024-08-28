@@ -45,7 +45,7 @@ from pretiac.config import Config
 from pretiac.exceptions import PretiacException, PretiacRequestException
 from pretiac.object_types import (
     HostState,
-    ObjectType,
+    ObjectTypeName,
     Payload,
     RequestMethod,
     ServiceState,
@@ -118,7 +118,7 @@ class Base:
         return session
 
     @staticmethod
-    def _pluralize(object_type: ObjectType) -> str:
+    def _pluralize(object_type: ObjectTypeName) -> str:
         return f"{object_type.lower()}s"
 
     def _throw_exception(self, suppress_exception: Optional[bool] = None) -> bool:
