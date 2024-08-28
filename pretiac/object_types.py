@@ -3,7 +3,7 @@ Listed in the order as in this `Markdown document <https://github.com/Icinga/ici
 """
 
 from collections.abc import Sequence
-from enum import Enum, auto
+from enum import Enum
 from typing import (
     Any,
     Literal,
@@ -78,29 +78,6 @@ HostServiceComment = Union[Literal["Comment"], HostOrService]
 HostServiceDowntime = Union[Literal["Downtime"], HostOrService]
 
 
-class HostState(Enum):
-    """
-    https://github.com/Icinga/icinga2/blob/a8adfeda60232260e3eee6d68fa5f4787bb6a245/lib/icinga/checkresult.ti#L11-L20
-    """
-
-    UP = 0
-    DOWN = 1
-
-
-class ServiceState(Enum):
-    """
-    https://github.com/Icinga/icinga2/blob/a8adfeda60232260e3eee6d68fa5f4787bb6a245/lib/icinga/checkresult.ti#L22-L33
-    """
-
-    OK = 0
-    WARNING = 1
-    CRITICAL = 2
-    UNKNOWN = 3
-
-
-State = HostState | ServiceState | Literal[0, 1, 2, 3] | int
-
-
 Payload = dict[str, Any]
 
 FilterVars = Optional[Payload]
@@ -133,55 +110,64 @@ class SourceLocation:
 class HAMode(Enum):
     """:see: `lib/base/configobject.ti L12-L16 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L12-L16>`__"""
 
-    HARunOnce = auto()
-    HARunEverywhere = auto()
+    HARunOnce = 0
+    HARunEverywhere = 1
 
 
-# /**
-#  * :see: `lib/icinga/checkresult.ti L38-L43 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/checkresult.ti#L38-L43>`__
-#  */
-# export enum StateType {
-#   StateTypeSoft = 0,
-#   StateTypeHard = 1
-# }
+class StateType(Enum):
+    """
+    see: `lib/icinga/checkresult.ti L38-L43 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/checkresult.ti#L38-L43>`__
+    """
 
-# export interface Dictionary {}
+    StateTypeSoft = 0
+    StateTypeHard = 1
 
-# /**
-#  * for example `1699475880.364077`
-#  */
-# export type TimeStamp = number
 
-# export type Timestamp = number
+class Dictionary:
+    pass
 
-# export interface Value {}
 
-# /**
-#  * 0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN
-#  */
-# export type State = 0 | 1 | 2 | 3
+TimeStamp = float
+"""
+for example `1699475880.364077`
+"""
 
-# /**
-#  * 0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN
-#  *
-#  * :see: `lib/icinga/checkresult.ti L25-L31 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/checkresult.ti#L25-L31>`__
-#  */
-# export enum ServiceState {
-#   ServiceOK = 0,
-#   ServiceWarning = 1,
-#   ServiceCritical = 2,
-#   ServiceUnknown = 3
-# }
 
-# /**
-#  * 0=UP, 1=DOWN.
-#  */
-# export enum HostState {
-#   HostUp = 0,
-#   HostDown = 1
-# }
+class Value:
+    pass
 
-# export interface CheckResult {}
+
+class ServiceState(Enum):
+    """
+
+    0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN
+
+    https://github.com/Icinga/icinga2/blob/a8adfeda60232260e3eee6d68fa5f4787bb6a245/lib/icinga/checkresult.ti#L22-L33
+    """
+
+    OK = 0
+    WARNING = 1
+    CRITICAL = 2
+    UNKNOWN = 3
+
+
+class HostState(Enum):
+    """
+     0=UP, 1=DOWN.
+
+    https://github.com/Icinga/icinga2/blob/a8adfeda60232260e3eee6d68fa5f4787bb6a245/lib/icinga/checkresult.ti#L11-L20
+    """
+
+    UP = 0
+    DOWN = 1
+
+
+State = HostState | ServiceState | Literal[0, 1, 2, 3] | int
+
+
+class CheckResult:
+    pass
+
 
 # /***************************************************************************
 #  * Interface from which the object types inherit
@@ -239,151 +225,145 @@ class CustomVarObject(ConfigObject):
     """
 
 
-# /**
-#  * :see: `lib/icinga/checkable.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/checkable.ti>`__
-#  */
-# interface Checkable extends CustomVarObject {
-#   /**
-#    * The name of the check command.
-#    *
-#    * @group navigation
-#    *
-#    * :see: `doc/09-object-types.md L717 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L717>`__
-#    */
-#   check_command: string
+class Checkable(CustomVarObject):
+    """
+    :see: `lib/icinga/checkable.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/checkable.ti>`__
+    """
 
-#   /**
-#    * The number of times a service is re-checked before changing into a hard state. Defaults to 3.
-#    *
-#    * :see: `doc/09-object-types.md L718 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L718>`__
-#    */
-#   max_check_attempts: bigint
+    check_command: str
+    """
+    The name of the check command.
 
-#   /**
-#    * The name of a time period which determines when this service should be checked. Not set by default (effectively 24x7).
-#    *
-#    * @group navigation
-#    *
-#    * :see: `doc/09-object-types.md L719 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L719>`__
-#    */
-#   check_period: string
+    :see: `doc/09-object-types.md L717 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L717>`__
+    """
 
-#   /**
-#    * Check command timeout in seconds. Overrides the CheckCommand's `timeout` attribute.
-#    *
-#    * :see: `doc/09-object-types.md L720 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L720>`__
-#    */
-#   check_timeout: Value
+    max_check_attempts: int
+    """
+    The float of times a service is re-checked before changing into a hard state. Defaults to 3.
 
-#   /**
-#    * The check interval (in seconds). This interval is used for checks when the service is in a `HARD` state. Defaults to `5m`.
-#    *
-#    * :see: `doc/09-object-types.md L721 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L721>`__
-#    */
-#   check_interval: number
+    :see: `doc/09-object-types.md L718 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L718>`__
+    """
 
-#   /**
-#    * This interval is used for checks when the service is in a `SOFT` state. Defaults to `1m`. Note: This does not affect the scheduling `after a passive check result <08-advanced-topics.md#check-result-freshness>`__.
-#    */
-#   retry_interval: number
+    check_period: str
+    """
+    The name of a time period which determines when this service should be checked. Not set by default (effectively 24x7).
 
-#   /**
-#    * @group navigation
-#    */
-#   event_command: string
+    :see: `doc/09-object-types.md L719 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L719>`__
 
-#   volatile: bool
+    """
 
-#   enable_active_checks: bool
+    check_timeout: Value
+    """
+    Check command timeout in seconds. Overrides the CheckCommand's `timeout` attribute.
 
-#   enable_passive_checks: bool
+    :see: `doc/09-object-types.md L720 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L720>`__
+    """
 
-#   enable_event_handler: bool
+    check_interval: float
+    """
+    The check interval (in seconds). This interval is used for checks when the service is in a `HARD` state. Defaults to `5m`.
 
-#   enable_notifications: bool
+    :see: `doc/09-object-types.md L721 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L721>`__
+    """
 
-#   enable_flapping: bool
+    retry_interval: float
+    """
+    This interval is used for checks when the service is in a `SOFT` state. Defaults to `1m`. Note: This does not affect the scheduling `after a passive check result <08-advanced-topics.md#check-result-freshness>`__.
+    """
 
-#   enable_perfdata: bool
+    event_command: str
 
-#   flapping_ignore_states: string[]
+    volatile: bool
 
-#   /**
-#    * @deprecated
-#    */
-#   flapping_threshold: number
+    enable_active_checks: bool
 
-#   flapping_threshold_low: number
+    enable_passive_checks: bool
 
-#   flapping_threshold_high: number
+    enable_event_handler: bool
 
-#   notes: string
+    enable_notifications: bool
 
-#   notes_url: string
+    enable_flapping: bool
 
-#   action_url: string
+    enable_perfdata: bool
 
-#   icon_image: string
+    flapping_ignore_states: Sequence[str]
 
-#   icon_image_alt: string
+    flapping_threshold: float
+    """
+    deprecated
+    """
+    flapping_threshold_low: float
 
-#   next_check: Timestamp
+    flapping_threshold_high: float
 
-#   check_attempt: bigint
+    notes: str
 
-#   state_type: StateType
+    notes_url: str
 
-#   last_state_type: StateType
+    action_url: str
 
-#   last_reachable: bool
+    icon_image: str
 
-#   last_check_result: CheckResult
+    icon_image_alt: str
 
-#   last_state_change: Timestamp
+    next_check: TimeStamp
 
-#   last_hard_state_change: Timestamp
+    check_attempt: int
 
-#   last_state_unreachable: Timestamp
+    state_type: StateType
 
-#   previous_state_change: Timestamp
+    last_state_type: StateType
 
-#   severity: bigint
+    last_reachable: bool
 
-#   problem: bool
+    last_check_result: CheckResult
 
-#   handled: bool
+    last_state_change: TimeStamp
 
-#   next_update: Timestamp
+    last_hard_state_change: TimeStamp
 
-#   force_next_check: bool
+    last_state_unreachable: TimeStamp
 
-#   acknowledgement: bigint
+    previous_state_change: TimeStamp
 
-#   acknowledgement_expiry: Timestamp
+    severity: int
 
-#   acknowledgement_last_change: Timestamp
+    problem: bool
 
-#   force_next_notification: bool
+    handled: bool
 
-#   last_check: Timestamp
+    next_update: TimeStamp
 
-#   downtime_depth: bigint
+    force_next_check: bool
 
-#   flapping_current: number
+    acknowledgement: int
 
-#   flapping_last_change: Timestamp
+    acknowledgement_expiry: TimeStamp
 
-#   flapping: bool
+    acknowledgement_last_change: TimeStamp
 
-#   /**
-#    * @group navigation
-#    */
-#   command_endpoint: string
+    force_next_notification: bool
 
-#   executions: Dictionary
-# }
+    last_check: TimeStamp
 
-# export interface CheckableWithRelations
+    downtime_depth: int
+
+    flapping_current: float
+
+    flapping_last_change: TimeStamp
+
+    flapping: bool
+
+    command_endpoint: str
+
+    executions: Dictionary
+
+
+class CheckableWithRelations:
+    pass
+
+
 #   extends Omit<
 #     Checkable,
 #     'check_command' | 'check_period' | 'event_command' | 'command_endpoint'
@@ -401,6 +381,7 @@ class CustomVarObject(ConfigObject):
 # /***************************************************************************
 #  * Monitoring Objects
 #  **************************************************************************/
+
 
 # /**
 #  * ApiUser objects are used for authentication against the `Icinga 2 API <12-icinga2-api.md#icinga2-api-authentication>`__.
@@ -420,14 +401,17 @@ class CustomVarObject(ConfigObject):
 #  * :see: `lib/remote/apiuser.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti>`__
 #  * :see: `doc/09-object-types.md L41-L63 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L41-L63>`__
 #  */
-# export interface ApiUser extends ConfigObject {
+class ApiUser(ConfigObject):
+    pass
+
+
 #   /**
-#    * Password string. Note: This attribute is hidden in API responses.
+#    * Password str. Note: This attribute is hidden in API responses.
 #    *
 #    * @group config
 #    * :see: `lib/remote/apiuser.ti L14 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L14>`__
 #    */
-#   password?: string
+#   password?: str
 
 #   /**
 #    * Client Common Name (CN).
@@ -435,17 +419,18 @@ class CustomVarObject(ConfigObject):
 #    * @group config
 #    * :see: `lib/remote/apiuser.ti L16 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L16>`__
 #    */
-#   client_cn?: string
+#   client_cn?: str
 
 #   /**
-#    * Array of permissions. Either as string or dictionary with the keys `permission` and `filter`. The latter must be specified as function.
+#    * Array of permissions. Either as str or dictionary with the keys `permission` and `filter`. The latter must be specified as function.
 #    *
 #    * @group config
 #    * :see: `lib/remote/apiuser.ti L17 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L17>`__
 #    * :see: `lib/remote/apiuser.ti L21-L28 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L21-L28>`__
 #    */
-#   permissions: string[]
+#   permissions: str[]
 # }
+
 
 # /**
 #  * A check command definition. Additional default command custom variables can be
@@ -493,7 +478,9 @@ class CustomVarObject(ConfigObject):
 #  * :see: `doc/09-object-types.md L65-L114 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L65-L114>`__
 #  * :see: `lib/icinga/command.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti>`__
 #  */
-# export interface CheckCommand {}
+class CheckCommand:
+    pass
+
 
 # /**
 #  *
@@ -518,7 +505,9 @@ class CustomVarObject(ConfigObject):
 #  * :see: `doc/09-object-types.md L117-L150 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L117-L150>`__
 #  * :see: `lib/icinga/command.ti L30-L46 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L30-L46>`__
 #  */
-# export interface CheckCommandArguments {}
+class CheckCommandArguments:
+    pass
+
 
 # /**
 #  * Dependency objects are used to specify dependencies between hosts and services. Dependencies
@@ -529,7 +518,7 @@ class CustomVarObject(ConfigObject):
 #  * >
 #  * > Rather than creating a `Dependency` object for a specific host or service it is usually easier
 #  * > to just create a `Dependency` template and use the `apply` keyword to assign the
-#  * > dependency to a number of hosts or services. Use the `to` keyword to set the specific target
+#  * > dependency to a float of hosts or services. Use the `to` keyword to set the specific target
 #  * > type for `Host` or `Service`.
 #  * > Check the `dependencies <03-monitoring-basics.md#dependencies>`__ chapter for detailed examples.
 #  *
@@ -568,7 +557,9 @@ class CustomVarObject(ConfigObject):
 #  *
 #  * :see: `doc/09-object-types.md L153-L258 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L153-L258>`__
 #  */
-# export interface Dependency {}
+class Dependency:
+    pass
+
 
 # /**
 #  * Endpoint objects are used to specify connection information for remote
@@ -599,7 +590,9 @@ class CustomVarObject(ConfigObject):
 #  *
 #  * :see: `doc/09-object-types.md L260-L293 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L260-L293>`__
 #  */
-# export interface Endpoint {}
+class Endpoint:
+    pass
+
 
 # /**
 #  * An event command definition.
@@ -617,7 +610,9 @@ class CustomVarObject(ConfigObject):
 #  *
 #  * :see: `doc/09-object-types.md L295-L320 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L295-L320>`__
 #  */
-# export interface EventCommand {}
+class EventCommand:
+    pass
+
 
 # /**
 #  * A host.
@@ -642,34 +637,37 @@ class CustomVarObject(ConfigObject):
 #  * :see: `doc/09-object-types.md L323-L413 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L323-L413>`__
 #  * :see: `lib/icinga/host.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti>`__
 #  */
-# export interface Host extends Checkable {
+class Host(Checkable):
+    pass
+
+
 #   /**
 #    * A list of host groups this host belongs to.
 #    *
 #    * :see: `lib/icinga/host.ti L18-L20 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L18-L20>`__
 #    */
-#   groups: string[]
+#   groups: str[]
 
 #   /**
 #    * A short description of the host (e.g. displayed by external interfaces instead of the name if set).
 #    *
 #    * :see: `lib/icinga/host.ti L22-L30 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L22-L30>`__
 #    */
-#   display_name: string
+#   display_name: str
 
 #   /**
 #    * The host's IPv4 address. Available as command runtime macro `$address$` if set.
 #    *
 #    * :see: `lib/icinga/host.ti L32 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L32>`__
 #    */
-#   address: string
+#   address: str
 
 #   /**
 #    * The host's IPv6 address. Available as command runtime macro `$address6$` if set.
 #    *
 #    * :see: `lib/icinga/host.ti L33 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L33>`__
 #    */
-#   address6: string
+#   address6: str
 
 #   /**
 #    * The current state (0 = UP, 1 = DOWN).
@@ -697,15 +695,16 @@ class CustomVarObject(ConfigObject):
 #    *
 #    * :see: `lib/icinga/host.ti L44 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L44>`__
 #    */
-#   last_state_up: Timestamp
+#   last_state_up: TimeStamp
 
 #   /**
 #    * When the last DOWN state occurred (as a UNIX timestamp).
 #    *
 #    * :see: `lib/icinga/host.ti L45 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L45>`__
 #    */
-#   last_state_down: Timestamp
+#   last_state_down: TimeStamp
 # }
+
 
 # /**
 #  * A group of hosts.
@@ -729,7 +728,9 @@ class CustomVarObject(ConfigObject):
 #  *
 #  * :see: `doc/09-object-types.md L417-L440 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L417-L440>`__
 #  */
-# export interface HostGroup {}
+class HostGroup:
+    pass
+
 
 # /**
 #  * Notification objects are used to specify how users should be notified in case
@@ -739,7 +740,7 @@ class CustomVarObject(ConfigObject):
 #  * >
 #  * > Rather than creating a `Notification` object for a specific host or service it is
 #  * > usually easier to just create a `Notification` template and use the `apply` keyword
-#  * > to assign the notification to a number of hosts or services. Use the `to` keyword
+#  * > to assign the notification to a float of hosts or services. Use the `to` keyword
 #  * > to set the specific target type for `Host` or `Service`.
 #  * > Check the `notifications <03-monitoring-basics.md#alert-notifications>`__ chapter for detailed examples.
 #  *
@@ -764,7 +765,9 @@ class CustomVarObject(ConfigObject):
 #  *
 #  * :see: `doc/09-object-types.md L444-L527 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L444-L527>`__
 #  */
-# export interface Notification {}
+class Notification:
+    pass
+
 
 # /**
 #  * A notification command definition.
@@ -850,7 +853,9 @@ class CustomVarObject(ConfigObject):
 #  *
 #  * :see: `doc/09-object-types.md L530-L622 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L530-L622>`__
 #  */
-# export interface NotificationCommand {}
+class NotificationCommand:
+    pass
+
 
 # /**
 #  * ScheduledDowntime objects can be used to set up recurring downtimes for hosts/services.
@@ -859,7 +864,7 @@ class CustomVarObject(ConfigObject):
 #  * >
 #  * > Rather than creating a `ScheduledDowntime` object for a specific host or service it is usually easier
 #  * > to just create a `ScheduledDowntime` template and use the `apply` keyword to assign the
-#  * > scheduled downtime to a number of hosts or services. Use the `to` keyword to set the specific target
+#  * > scheduled downtime to a float of hosts or services. Use the `to` keyword to set the specific target
 #  * > type for `Host` or `Service`.
 #  * > Check the `recurring downtimes <08-advanced-topics.md#recurring-downtimes>`__ example for details.
 #  *
@@ -887,7 +892,9 @@ class CustomVarObject(ConfigObject):
 #  *
 #  * :see: `doc/09-object-types.md L624-L674 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L624-L674>`__
 #  */
-# export interface ScheduledDowntime {}
+class ScheduledDowntime:
+    pass
+
 
 # /**
 #  * Service objects describe network services and how they should be checked
@@ -897,7 +904,7 @@ class CustomVarObject(ConfigObject):
 #  * >
 #  * > Rather than creating a `Service` object for a specific host it is usually easier
 #  * > to just create a `Service` template and use the `apply` keyword to assign the
-#  * > service to a number of hosts.
+#  * > service to a float of hosts.
 #  * > Check the `apply <03-monitoring-basics.md#using-apply>`__ chapter for details.
 #  *
 #  * Example:
@@ -926,21 +933,24 @@ class CustomVarObject(ConfigObject):
 #  * :see: `lib/icinga/service.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/service.ti>`__
 #  * :see: `doc/09-object-types.md L677-L781 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L677-L781>`__
 #  */
-# export interface Service extends Checkable {
+class Service(Checkable):
+    pass
+
+
 #   /**
 #    * The service groups this service belongs to.
 #    */
-#   groups: string
+#   groups: str
 
 #   /**
 #    * A short description of the service.
 #    */
-#   display_name: string
+#   display_name: str
 
 #   /**
 #    * The host this service belongs to. There must be a `Host` object with that name.
 #    */
-#   host_name: string
+#   host_name: str
 
 #   /**
 #    * @group navigation
@@ -983,6 +993,7 @@ class CustomVarObject(ConfigObject):
 #   last_state_unknown: TimeStamp
 # }
 
+
 # /**
 #  * A group of services.
 #  *
@@ -1003,56 +1014,82 @@ class CustomVarObject(ConfigObject):
 #  *
 #  * :see: `doc/09-object-types.md L784-L805 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L784-L805>`__
 #  */
-# export interface ServiceGroup {}
+class ServiceGroup:
+    pass
 
-# /**
-#  * Time periods can be used to specify when hosts/services should be checked or to limit
-#  * when notifications should be sent out.
-#  *
-#  * Examples:
-#  *
-#  * ```
-#  * object TimePeriod "nonworkhours" {
-#  *   display_name = "Icinga 2 TimePeriod for non working hours"
-#  *
-#  *   ranges = {
-#  *     monday = "00:00-8:00,17:00-24:00"
-#  *     tuesday = "00:00-8:00,17:00-24:00"
-#  *     wednesday = "00:00-8:00,17:00-24:00"
-#  *     thursday = "00:00-8:00,17:00-24:00"
-#  *     friday = "00:00-8:00,16:00-24:00"
-#  *     saturday = "00:00-24:00"
-#  *     sunday = "00:00-24:00"
-#  *   }
-#  * }
-#  *
-#  * object TimePeriod "exampledays" {
-#  *     display_name = "Icinga 2 TimePeriod for random example days"
-#  *
-#  *     ranges = {
-#  *         //We still believe in Santa, no peeking!
-#  *         //Applies every 25th of December every year
-#  *         "december 25" = "00:00-24:00"
-#  *
-#  *         //Any point in time can be specified,
-#  *         //but you still have to use a range
-#  *         "2038-01-19" = "03:13-03:15"
-#  *
-#  *         //Evey 3rd day from the second monday of February
-#  *         //to 8th of November
-#  *         "monday 2 february - november 8 / 3" = "00:00-24:00"
-#  *     }
-#  * }
-#  * ```
-#  *
-#  * Additional examples can be found `here <08-advanced-topics.md#timeperiods>`__.
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L809-L869 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L809-L869>`__
-#  */
-# export interface TimePeriod {}
+
+class TimePeriod(CustomVarObject):
+    """
+    Time periods can be used to specify when hosts/services should be checked or to limit
+    when notifications should be sent out.
+
+    Examples:
+
+    .. code-block::
+
+        object TimePeriod "nonworkhours" {
+            display_name = "Icinga 2 TimePeriod for non working hours"
+
+            ranges = {
+                monday = "00:00-8:00,17:00-24:00"
+                tuesday = "00:00-8:00,17:00-24:00"
+                wednesday = "00:00-8:00,17:00-24:00"
+                thursday = "00:00-8:00,17:00-24:00"
+                friday = "00:00-8:00,16:00-24:00"
+                saturday = "00:00-24:00"
+                sunday = "00:00-24:00"
+            }
+        }
+
+    .. code-block::
+
+        object TimePeriod "exampledays" {
+            display_name = "Icinga 2 TimePeriod for random example days"
+
+            ranges = {
+                //We still believe in Santa, no peeking!
+                //Applies every 25th of December every year
+                "december 25" = "00:00-24:00"
+
+                //Any point in time can be specified,
+                //but you still have to use a range
+                "2038-01-19" = "03:13-03:15"
+
+                //Evey 3rd day from the second monday of February
+                //to 8th of November
+                "monday 2 february - november 8 / 3" = "00:00-24:00"
+            }
+        }
+
+    Additional examples can be found `here <08-advanced-topics.md#timeperiods>`__.
+
+    :see: `doc/09-object-types.md L809-L869 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L809-L869>`__
+
+    https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L11-L39
+    """
+
+    display_name: str
+
+    ranges: dict[str, str]
+
+
+# [config, required] Function::Ptr update;
+# [config] bool prefer_includes {
+# 	default {{{ return true; }}}
+# };
+# [config, required, signal_with_old_value] array(name(TimePeriod)) excludes {
+# 	default {{{ return new Array(); }}}
+# };
+# [config, required, signal_with_old_value] array(name(TimePeriod)) includes {
+# 	default {{{ return new Array(); }}}
+# };
+# [state, no_user_modify] Value valid_begin;
+# [state, no_user_modify] Value valid_end;
+# [state, no_user_modify] Array::Ptr segments;
+# [no_storage] bool is_inside {
+# 	get;
+# };
+
 
 # /**
 #  * A user.
@@ -1106,14 +1143,17 @@ class CustomVarObject(ConfigObject):
 #  * :see: `lib/icinga/user.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti>`__
 #  * :see: `doc/09-object-types.md L872-L937 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L872-L937>`__
 #  */
-# export interface User extends CustomVarObject {
+class User(CustomVarObject):
+    pass
+
+
 #   /**
 #    * A short description of the user.
 #    *
 #    * :see: `lib/icinga/user.ti L14-L22 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L14-L22>`__
 #    * :see: `doc/09-object-types.md L923 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L923>`__
 #    */
-#   display_name: string
+#   display_name: str
 
 #   /**
 #    * An array of group names.
@@ -1121,7 +1161,7 @@ class CustomVarObject(ConfigObject):
 #    * :see: `lib/icinga/user.ti L23-L25 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L23-L25>`__
 #    * :see: `doc/09-object-types.md L927 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L927>`__
 #    */
-#   groups: string[]
+#   groups: str[]
 
 #   /**
 #    * The name of a time period which determines when a notification for this user should be triggered. Not set by default (effectively 24x7).
@@ -1129,7 +1169,7 @@ class CustomVarObject(ConfigObject):
 #    * :see: `lib/icinga/user.ti L26-L30 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L26-L30>`__
 #    * :see: `doc/09-object-types.md L929 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L929>`__
 #    */
-#   period: string
+#   period: str
 
 #   /**
 #    * A set of type filters when a notification for this user should be triggered. By default everything is matched.
@@ -1137,7 +1177,7 @@ class CustomVarObject(ConfigObject):
 #    * :see: `lib/icinga/user.ti L32 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L32>`__
 #    * :see: `doc/09-object-types.md L930 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L930>`__
 #    */
-#   types: string[]
+#   types: str[]
 
 #   /**
 #    * A set of state filters when a notification for this should be triggered. By default everything is matched.
@@ -1145,23 +1185,23 @@ class CustomVarObject(ConfigObject):
 #    * :see: `lib/icinga/user.ti L34 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L34>`__
 #    * :see: `doc/09-object-types.md L931 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L931>`__
 #    */
-#   states: string[]
+#   states: str[]
 
 #   /**
-#    * An email string for this user. Useful for notification commands.
+#    * An email str for this user. Useful for notification commands.
 #    *
 #    * :see: `lib/icinga/user.ti L37 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L37>`__
 #    * :see: `doc/09-object-types.md L924 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L924>`__
 #    */
-#   email: string
+#   email: str
 
 #   /**
-#    * A pager string for this user. Useful for notification commands.
+#    * A pager str for this user. Useful for notification commands.
 #    *
 #    * :see: `lib/icinga/user.ti L38 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L38>`__
 #    * :see: `doc/09-object-types.md L925 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L925>`__
 #    */
-#   pager: string
+#   pager: str
 
 #   /**
 #    * Whether notifications are enabled for this user. Defaults to true.
@@ -1177,8 +1217,9 @@ class CustomVarObject(ConfigObject):
 #    * :see: `lib/icinga/user.ti L44 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L44>`__
 #    * :see: `doc/09-object-types.md L937 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L937>`__
 #    */
-#   last_notification: number
+#   last_notification: float
 # }
+
 
 # /**
 #  * A user group.
@@ -1200,7 +1241,9 @@ class CustomVarObject(ConfigObject):
 #  *
 #  * :see: `doc/09-object-types.md L939-L960 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L939-L960>`__
 #  */
-# export interface UserGroup {}
+class UserGroup:
+    pass
+
 
 # /**
 #  * Zone objects are used to specify which Icinga 2 instances are located in a zone.
@@ -1224,153 +1267,203 @@ class CustomVarObject(ConfigObject):
 #  *
 #  * :see: `doc/09-object-types.md L963-L989 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L963-L989>`__
 #  */
-# export interface Zone {}
+class Zone:
+    pass
+
 
 # /***************************************************************************
 #  * Runtime Objects
 #  **************************************************************************/
 
-# /**
-#  * @category Object type
-#  * @category Runtime object type
-#  */
-# export interface Comment {}
 
 # /**
 #  * @category Object type
 #  * @category Runtime object type
 #  */
-# export interface Downtime {}
+class Comment:
+    pass
+
+
+# /**
+#  * @category Object type
+#  * @category Runtime object type
+#  */
+class Downtime:
+    pass
+
 
 # /***************************************************************************
 #  * Features
 #  **************************************************************************/
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
-# export interface ApiListener {}
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface CheckerComponent {}
+class ApiListener:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface CompatLogger {}
+class CheckerComponent:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface ElasticsearchWriter {}
+class CompatLogger:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface ExternalCommandListener {}
+class ElasticsearchWriter:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface FileLogger {}
+class ExternalCommandListener:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface GelfWriter {}
+class FileLogger:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface GraphiteWriter {}
+class GelfWriter:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface IcingaApplication {}
+class GraphiteWriter:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface IcingaDB {}
+class IcingaApplication:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface IdoMySqlConnection {}
+class IcingaDB:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface IdoPgsqlConnection {}
+class IdoMySqlConnection:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface InfluxdbWriter {}
+class IdoPgsqlConnection:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface Influxdb2Writer {}
+class InfluxdbWriter:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface JournaldLogger {}
+class Influxdb2Writer:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface LiveStatusListener {}
+class JournaldLogger:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface NotificationComponent {}
+class LiveStatusListener:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface OpenTsdbWriter {}
+class NotificationComponent:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface PerfdataWriter {}
+class OpenTsdbWriter:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface SyslogLogger {}
+class PerfdataWriter:
+    pass
+
 
 # /**
 #  * @category Object type
 #  * @category Feature object type
 #  */
-# export interface WindowsEventLogLogger {}
+class SyslogLogger:
+    pass
+
+
+# /**
+#  * @category Object type
+#  * @category Feature object type
+#  */
+class WindowsEventLogLogger:
+    pass
+
 
 # export type ObjectType =
 #   // Monitoring
