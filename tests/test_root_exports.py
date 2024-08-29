@@ -1,7 +1,5 @@
 """Test the functions from the root ``__init__.py``."""
 
-import pytest
-
 from pretiac import (
     CheckError,
     CheckResult,
@@ -79,8 +77,6 @@ def test_send_service_check_result_safe(client: Client) -> None:
     client.objects.delete("Host", "NewHost", suppress_exception=True)
 
 
-@pytest.mark.skip
 def test_get_time_periods():
     results = get_time_periods()
-
-    assert results == ""
+    assert isinstance(results[0].name, str)

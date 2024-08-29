@@ -324,6 +324,9 @@ def get_time_periods() -> Sequence[TimePeriod]:
 
     for result in results:
         attrs = result["attrs"]
+        if "__name" in attrs:
+            attrs["name"] = attrs["__name"]
+            del attrs["__name"]
         time_periods.append(time_period_adapter.validate_python(attrs))
 
     return time_periods

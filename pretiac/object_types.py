@@ -185,39 +185,39 @@ class ConfigObject:
     :see: `lib/base/configobject.ti L57-L92 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L57-L92>`__
     """
 
-    __name: str
+    name: Optional[str] = None
     """:see: `lib/base/configobject.ti L59-L68 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L59-L68>`__"""
 
-    type: Optional[str]
-    zone: str
+    type: Optional[str] = None
+    zone: Optional[str] = None
     """:see: `lib/base/configobject.ti L69 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L69>`__"""
 
-    package: str
+    package: Optional[str] = None
     """for example ``_etc``
 
     :see: `lib/base/configobject.ti L70 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L70>`__"""
 
-    templates: Sequence[str]
+    templates: Optional[Sequence[str]] = None
     """:see: `lib/base/configobject.ti L71 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L71>`__"""
 
-    source_location: SourceLocation
+    source_location: Optional[SourceLocation] = None
     """
     :see: `lib/base/configobject.ti L72-L74 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L72-L74>`__
     """
 
-    active: bool
+    active: Optional[bool] = None
     """:see: `lib/base/configobject.ti L75 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L75>`__"""
 
-    paused: bool
+    paused: Optional[bool] = None
     """:see: `lib/base/configobject.ti L76-L78 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L76-L78>`__"""
 
-    ha_mode: HAMode
+    ha_mode: Optional[HAMode] = None
     """:see: `lib/base/configobject.ti L83 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L83>`__"""
 
-    original_attributes: Optional[dict[str, Any]]
+    original_attributes: Optional[dict[str, Any]] = None
     """:see: `lib/base/configobject.ti L87 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L87>`__"""
 
-    version: float
+    version: Optional[float] = None
     """:see: `lib/base/configobject.ti L88-L90 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L88-L90>`__"""
 
 
@@ -227,7 +227,7 @@ class CustomVarObject(ConfigObject):
     :see: `lib/icinga/customvarobject.ti L10 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/customvarobject.ti#L10>`__
     """
 
-    vars: Optional[dict[str, Any]]
+    vars: Optional[dict[str, Any]] = None
     """
     :see: `lib/icinga/customvarobject.ti L12 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/customvarobject.ti#L12>`__
     """
@@ -239,21 +239,21 @@ class Checkable(CustomVarObject):
     :see: `lib/icinga/checkable.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/checkable.ti>`__
     """
 
-    check_command: str
+    check_command: Optional[str] = None
     """
     The name of the check command.
 
     :see: `doc/09-object-types.md L717 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L717>`__
     """
 
-    max_check_attempts: int
+    max_check_attempts: Optional[int] = None
     """
     The float of times a service is re-checked before changing into a hard state. Defaults to 3.
 
     :see: `doc/09-object-types.md L718 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L718>`__
     """
 
-    check_period: str
+    check_period: Optional[str] = None
     """
     The name of a time period which determines when this service should be checked. Not set by default (effectively 24x7).
 
@@ -261,112 +261,112 @@ class Checkable(CustomVarObject):
 
     """
 
-    check_timeout: Value
+    check_timeout: Optional[Value] = None
     """
     Check command timeout in seconds. Overrides the CheckCommand's `timeout` attribute.
 
     :see: `doc/09-object-types.md L720 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L720>`__
     """
 
-    check_interval: float
+    check_interval: Optional[float] = None
     """
     The check interval (in seconds). This interval is used for checks when the service is in a `HARD` state. Defaults to `5m`.
 
     :see: `doc/09-object-types.md L721 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L721>`__
     """
 
-    retry_interval: float
+    retry_interval: Optional[float] = None
     """
     This interval is used for checks when the service is in a `SOFT` state. Defaults to `1m`. Note: This does not affect the scheduling `after a passive check result <08-advanced-topics.md#check-result-freshness>`__.
     """
 
-    event_command: str
+    event_command: Optional[str] = None
 
-    volatile: bool
+    volatile: Optional[bool] = None
 
-    enable_active_checks: bool
+    enable_active_checks: Optional[bool] = None
 
-    enable_passive_checks: bool
+    enable_passive_checks: Optional[bool] = None
 
-    enable_event_handler: bool
+    enable_event_handler: Optional[bool] = None
 
-    enable_notifications: bool
+    enable_notifications: Optional[bool] = None
 
-    enable_flapping: bool
+    enable_flapping: Optional[bool] = None
 
-    enable_perfdata: bool
+    enable_perfdata: Optional[bool] = None
 
-    flapping_ignore_states: Sequence[str]
+    flapping_ignore_states: Optional[Sequence[str]] = None
 
-    flapping_threshold: float
+    flapping_threshold: Optional[float] = None
     """
     deprecated
     """
-    flapping_threshold_low: float
+    flapping_threshold_low: Optional[float] = None
 
-    flapping_threshold_high: float
+    flapping_threshold_high: Optional[float] = None
 
-    notes: str
+    notes: Optional[str] = None
 
-    notes_url: str
+    notes_url: Optional[str] = None
 
-    action_url: str
+    action_url: Optional[str] = None
 
-    icon_image: str
+    icon_image: Optional[str] = None
 
-    icon_image_alt: str
+    icon_image_alt: Optional[str] = None
 
-    next_check: TimeStamp
+    next_check: Optional[TimeStamp] = None
 
-    check_attempt: int
+    check_attempt: Optional[int] = None
 
-    state_type: StateType
+    state_type: Optional[StateType] = None
 
-    last_state_type: StateType
+    last_state_type: Optional[StateType] = None
 
-    last_reachable: bool
+    last_reachable: Optional[bool] = None
 
-    last_check_result: CheckResult
+    last_check_result: Optional[CheckResult] = None
 
-    last_state_change: TimeStamp
+    last_state_change: Optional[TimeStamp] = None
 
-    last_hard_state_change: TimeStamp
+    last_hard_state_change: Optional[TimeStamp] = None
 
-    last_state_unreachable: TimeStamp
+    last_state_unreachable: Optional[TimeStamp] = None
 
-    previous_state_change: TimeStamp
+    previous_state_change: Optional[TimeStamp] = None
 
-    severity: int
+    severity: Optional[int] = None
 
-    problem: bool
+    problem: Optional[bool] = None
 
-    handled: bool
+    handled: Optional[bool] = None
 
-    next_update: TimeStamp
+    next_update: Optional[TimeStamp] = None
 
-    force_next_check: bool
+    force_next_check: Optional[bool] = None
 
-    acknowledgement: int
+    acknowledgement: Optional[int] = None
 
-    acknowledgement_expiry: TimeStamp
+    acknowledgement_expiry: Optional[TimeStamp] = None
 
-    acknowledgement_last_change: TimeStamp
+    acknowledgement_last_change: Optional[TimeStamp] = None
 
-    force_next_notification: bool
+    force_next_notification: Optional[bool] = None
 
-    last_check: TimeStamp
+    last_check: Optional[TimeStamp] = None
 
-    downtime_depth: int
+    downtime_depth: Optional[int] = None
 
-    flapping_current: float
+    flapping_current: Optional[float] = None
 
-    flapping_last_change: TimeStamp
+    flapping_last_change: Optional[TimeStamp] = None
 
-    flapping: bool
+    flapping: Optional[bool] = None
 
-    command_endpoint: str
+    command_endpoint: Optional[str] = None
 
-    executions: Dictionary
+    executions: Optional[Dictionary] = None
 
 
 @dataclass
@@ -1092,9 +1092,9 @@ class TimePeriod(CustomVarObject):
     https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L11-L39
     """
 
-    display_name: str
+    display_name: Optional[str] = None
 
-    ranges: dict[str, str]
+    ranges: Optional[dict[str, str]] = None
 
 
 # [config, required] Function::Ptr update;
