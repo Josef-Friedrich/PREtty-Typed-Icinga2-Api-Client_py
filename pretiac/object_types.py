@@ -3,6 +3,7 @@ Listed in the order as in this `Markdown document <https://github.com/Icinga/ici
 """
 
 from collections.abc import Sequence
+from dataclasses import dataclass
 from enum import Enum
 from typing import (
     Any,
@@ -95,13 +96,14 @@ https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 #  **************************************************************************/
 
 
+@dataclass
 class SourceLocation:
     first_column: int
     first_line: int
     last_column: int
     last_line: int
 
-    path: int
+    path: str
     """
     ``/etc/icinga2-custom/conf.d/api-users.conf``
     """
@@ -123,6 +125,7 @@ class StateType(Enum):
     StateTypeHard = 1
 
 
+@dataclass
 class Dictionary:
     pass
 
@@ -133,6 +136,7 @@ for example `1699475880.364077`
 """
 
 
+@dataclass
 class Value:
     pass
 
@@ -165,6 +169,7 @@ class HostState(Enum):
 State = HostState | ServiceState | Literal[0, 1, 2, 3] | int
 
 
+@dataclass
 class CheckResult:
     pass
 
@@ -174,6 +179,7 @@ class CheckResult:
 #  **************************************************************************/
 
 
+@dataclass
 class ConfigObject:
     """
     :see: `lib/base/configobject.ti L57-L92 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L57-L92>`__
@@ -182,6 +188,7 @@ class ConfigObject:
     __name: str
     """:see: `lib/base/configobject.ti L59-L68 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L59-L68>`__"""
 
+    type: Optional[str]
     zone: str
     """:see: `lib/base/configobject.ti L69 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L69>`__"""
 
@@ -207,24 +214,26 @@ class ConfigObject:
     ha_mode: HAMode
     """:see: `lib/base/configobject.ti L83 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L83>`__"""
 
-    original_attributes: dict[str, Any]
+    original_attributes: Optional[dict[str, Any]]
     """:see: `lib/base/configobject.ti L87 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L87>`__"""
 
     version: float
     """:see: `lib/base/configobject.ti L88-L90 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L88-L90>`__"""
 
 
+@dataclass
 class CustomVarObject(ConfigObject):
     """
     :see: `lib/icinga/customvarobject.ti L10 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/customvarobject.ti#L10>`__
     """
 
-    vars: dict[str, Any]
+    vars: Optional[dict[str, Any]]
     """
     :see: `lib/icinga/customvarobject.ti L12 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/customvarobject.ti#L12>`__
     """
 
 
+@dataclass
 class Checkable(CustomVarObject):
     """
     :see: `lib/icinga/checkable.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/checkable.ti>`__
@@ -360,6 +369,7 @@ class Checkable(CustomVarObject):
     executions: Dictionary
 
 
+@dataclass
 class CheckableWithRelations:
     pass
 
@@ -401,6 +411,7 @@ class CheckableWithRelations:
 #  * :see: `lib/remote/apiuser.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti>`__
 #  * :see: `doc/09-object-types.md L41-L63 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L41-L63>`__
 #  */
+@dataclass
 class ApiUser(ConfigObject):
     pass
 
@@ -478,6 +489,7 @@ class ApiUser(ConfigObject):
 #  * :see: `doc/09-object-types.md L65-L114 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L65-L114>`__
 #  * :see: `lib/icinga/command.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti>`__
 #  */
+@dataclass
 class CheckCommand:
     pass
 
@@ -505,6 +517,7 @@ class CheckCommand:
 #  * :see: `doc/09-object-types.md L117-L150 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L117-L150>`__
 #  * :see: `lib/icinga/command.ti L30-L46 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L30-L46>`__
 #  */
+@dataclass
 class CheckCommandArguments:
     pass
 
@@ -557,6 +570,7 @@ class CheckCommandArguments:
 #  *
 #  * :see: `doc/09-object-types.md L153-L258 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L153-L258>`__
 #  */
+@dataclass
 class Dependency:
     pass
 
@@ -590,6 +604,7 @@ class Dependency:
 #  *
 #  * :see: `doc/09-object-types.md L260-L293 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L260-L293>`__
 #  */
+@dataclass
 class Endpoint:
     pass
 
@@ -610,6 +625,7 @@ class Endpoint:
 #  *
 #  * :see: `doc/09-object-types.md L295-L320 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L295-L320>`__
 #  */
+@dataclass
 class EventCommand:
     pass
 
@@ -637,6 +653,7 @@ class EventCommand:
 #  * :see: `doc/09-object-types.md L323-L413 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L323-L413>`__
 #  * :see: `lib/icinga/host.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti>`__
 #  */
+@dataclass
 class Host(Checkable):
     pass
 
@@ -728,6 +745,7 @@ class Host(Checkable):
 #  *
 #  * :see: `doc/09-object-types.md L417-L440 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L417-L440>`__
 #  */
+@dataclass
 class HostGroup:
     pass
 
@@ -765,6 +783,7 @@ class HostGroup:
 #  *
 #  * :see: `doc/09-object-types.md L444-L527 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L444-L527>`__
 #  */
+@dataclass
 class Notification:
     pass
 
@@ -853,6 +872,7 @@ class Notification:
 #  *
 #  * :see: `doc/09-object-types.md L530-L622 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L530-L622>`__
 #  */
+@dataclass
 class NotificationCommand:
     pass
 
@@ -892,6 +912,7 @@ class NotificationCommand:
 #  *
 #  * :see: `doc/09-object-types.md L624-L674 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L624-L674>`__
 #  */
+@dataclass
 class ScheduledDowntime:
     pass
 
@@ -933,6 +954,7 @@ class ScheduledDowntime:
 #  * :see: `lib/icinga/service.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/service.ti>`__
 #  * :see: `doc/09-object-types.md L677-L781 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L677-L781>`__
 #  */
+@dataclass
 class Service(Checkable):
     pass
 
@@ -1014,10 +1036,12 @@ class Service(Checkable):
 #  *
 #  * :see: `doc/09-object-types.md L784-L805 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L784-L805>`__
 #  */
+@dataclass
 class ServiceGroup:
     pass
 
 
+@dataclass
 class TimePeriod(CustomVarObject):
     """
     Time periods can be used to specify when hosts/services should be checked or to limit
@@ -1143,6 +1167,7 @@ class TimePeriod(CustomVarObject):
 #  * :see: `lib/icinga/user.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti>`__
 #  * :see: `doc/09-object-types.md L872-L937 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L872-L937>`__
 #  */
+@dataclass
 class User(CustomVarObject):
     pass
 
@@ -1241,6 +1266,7 @@ class User(CustomVarObject):
 #  *
 #  * :see: `doc/09-object-types.md L939-L960 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L939-L960>`__
 #  */
+@dataclass
 class UserGroup:
     pass
 
@@ -1267,6 +1293,7 @@ class UserGroup:
 #  *
 #  * :see: `doc/09-object-types.md L963-L989 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L963-L989>`__
 #  */
+@dataclass
 class Zone:
     pass
 
@@ -1280,6 +1307,7 @@ class Zone:
 #  * @category Object type
 #  * @category Runtime object type
 #  */
+@dataclass
 class Comment:
     pass
 
@@ -1288,6 +1316,7 @@ class Comment:
 #  * @category Object type
 #  * @category Runtime object type
 #  */
+@dataclass
 class Downtime:
     pass
 
@@ -1301,6 +1330,7 @@ class Downtime:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class ApiListener:
     pass
 
@@ -1309,6 +1339,7 @@ class ApiListener:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class CheckerComponent:
     pass
 
@@ -1317,6 +1348,7 @@ class CheckerComponent:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class CompatLogger:
     pass
 
@@ -1325,6 +1357,7 @@ class CompatLogger:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class ElasticsearchWriter:
     pass
 
@@ -1333,6 +1366,7 @@ class ElasticsearchWriter:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class ExternalCommandListener:
     pass
 
@@ -1341,6 +1375,7 @@ class ExternalCommandListener:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class FileLogger:
     pass
 
@@ -1349,6 +1384,7 @@ class FileLogger:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class GelfWriter:
     pass
 
@@ -1357,6 +1393,7 @@ class GelfWriter:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class GraphiteWriter:
     pass
 
@@ -1365,6 +1402,7 @@ class GraphiteWriter:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class IcingaApplication:
     pass
 
@@ -1373,6 +1411,7 @@ class IcingaApplication:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class IcingaDB:
     pass
 
@@ -1381,6 +1420,7 @@ class IcingaDB:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class IdoMySqlConnection:
     pass
 
@@ -1389,6 +1429,7 @@ class IdoMySqlConnection:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class IdoPgsqlConnection:
     pass
 
@@ -1397,6 +1438,7 @@ class IdoPgsqlConnection:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class InfluxdbWriter:
     pass
 
@@ -1405,6 +1447,7 @@ class InfluxdbWriter:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class Influxdb2Writer:
     pass
 
@@ -1413,6 +1456,7 @@ class Influxdb2Writer:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class JournaldLogger:
     pass
 
@@ -1421,6 +1465,7 @@ class JournaldLogger:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class LiveStatusListener:
     pass
 
@@ -1429,6 +1474,7 @@ class LiveStatusListener:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class NotificationComponent:
     pass
 
@@ -1437,6 +1483,7 @@ class NotificationComponent:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class OpenTsdbWriter:
     pass
 
@@ -1445,6 +1492,7 @@ class OpenTsdbWriter:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class PerfdataWriter:
     pass
 
@@ -1453,6 +1501,7 @@ class PerfdataWriter:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class SyslogLogger:
     pass
 
@@ -1461,6 +1510,7 @@ class SyslogLogger:
 #  * @category Object type
 #  * @category Feature object type
 #  */
+@dataclass
 class WindowsEventLogLogger:
     pass
 

@@ -1,11 +1,14 @@
 """Test the functions from the root ``__init__.py``."""
 
+import pytest
+
 from pretiac import (
     CheckError,
     CheckResult,
     create_host,
     create_service,
     get_client,
+    get_time_periods,
     send_service_check_result,
     send_service_check_result_safe,
 )
@@ -74,3 +77,10 @@ def test_send_service_check_result_safe(client: Client) -> None:
 
     client.objects.delete("Service", "NewHost!NewService", suppress_exception=True)
     client.objects.delete("Host", "NewHost", suppress_exception=True)
+
+
+@pytest.mark.skip
+def test_get_time_periods():
+    results = get_time_periods()
+
+    assert results == ""

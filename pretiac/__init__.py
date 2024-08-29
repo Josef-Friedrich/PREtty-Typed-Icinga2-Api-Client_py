@@ -34,11 +34,12 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 
 from pretiac.base import Payload, State
 from pretiac.client import Client
 from pretiac.config import ObjectConfig
+from pretiac.object_types import TimePeriod
 
 __client: Optional[Client] = None
 
@@ -311,3 +312,18 @@ def send_service_check_result_safe(
         ttl=ttl,
         suppress_exception=True,
     )
+
+
+def get_time_periods() -> Sequence[TimePeriod]:
+    client = get_client()
+    results = client.objects.list("TimePeriod")
+
+    time_period_adapter = TypeAdapter(TimePeriod)
+
+    time_periods: list[TimePeriod] = []
+
+    for result in results:
+        attrs = result["attrs"]
+        time_periods.append(time_period_adapter.validate_python(attrs))
+
+    return time_periods
