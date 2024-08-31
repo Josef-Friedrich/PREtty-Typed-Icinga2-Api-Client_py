@@ -6,6 +6,7 @@ from pretiac import (
     create_host,
     create_service,
     get_client,
+    get_services,
     get_time_periods,
     send_service_check_result,
     send_service_check_result_safe,
@@ -75,6 +76,11 @@ def test_send_service_check_result_safe(client: Client) -> None:
 
     client.objects.delete("Service", "NewHost!NewService", suppress_exception=True)
     client.objects.delete("Host", "NewHost", suppress_exception=True)
+
+
+def test_get_services():
+    results = get_services()
+    assert isinstance(results[0].name, str)
 
 
 def test_get_time_periods():

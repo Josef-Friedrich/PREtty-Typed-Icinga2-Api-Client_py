@@ -13,6 +13,7 @@ Welcome to pretiac's documentation!
 .. automodule:: pretiac.config
 .. automodule:: pretiac.events
 .. automodule:: pretiac.exceptions
+.. automodule:: pretiac.object_types
 .. automodule:: pretiac.objects
 .. automodule:: pretiac.status
 .. automodule:: pretiac.templates

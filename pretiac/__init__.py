@@ -32,14 +32,14 @@ pretiac is a `Python <http://www.python.org>`_ module to interact with the
 
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, TypeAdapter
 
 from pretiac.base import Payload, State
 from pretiac.client import Client
 from pretiac.config import ObjectConfig
-from pretiac.object_types import TimePeriod
+from pretiac.object_types import ObjectTypeName, Service, TimePeriod
 
 __client: Optional[Client] = None
 
@@ -314,19 +314,23 @@ def send_service_check_result_safe(
     )
 
 
-def get_time_periods() -> Sequence[TimePeriod]:
+def _get_objects(object_type_name: ObjectTypeName, type: Any) -> Sequence[Any]:
     client = get_client()
-    results = client.objects.list("TimePeriod")
-
-    time_period_adapter = TypeAdapter(TimePeriod)
-
-    time_periods: list[TimePeriod] = []
-
+    results = client.objects.list(object_type_name)
+    adapter = TypeAdapter(type)
+    objects: list[type] = []
     for result in results:
         attrs = result["attrs"]
         if "__name" in attrs:
             attrs["name"] = attrs["__name"]
             del attrs["__name"]
-        time_periods.append(time_period_adapter.validate_python(attrs))
+        objects.append(adapter.validate_python(attrs))
+    return objects
 
-    return time_periods
+
+def get_services() -> Sequence[Service]:
+    return _get_objects("Service", Service)
+
+
+def get_time_periods() -> Sequence[TimePeriod]:
+    return _get_objects("TimePeriod", TimePeriod)

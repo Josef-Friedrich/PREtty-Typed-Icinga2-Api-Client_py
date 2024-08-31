@@ -917,103 +917,96 @@ class ScheduledDowntime:
     pass
 
 
-# /**
-#  * Service objects describe network services and how they should be checked
-#  * by Icinga 2.
-#  *
-#  * > **Best Practice**
-#  * >
-#  * > Rather than creating a `Service` object for a specific host it is usually easier
-#  * > to just create a `Service` template and use the `apply` keyword to assign the
-#  * > service to a float of hosts.
-#  * > Check the `apply <03-monitoring-basics.md#using-apply>`__ chapter for details.
-#  *
-#  * Example:
-#  *
-#  * ```
-#  * object Service "uptime" {
-#  *   host_name = "localhost"
-#  *
-#  *   display_name = "localhost Uptime"
-#  *
-#  *   check_command = "snmp"
-#  *
-#  *   vars.snmp_community = "public"
-#  *   vars.snmp_oid = "DISMAN-EVENT-MIB::sysUpTimeInstance"
-#  *
-#  *   check_interval = 60s
-#  *   retry_interval = 15s
-#  *
-#  *   groups = [ "all-services", "snmp" ]
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `lib/icinga/service.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/service.ti>`__
-#  * :see: `doc/09-object-types.md L677-L781 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L677-L781>`__
-#  */
 @dataclass
 class Service(Checkable):
-    pass
+    """
+    Service objects describe network services and how they should be checked
+    by Icinga 2.
+
+    **Best Practice**
+
+    Rather than creating a ``Service`` object for a specific host it is usually easier
+    to just create a ``Service`` template and use the ``apply`` keyword to assign the
+    service to a float of hosts.
+    Check the `apply <03-monitoring-basics.md#using-apply>`__ chapter for details.
+
+    Example:
+
+    .. code-block:
 
 
-#   /**
-#    * The service groups this service belongs to.
-#    */
-#   groups: str
+        object Service "uptime" {
+            host_name = "localhost"
 
-#   /**
-#    * A short description of the service.
-#    */
-#   display_name: str
+            display_name = "localhost Uptime"
 
-#   /**
-#    * The host this service belongs to. There must be a `Host` object with that name.
-#    */
-#   host_name: str
+            check_command = "snmp"
 
-#   /**
-#    * @group navigation
-#    */
-#   host?: Host
+            vars.snmp_community = "public"
+            vars.snmp_oid = "DISMAN-EVENT-MIB::sysUpTimeInstance"
 
-#   /**
-#    * The current state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
-#    */
-#   state: ServiceState
+            check_interval = 60s
+            retry_interval = 15s
 
-#   /**
-#    * The previous state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
-#    */
-#   last_state: ServiceState
+            groups = [ "all-services", "snmp" ]
+        }
 
-#   /**
-#    * The last hard state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
-#    */
-#   last_hard_state: ServiceState
 
-#   /**
-#    * When the last OK state occurred (as a UNIX timestamp).
-#    */
-#   last_state_ok: TimeStamp
+    :see: `lib/icinga/service.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/service.ti>`__
+    :see: `doc/09-object-types.md L677-L781 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L677-L781>`__
+    """
 
-#   /**
-#    * When the last WARNING state occurred (as a UNIX timestamp).
-#    */
-#   last_state_warning: TimeStamp
+    groups: Optional[Sequence[str]] = None
+    """
+    The service groups this service belongs to.
+    """
 
-#   /**
-#    * When the last CRITICAL state occurred (as a UNIX timestamp).
-#    */
-#   last_state_critical: TimeStamp
+    display_name: Optional[str] = None
+    """
+    A short description of the service.
+    """
 
-#   /**
-#    * When the last UNKNOWN state occurred (as a UNIX timestamp).
-#    */
-#   last_state_unknown: TimeStamp
-# }
+    host_name: Optional[str] = None
+    """
+    The host this service belongs to. There must be a `Host` object with that name.
+    """
+
+    host: Optional[Host] = None
+
+    state: Optional[ServiceState] = None
+    """
+    The current state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
+    """
+
+    last_state: Optional[ServiceState] = None
+    """
+    The previous state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
+    """
+
+    last_hard_state: Optional[ServiceState] = None
+    """
+    The last hard state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
+    """
+
+    last_state_ok: Optional[TimeStamp] = None
+    """
+    When the last OK state occurred (as a UNIX timestamp).
+    """
+
+    last_state_warning: Optional[TimeStamp] = None
+    """
+    When the last WARNING state occurred (as a UNIX timestamp).
+    """
+
+    last_state_critical: Optional[TimeStamp] = None
+    """
+    When the last CRITICAL state occurred (as a UNIX timestamp).
+    """
+
+    last_state_unknown: Optional[TimeStamp] = None
+    """
+    When the last UNKNOWN state occurred (as a UNIX timestamp).
+    """
 
 
 # /**
@@ -1087,32 +1080,35 @@ class TimePeriod(CustomVarObject):
 
     Additional examples can be found `here <08-advanced-topics.md#timeperiods>`__.
 
-    :see: `doc/09-object-types.md L809-L869 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L809-L869>`__
+    :see: `doc/09-object-types.md L809-L869 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/doc/09-object-types.md?plain=1#L807-L867>`__
 
     https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L11-L39
     """
 
     display_name: Optional[str] = None
+    """
+    A short description of the time period.
+    """
 
     ranges: Optional[dict[str, str]] = None
+    """
+    A dictionary containing information which days and durations apply to this timeperiod.
+    """
 
+    prefer_includes: Optional[bool] = None
+    """
+    Whether to prefer timeperiods ``includes`` or ``excludes``. Default to true.
+    """
 
-# [config, required] Function::Ptr update;
-# [config] bool prefer_includes {
-# 	default {{{ return true; }}}
-# };
-# [config, required, signal_with_old_value] array(name(TimePeriod)) excludes {
-# 	default {{{ return new Array(); }}}
-# };
-# [config, required, signal_with_old_value] array(name(TimePeriod)) includes {
-# 	default {{{ return new Array(); }}}
-# };
-# [state, no_user_modify] Value valid_begin;
-# [state, no_user_modify] Value valid_end;
-# [state, no_user_modify] Array::Ptr segments;
-# [no_storage] bool is_inside {
-# 	get;
-# };
+    excludes: Optional[Sequence[str]] = None
+    """
+    An array of timeperiods, which should exclude from your timerange.
+    """
+
+    includes: Optional[Sequence[str]] = None
+    """
+    An array of timeperiods, which should include into your timerange.
+    """
 
 
 # /**
