@@ -39,7 +39,7 @@ from pydantic import BaseModel, TypeAdapter
 from pretiac.base import Payload, State
 from pretiac.client import Client
 from pretiac.config import ObjectConfig
-from pretiac.object_types import ObjectTypeName, Service, TimePeriod
+from pretiac.object_types import Service, TimePeriod, User
 
 __client: Optional[Client] = None
 
@@ -314,9 +314,9 @@ def send_service_check_result_safe(
     )
 
 
-def _get_objects(object_type_name: ObjectTypeName, type: Any) -> Sequence[Any]:
+def _get_objects(type: Any) -> Sequence[Any]:
     client = get_client()
-    results = client.objects.list(object_type_name)
+    results = client.objects.list(type.__name__)
     adapter = TypeAdapter(type)
     objects: list[type] = []
     for result in results:
@@ -329,8 +329,12 @@ def _get_objects(object_type_name: ObjectTypeName, type: Any) -> Sequence[Any]:
 
 
 def get_services() -> Sequence[Service]:
-    return _get_objects("Service", Service)
+    return _get_objects(Service)
 
 
 def get_time_periods() -> Sequence[TimePeriod]:
-    return _get_objects("TimePeriod", TimePeriod)
+    return _get_objects(TimePeriod)
+
+
+def get_users() -> Sequence[User]:
+    return _get_objects(User)

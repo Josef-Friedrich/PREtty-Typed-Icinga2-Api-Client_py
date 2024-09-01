@@ -1111,135 +1111,141 @@ class TimePeriod(CustomVarObject):
     """
 
 
-# /**
-#  * A user.
-#  *
-#  * Example:
-#  *
-#  * ```
-#  * object User "icingaadmin" {
-#  *   display_name = "Icinga 2 Admin"
-#  *   groups = [ "icingaadmins" ]
-#  *   email = "icinga@localhost"
-#  *   pager = "icingaadmin@localhost.localdomain"
-#  *
-#  *   period = "24x7"
-#  *
-#  *   states = [ OK, Warning, Critical, Unknown ]
-#  *   types = [ Problem, Recovery ]
-#  *
-#  *   vars.additional_notes = "This is the Icinga 2 Admin account."
-#  * }
-#  * ```
-#  *
-#  * Available notification state filters:
-#  *
-#  * ```
-#  * OK
-#  * Warning
-#  * Critical
-#  * Unknown
-#  * Up
-#  * Down
-#  * ```
-#  *
-#  * Available notification type filters:
-#  *
-#  * ```
-#  * DowntimeStart
-#  * DowntimeEnd
-#  * DowntimeRemoved
-#  * Custom
-#  * Acknowledgement
-#  * Problem
-#  * Recovery
-#  * FlappingStart
-#  * FlappingEnd
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `lib/icinga/user.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti>`__
-#  * :see: `doc/09-object-types.md L872-L937 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L872-L937>`__
-#  */
 @dataclass
 class User(CustomVarObject):
-    pass
+    """
+
+    A user.
+
+    Example:
+
+    .. code-block:
+
+        object User "icingaadmin" {
+            display_name = "Icinga 2 Admin"
+            groups = [ "icingaadmins" ]
+            email = "icinga@localhost"
+            pager = "icingaadmin@localhost.localdomain"
+
+            period = "24x7"
+
+            states = [ OK, Warning, Critical, Unknown ]
+            types = [ Problem, Recovery ]
+
+            vars.additional_notes = "This is the Icinga 2 Admin account."
+        }
 
 
-#   /**
-#    * A short description of the user.
-#    *
-#    * :see: `lib/icinga/user.ti L14-L22 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L14-L22>`__
-#    * :see: `doc/09-object-types.md L923 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L923>`__
-#    */
-#   display_name: str
+    Available notification state filters:
 
-#   /**
-#    * An array of group names.
-#    *
-#    * :see: `lib/icinga/user.ti L23-L25 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L23-L25>`__
-#    * :see: `doc/09-object-types.md L927 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L927>`__
-#    */
-#   groups: str[]
+    .. code-block:
 
-#   /**
-#    * The name of a time period which determines when a notification for this user should be triggered. Not set by default (effectively 24x7).
-#    *
-#    * :see: `lib/icinga/user.ti L26-L30 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L26-L30>`__
-#    * :see: `doc/09-object-types.md L929 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L929>`__
-#    */
-#   period: str
+        OK
+        Warning
+        Critical
+        Unknown
+        Up
+        Down
 
-#   /**
-#    * A set of type filters when a notification for this user should be triggered. By default everything is matched.
-#    *
-#    * :see: `lib/icinga/user.ti L32 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L32>`__
-#    * :see: `doc/09-object-types.md L930 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L930>`__
-#    */
-#   types: str[]
 
-#   /**
-#    * A set of state filters when a notification for this should be triggered. By default everything is matched.
-#    *
-#    * :see: `lib/icinga/user.ti L34 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L34>`__
-#    * :see: `doc/09-object-types.md L931 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L931>`__
-#    */
-#   states: str[]
+    Available notification type filters:
 
-#   /**
-#    * An email str for this user. Useful for notification commands.
-#    *
-#    * :see: `lib/icinga/user.ti L37 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L37>`__
-#    * :see: `doc/09-object-types.md L924 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L924>`__
-#    */
-#   email: str
+    .. code-block:
 
-#   /**
-#    * A pager str for this user. Useful for notification commands.
-#    *
-#    * :see: `lib/icinga/user.ti L38 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L38>`__
-#    * :see: `doc/09-object-types.md L925 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L925>`__
-#    */
-#   pager: str
+        DowntimeStart
+        DowntimeEnd
+        DowntimeRemoved
+        Custom
+        Acknowledgement
+        Problem
+        Recovery
+        FlappingStart
+        FlappingEnd
 
-#   /**
-#    * Whether notifications are enabled for this user. Defaults to true.
-#    *
-#    * :see: `lib/icinga/user.ti L40-L42 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L40-L42>`__
-#    * :see: `doc/09-object-types.md L928 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L928>`__
-#    */
-#   enable_notifications: bool
+    :see: `lib/icinga/user.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti>`__
+    :see: `doc/09-object-types.md L872-L937 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L872-L937>`__
+    """
 
-#   /**
-#    * When the last notification was sent for this user (as a UNIX timestamp).
-#    *
-#    * :see: `lib/icinga/user.ti L44 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L44>`__
-#    * :see: `doc/09-object-types.md L937 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L937>`__
-#    */
-#   last_notification: float
-# }
+    display_name: Optional[str] = None
+    """
+    A short description of the user.
+
+    :see: `lib/icinga/user.ti L14-L22 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L14-L22>`__
+    :see: `doc/09-object-types.md L923 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L923>`__
+
+    """
+
+    groups: Optional[Sequence[str]] = None
+    """
+    An array of group names.
+
+    :see: `lib/icinga/user.ti L23-L25 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L23-L25>`__
+    :see: `doc/09-object-types.md L927 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L927>`__
+
+    """
+
+    period: Optional[str] = None
+    """
+    The name of a time period which determines when a notification for this user should be triggered. Not set by default (effectively 24x7).
+
+    :see: `lib/icinga/user.ti L26-L30 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L26-L30>`__
+    :see: `doc/09-object-types.md L929 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L929>`__
+
+    """
+
+    types: Optional[Sequence[str]] = None
+    """
+    A set of type filters when a notification for this user should be triggered. By default everything is matched.
+
+    :see: `lib/icinga/user.ti L32 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L32>`__
+    :see: `doc/09-object-types.md L930 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L930>`__
+
+    """
+
+    states: Optional[Sequence[str]] = None
+    """
+    A set of state filters when a notification for this should be triggered. By default everything is matched.
+
+    :see: `lib/icinga/user.ti L34 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L34>`__
+    :see: `doc/09-object-types.md L931 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L931>`__
+
+    """
+
+    email: Optional[str] = None
+    """
+    An email string for this user. Useful for notification commands.
+
+    :see: `lib/icinga/user.ti L37 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L37>`__
+    :see: `doc/09-object-types.md L924 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L924>`__
+
+    """
+
+    pager: Optional[str] = None
+    """
+    A pager str for this user. Useful for notification commands.
+
+    :see: `lib/icinga/user.ti L38 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L38>`__
+    :see: `doc/09-object-types.md L925 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L925>`__
+
+    """
+
+    enable_notifications: Optional[bool] = None
+    """
+    Whether notifications are enabled for this user. Defaults to true.
+
+    :see: `lib/icinga/user.ti L40-L42 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L40-L42>`__
+    :see: `doc/09-object-types.md L928 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L928>`__
+
+    """
+
+    last_notification: Optional[float] = None
+    """
+    When the last notification was sent for this user (as a UNIX timestamp).
+
+    :see: `lib/icinga/user.ti L44 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti#L44>`__
+    :see: `doc/09-object-types.md L937 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L937>`__
+
+    """
 
 
 # /**
