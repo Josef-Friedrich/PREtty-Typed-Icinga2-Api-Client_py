@@ -136,9 +136,12 @@ for example `1699475880.364077`
 """
 
 
-@dataclass
-class Value:
-    pass
+Value = int | float | str | bool | Any
+"""
+A type that can hold an arbitrary value.
+
+`lib/base/value.hpp L31-L145 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/base/value.hpp#L31-L145>`_
+"""
 
 
 class ServiceState(Enum):

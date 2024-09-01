@@ -28,20 +28,19 @@
 """
 Retrieve status information and statistics for Icinga 2.
 
-https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#status-and-statistics
+:see: `doc/12-icinga2-api/#status-and-statistics <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#status-and-statistics>`__
 """
 
 from __future__ import print_function
 
-import logging
+from collections.abc import Sequence
+from dataclasses import dataclass
 from typing import Any, Literal, Optional
 
 from pretiac.base import Base
+from pretiac.object_types import Value
 
-LOG = logging.getLogger(__name__)
-
-
-Component = Literal[
+StatusType = Literal[
     "ApiListener",
     "CIB",
     "CheckerComponent",
@@ -65,34 +64,65 @@ Component = Literal[
 class Status(Base):
     """
     Icinga 2 API status class
+
+    :see: `lib/remote/statushandler.cpp <https://github.com/Icinga/icinga2/blob/master/lib/remote/statushandler.cpp>`_:
     """
 
     base_url_path = "v1/status"
 
-    def list(self, component: Optional[Component | str] = None) -> Any:
+    def list(self, status_type: Optional[StatusType | str] = None) -> Any:
         """
-        Retrieve status information and statistics for Icinga 2
+        Retrieve status information and statistics for Icinga 2.
 
         Example 1:
 
         .. code-block:: python
 
-            list()
+            client.status.list()
 
         Example 2:
 
         .. code-block:: python
 
-            list("IcingaApplication")
+            client.status.list("IcingaApplication")
 
-        :param component: only list the status of this component
+        :param status_type: Limit the output by specifying a status type, e.g. ``IcingaApplication``.
 
         :returns: status information
-        :rtype: dictionary
         """
 
-        url = self.base_url
-        if component:
-            url += f"/{component}"
+        url: str = self.base_url
+        if status_type:
+            url += f"/{status_type}"
 
         return self._request("GET", url)
+
+
+@dataclass
+class PerfdataValue:
+    """
+    `lib/base/perfdatavalue.ti L8-L18 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/base/perfdatavalue.ti#L8-L18>`_
+    `lib/base/perfdatavalue.hpp L17-L36 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/base/perfdatavalue.hpp#L17-L36>`__
+    """
+
+    label: str
+    value: float
+    counter: bool
+    unit: str
+    crit: Optional[Value] = None
+    warn: Optional[Value] = None
+    min: Optional[Value] = None
+    max: Optional[Value] = None
+
+
+@dataclass
+class StatusMessage:
+    """
+    :see: `lib/remote/statushandler.cpp L53-L57 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/remote/statushandler.cpp#L53-L57>`_
+    """
+
+    name: str
+
+    status: dict[str, Any]
+
+    perfdata: Optional[Sequence[PerfdataValue]]

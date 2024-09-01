@@ -40,6 +40,7 @@ from pretiac.base import Payload, State
 from pretiac.client import Client
 from pretiac.config import ObjectConfig
 from pretiac.object_types import Service, TimePeriod, User
+from pretiac.status import StatusMessage
 
 __client: Optional[Client] = None
 
@@ -338,3 +339,10 @@ def get_time_periods() -> Sequence[TimePeriod]:
 
 def get_users() -> Sequence[User]:
     return _get_objects(User)
+
+
+def get_status() -> Sequence[StatusMessage]:
+    client = get_client()
+    result = client.status.list()
+    adapter = TypeAdapter(list[StatusMessage], config={"arbitrary_types_allowed": True})
+    return adapter.validate_python(result["results"])
