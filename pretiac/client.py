@@ -32,8 +32,6 @@ The Icinga 2 API allows you to manage configuration objects and resources in a s
 programmatic way using HTTP requests.
 """
 
-from __future__ import print_function
-
 from importlib.metadata import version as get_version
 from pathlib import Path
 from typing import Optional

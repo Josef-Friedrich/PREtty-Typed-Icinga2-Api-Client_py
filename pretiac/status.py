@@ -31,8 +31,6 @@ Retrieve status information and statistics for Icinga 2.
 :see: `doc/12-icinga2-api/#status-and-statistics <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#status-and-statistics>`__
 """
 
-from __future__ import print_function
-
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, Optional

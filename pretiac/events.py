@@ -29,17 +29,11 @@
 Icinga 2 API events
 """
 
-from __future__ import print_function
-
-import logging
 from collections.abc import Sequence
 from typing import Any, Generator, Literal, Optional
 
 from pretiac.base import Base
 from pretiac.object_types import FilterVars, Payload
-
-LOG = logging.getLogger(__name__)
-
 
 EventStreamType = Literal[
     "CheckResult",  # Check results for hosts and services.

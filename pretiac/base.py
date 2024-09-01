@@ -29,8 +29,6 @@
 Icinga 2 API client base
 """
 
-import logging
-from logging import Logger
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -54,8 +52,6 @@ from pretiac.object_types import (
 
 if TYPE_CHECKING:
     from pretiac.client import Client
-
-LOG: Logger = logging.getLogger(__name__)
 
 
 def normalize_state(state: State | Any) -> int:
@@ -154,7 +150,6 @@ class Base:
         """
 
         request_url = urljoin(self.client.url, url_path)
-        LOG.debug("Request URL: %s", request_url)
 
         # create session
         session = self._create_session(method)

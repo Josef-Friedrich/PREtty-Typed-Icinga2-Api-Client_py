@@ -25,9 +25,6 @@
 # @contact: christian@jonak.org, fmnisme@gmail.com, tobias@vonderkrone.info
 # @summary: Python library for the Icinga 2 RESTful API
 
-from __future__ import print_function
-
-import logging
 from dataclasses import dataclass
 from typing import Optional
 
@@ -42,8 +39,6 @@ from pretiac.object_types import (
     FilterVars,
     HostOrService,
 )
-
-LOG = logging.getLogger(__name__)
 
 
 @dataclass

@@ -29,9 +29,6 @@
 Icinga 2 API objects
 """
 
-from __future__ import print_function
-
-import logging
 import urllib
 import urllib.parse
 from collections.abc import Sequence
@@ -40,8 +37,6 @@ from typing import Any, Optional, Union
 from pretiac.base import Base
 from pretiac.exceptions import PretiacException
 from pretiac.object_types import FilterVars, ObjectTypeName, Payload
-
-LOG = logging.getLogger(__name__)
 
 
 def _normalize_name(name: str) -> str:
