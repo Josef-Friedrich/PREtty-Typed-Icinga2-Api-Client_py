@@ -307,14 +307,19 @@ class Checkable(CustomVarObject):
     flapping_threshold_high: Optional[float] = None
 
     notes: Optional[str] = None
+    """ **Optional.** Notes for the checkable."""
 
     notes_url: Optional[str] = None
+    """**Optional.** URL for notes for the checkable (for example, in notification commands)."""
 
     action_url: Optional[str] = None
+    """**Optional.** URL for actions for the checkable (for example, an external graphing tool)."""
 
     icon_image: Optional[str] = None
+    """**Optional.** Icon image for the checkable. Used by external interfaces only."""
 
     icon_image_alt: Optional[str] = None
+    """**Optional.** Icon image description for the checkable. Used by external interface only."""
 
     next_check: Optional[TimeStamp] = None
 
