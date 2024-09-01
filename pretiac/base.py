@@ -100,15 +100,21 @@ class Base:
 
         session = requests.Session()
         # prefer certificate authentification
-        if self.config.certificate and self.config.key:
+        if self.config.client_certificate and self.config.client_private_key:
             # certificate and key are in different files
-            session.cert = (self.config.certificate, self.config.key)
-        elif self.config.certificate:
+            session.cert = (
+                self.config.client_certificate,
+                self.config.client_private_key,
+            )
+        elif self.config.client_certificate:
             # certificate and key are in the same file
-            session.cert = self.config.certificate
-        elif self.config.api_user and self.config.password:
+            session.cert = self.config.client_certificate
+        elif self.config.http_basic_username and self.config.http_basic_password:
             # use username and password
-            session.auth = (self.config.api_user, self.config.password)
+            session.auth = (
+                self.config.http_basic_username,
+                self.config.http_basic_password,
+            )
         session.headers = {
             "User-Agent": "Python-pretiac/{0}".format(self.client.version),
             "X-HTTP-Method-Override": method.upper(),

@@ -129,30 +129,30 @@ class Client:
         self.config = config
 
         if domain is not None:
-            config.domain = domain
+            config.api_endpoint_host = domain
 
-        if config.domain is None:
+        if config.api_endpoint_host is None:
             raise PretiacException("no domain")
 
         if port is not None:
-            config.port = port
+            config.api_endpoint_port = port
 
-        if config.port is None:
-            config.port = 5665
+        if config.api_endpoint_port is None:
+            config.api_endpoint_port = 5665
 
-        self.url = f"https://{config.domain}:{config.port}"
+        self.url = f"https://{config.api_endpoint_host}:{config.api_endpoint_port}"
 
         if api_user is not None:
-            config.api_user = api_user
+            config.http_basic_username = api_user
 
         if password is not None:
-            config.password = password
+            config.http_basic_password = password
 
         if certificate is not None:
-            config.certificate = certificate
+            config.client_certificate = certificate
 
         if key is not None:
-            config.key = key
+            config.client_private_key = key
 
         if ca_certificate is not None:
             config.ca_certificate = ca_certificate
@@ -169,8 +169,8 @@ class Client:
         self.templates = Templates(self)
 
         if (
-            not self.config.api_user
-            and not self.config.password
-            and not self.config.certificate
+            not self.config.http_basic_username
+            and not self.config.http_basic_password
+            and not self.config.client_certificate
         ):
             raise PretiacException("Neither username/password nor certificate defined.")

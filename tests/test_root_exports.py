@@ -17,7 +17,7 @@ from pretiac.client import Client
 
 def test_get_client() -> None:
     client = get_client()
-    assert client.config.api_user == "apiuser"
+    assert client.config.http_basic_username == "apiuser"
 
 
 def test_create_host(client: Client) -> None:

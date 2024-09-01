@@ -26,23 +26,24 @@ class ObjectConfig(BaseModel):
 
 class Config(BaseModel):
     """
-    https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/722c6308d79f603a9ad7678609cd907b932c64ab/src/client.ts#L7-L15
+    :see: `pretiac (JS) <https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/722c6308d79f603a9ad7678609cd907b932c64ab/src/client.ts#L7-L15>`__
     """
 
-    domain: Optional[str] = None
+    api_endpoint_host: Optional[str] = Field(alias="apiEndpointHost", default=None)
     """
-    The domain, e. g. ``icinga.example.com`` or ``localhost``.
-    """
-
-    port: Optional[int] = None
-    """The TCP port`
-
-    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apilistener
+    The domain or the IP address of the API endpoint, e. g. ``icinga.example.com``
+    or ``localhost``.
     """
 
-    api_user: Optional[str] = Field(alias="apiUser", default=None)
+    api_endpoint_port: Optional[int] = Field(alias="apiEndpointPort", default=None)
+    """The TCP port of the API endpoint, for example ``5665``.
+
+    :see: `Icinca Object Types (apilistener) <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apilistener>`__
     """
-    The name of the API user, e. g. ``apiuser``.
+
+    http_basic_username: Optional[str] = Field(alias="httpBasicUsername", default=None)
+    """
+    The name of the API user used in the HTTP basic authentification, e. g. ``apiuser``.
 
     .. code-block ::
 
@@ -50,12 +51,12 @@ class Config(BaseModel):
             ...
         }
 
-    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser
+    :see: `Icinca Object Types (apiuser) <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser>`__
     """
 
-    password: Optional[str] = None
+    http_basic_password: Optional[str] = Field(alias="httpBasicPassword", default=None)
     """
-    The password of the API user, e. g. ``password``.
+    The password of the API user used in the HTTP basic authentification, e. g. ``password``.
 
     .. code-block ::
 
@@ -63,16 +64,49 @@ class Config(BaseModel):
             password = "password"
         }
 
-    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser
+    :see: `Icinca Object Types <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser>`__
     """
 
-    certificate: Optional[str] = None
+    client_private_key: Optional[str] = Field(alias="clientPrivateKey", default=None)
+    """
+    The file path of the client **RSA private key**.
 
-    key: Optional[str] = None
+    The RSA private key is created with this command:
 
-    ca_certificate: Optional[str] = None
+    .. code-block ::
 
-    suppress_exception: Optional[bool] = None
+        icinga2 pki new-cert \\
+            --cn api-client \\
+            --key api-client.key.pem \\
+            --csr api-client.csr.pem
+    """
+
+    client_certificate: Optional[str] = Field(alias="clientCertificate", default=None)
+    """
+    The file path of the client **certificate**.
+
+    The certificate is created with this command:
+
+    .. code-block ::
+
+        icinga2 pki sign-csr \\
+            --csr api-client.csr.pem \\
+            --cert api-client.cert.pem
+    """
+
+    ca_certificate: Optional[str] = Field(alias="caCertificate", default=None)
+    """
+    The file path of the Icinga **CA (Certification Authority)**.
+
+    The CA certificate is located at ``/var/lib/icinga2/certs/ca.crt``. This
+    command copies the certificate to the local host.
+
+    .. code-block ::
+
+        scp icinga-master:/var/lib/icinga2/certs/ca.crt .
+    """
+
+    suppress_exception: Optional[bool] = Field(alias="suppressException", default=None)
     """
     If set to ``True``, no exceptions are thrown.
     """
@@ -86,6 +120,9 @@ class Config(BaseModel):
         alias="newServiceDefaults", default=None
     )
     """If a new service needs to be created, use this defaults."""
+
+    config_file: Optional[Path] = Field(alias="configFile", default=None)
+    """The path of the loaded configuration file."""
 
 
 def load_config(config_file: str | Path | None = None) -> Config:
@@ -118,4 +155,5 @@ def load_config(config_file: str | Path | None = None) -> Config:
 
     with open(config_file, "r") as stream:
         config_raw = json.load(stream)
+        config_raw["configFile"] = str(config_file)
     return Config(**config_raw)

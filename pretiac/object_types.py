@@ -940,7 +940,7 @@ class Service(Checkable):
 
     Example:
 
-    .. code-block:
+    .. code-block::
 
 
         object Service "uptime" {
@@ -1127,7 +1127,7 @@ class User(CustomVarObject):
 
     Example:
 
-    .. code-block:
+    .. code-block::
 
         object User "icingaadmin" {
             display_name = "Icinga 2 Admin"
@@ -1146,7 +1146,7 @@ class User(CustomVarObject):
 
     Available notification state filters:
 
-    .. code-block:
+    .. code-block::
 
         OK
         Warning
@@ -1158,7 +1158,7 @@ class User(CustomVarObject):
 
     Available notification type filters:
 
-    .. code-block:
+    .. code-block::
 
         DowntimeStart
         DowntimeEnd

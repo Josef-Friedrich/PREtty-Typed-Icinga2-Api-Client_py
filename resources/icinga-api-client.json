@@ -1,8 +1,8 @@
 {
-  "domain": "localhost",
-  "port": 5665,
-  "apiUser": "apiuser",
-  "password": "password",
+  "apiEndpointHost": "localhost",
+  "apiEndpointPort": 5665,
+  "httpBasicUsername": "apiuser",
+  "httpBasicPassword": "password",
   "newServiceDefaults": {
     "template": "passive-service",
     "attrs": {
