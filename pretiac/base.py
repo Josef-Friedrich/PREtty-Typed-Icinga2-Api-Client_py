@@ -97,13 +97,13 @@ class Base:
         session = requests.Session()
         # prefer certificate authentification
         if self.config.client_certificate and self.config.client_private_key:
-            # certificate and key are in different files
+            # The certificate and RSA private key are in different files.
             session.cert = (
                 self.config.client_certificate,
                 self.config.client_private_key,
             )
         elif self.config.client_certificate:
-            # certificate and key are in the same file
+            # The certificate and RSA private key are in the same file.
             session.cert = self.config.client_certificate
         elif self.config.http_basic_username and self.config.http_basic_password:
             # use username and password
@@ -194,12 +194,11 @@ class Base:
         stream: requests.Response,
     ) -> Generator[str | Any, Any, None]:
         """
-        make the request and return the body
+        Make the request and return the body.
 
-        :param stream: the stream
-        :type method: request
-        :returns: the message
-        :rtype: dictionary
+        :param stream: The stream.
+
+        :returns: The message.
         """
 
         # TODO: test iter_lines()

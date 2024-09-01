@@ -10,7 +10,6 @@ from pretiac import (
     get_time_periods,
     get_users,
     send_service_check_result,
-    send_service_check_result_safe,
 )
 from pretiac.client import Client
 
@@ -46,7 +45,13 @@ class TestCreateService:
 
 class TestSendServiceCheckResult:
     def test_success(self) -> None:
-        result = send_service_check_result("Host1", "ssh", 2, "test")
+        result = send_service_check_result(
+            service="ssh",
+            host="Host1",
+            exit_status=2,
+            plugin_output="test",
+            create=False,
+        )
         assert isinstance(result, CheckResult)
         assert (
             result.status
@@ -54,29 +59,36 @@ class TestSendServiceCheckResult:
         )
         assert result.code == 200
 
-    def test_error(self) -> None:
+    def test_error(self, client: Client) -> None:
+        client.objects.delete("Service", "Host1!unknown", suppress_exception=True)
+
         result = send_service_check_result(
-            "Host1", "unknown", 2, "test", suppress_exception=True
+            service="unknown",
+            host="Host1",
+            exit_status=2,
+            plugin_output="test",
+            create=False,
         )
         assert isinstance(result, CheckError)
         assert result.status == "No objects found."
         assert result.error == 404
 
+    def test_send_service_check_result_safe(self, client: Client) -> None:
+        client.objects.delete("Service", "NewHost!NewService", suppress_exception=True)
+        client.objects.delete("Host", "NewHost", suppress_exception=True)
 
-def test_send_service_check_result_safe(client: Client) -> None:
-    client.objects.delete("Service", "NewHost!NewService", suppress_exception=True)
-    client.objects.delete("Host", "NewHost", suppress_exception=True)
+        result = send_service_check_result(
+            service="NewService", host="NewHost", exit_status=2, plugin_output="test"
+        )
+        assert isinstance(result, CheckResult)
+        assert (
+            result.status
+            == "Successfully processed check result for object 'NewHost!NewService'."
+        )
+        assert result.code == 200
 
-    result = send_service_check_result_safe("NewHost", "NewService", 2, "test")
-    assert isinstance(result, CheckResult)
-    assert (
-        result.status
-        == "Successfully processed check result for object 'NewHost!NewService'."
-    )
-    assert result.code == 200
-
-    client.objects.delete("Service", "NewHost!NewService", suppress_exception=True)
-    client.objects.delete("Host", "NewHost", suppress_exception=True)
+        client.objects.delete("Service", "NewHost!NewService", suppress_exception=True)
+        client.objects.delete("Host", "NewHost", suppress_exception=True)
 
 
 def test_get_services() -> None:

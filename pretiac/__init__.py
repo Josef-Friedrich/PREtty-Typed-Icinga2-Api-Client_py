@@ -30,6 +30,7 @@ pretiac is a `Python <http://www.python.org>`_ module to interact with the
 `Icinga 2 RESTful API <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/>`_.
 """
 
+import socket
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Optional
@@ -39,7 +40,7 @@ from pydantic import BaseModel, TypeAdapter
 from pretiac.base import Payload, State
 from pretiac.client import Client
 from pretiac.config import ObjectConfig
-from pretiac.object_types import Service, TimePeriod, User
+from pretiac.object_types import Service, ServiceState, TimePeriod, User
 from pretiac.status import StatusMessage
 
 __client: Optional[Client] = None
@@ -181,84 +182,35 @@ class CheckError(BaseModel):
     status: str
 
 
+def _get_host(host: Optional[str] = None) -> str:
+    if host is None:
+        host = socket.gethostname()
+    return host
+
+
 def send_service_check_result(
-    host: str,
     service: str,
-    exit_status: State,
-    plugin_output: str,
+    host: Optional[str] = None,
+    exit_status: Optional[State] = ServiceState.OK,
+    plugin_output: Optional[str] = None,
     performance_data: Optional[list[str] | str] = None,
     check_command: Optional[list[str] | str] = None,
     check_source: Optional[str] = None,
     execution_start: Optional[int] = None,
     execution_end: Optional[int] = None,
     ttl: Optional[int] = None,
-    suppress_exception: Optional[bool] = None,
-) -> CheckResult | CheckError:
-    """
-    Send a check result for a service.
-
-    :param host: The name of the host.
-    :param service: The name of the service.
-    :param exit_status: For services: ``0=OK``, ``1=WARNING``, ``2=CRITICAL``,
-        ``3=UNKNOWN``, for hosts: ``0=UP``, ``1=DOWN``.
-    :param plugin_output: One or more lines of the plugin main output. Does **not**
-        contain the performance data.
-    :param check_command: The first entry should be the check commands path, then
-        one entry for each command line option followed by an entry for each of its
-        argument. Alternativly a single string can be used.
-    :param check_source: Usually the name of the ``command_endpoint``.
-    :param execution_start: The timestamp where a script/process started its
-        execution.
-    :param execution_end: The timestamp where a script/process ended its execution.
-        This timestamp is used in features to determine e.g. the metric timestamp.
-    :param ttl: Time-to-live duration in seconds for this check result. The next
-        expected check result is ``now + ttl`` where freshness checks are executed.
-    :param suppress_exception: If this parameter is set to ``True``, no exceptions
-        are thrown.
-
-    """
-    client = get_client()
-    result = client.actions.process_check_result(
-        type="Service",
-        name=f"{host}!{service}",
-        exit_status=exit_status,
-        plugin_output=plugin_output,
-        performance_data=performance_data,
-        check_command=check_command,
-        check_source=check_source,
-        execution_start=execution_start,
-        execution_end=execution_end,
-        ttl=ttl,
-        suppress_exception=suppress_exception,
-    )
-
-    if "results" in result and len(result["results"]) > 0:
-        return CheckResult(**result["results"][0])
-
-    return CheckError(**result)
-
-
-def send_service_check_result_safe(
-    host: str,
-    service: str,
-    exit_status: State,
-    plugin_output: str,
-    performance_data: Optional[list[str] | str] = None,
-    check_command: Optional[list[str] | str] = None,
-    check_source: Optional[str] = None,
-    execution_start: Optional[int] = None,
-    execution_end: Optional[int] = None,
-    ttl: Optional[int] = None,
+    create: bool = True,
 ) -> CheckResult | CheckError:
     """
     Send a check result for a service and create the host or the service if necessary.
 
-    :param host: The name of the host.
     :param service: The name of the service.
+    :param host: The name of the host.
     :param exit_status: For services: ``0=OK``, ``1=WARNING``, ``2=CRITICAL``,
         ``3=UNKNOWN``, for hosts: ``0=UP``, ``1=DOWN``.
     :param plugin_output: One or more lines of the plugin main output. Does **not**
         contain the performance data.
+    :param performance_data: The performance data.
     :param check_command: The first entry should be the check commands path, then
         one entry for each command line option followed by an entry for each of its
         argument. Alternativly a single string can be used.
@@ -269,25 +221,42 @@ def send_service_check_result_safe(
         This timestamp is used in features to determine e.g. the metric timestamp.
     :param ttl: Time-to-live duration in seconds for this check result. The next
         expected check result is ``now + ttl`` where freshness checks are executed.
+    :param create: Whether non-existent services and hosts should be created.
     """
     client = get_client()
     config = client.config
+    host = _get_host(host)
 
-    result = send_service_check_result(
-        host=host,
-        service=service,
-        exit_status=exit_status,
-        plugin_output=plugin_output,
-        performance_data=performance_data,
-        check_command=check_command,
-        check_source=check_source,
-        execution_start=execution_start,
-        execution_end=execution_end,
-        ttl=ttl,
-        suppress_exception=True,
-    )
+    if exit_status is None:
+        exit_status = ServiceState.OK
+
+    if plugin_output is None:
+        plugin_output = f"{service}: {exit_status}"
+
+    def _send_service_check_result() -> CheckResult | CheckError:
+        result = client.actions.process_check_result(
+            type="Service",
+            name=f"{host}!{service}",
+            exit_status=exit_status,
+            plugin_output=plugin_output,
+            performance_data=performance_data,
+            check_command=check_command,
+            check_source=check_source,
+            execution_start=execution_start,
+            execution_end=execution_end,
+            ttl=ttl,
+            suppress_exception=True,
+        )
+        if "results" in result and len(result["results"]) > 0:
+            return CheckResult(**result["results"][0])
+        return CheckError(**result)
+
+    result: CheckResult | CheckError = _send_service_check_result()
 
     if isinstance(result, CheckResult):
+        return result
+
+    if not create:
         return result
 
     create_host(
@@ -300,19 +269,7 @@ def send_service_check_result_safe(
         suppress_exception=True,
     )
 
-    return send_service_check_result(
-        host=host,
-        service=service,
-        exit_status=exit_status,
-        plugin_output=plugin_output,
-        performance_data=performance_data,
-        check_command=check_command,
-        check_source=check_source,
-        execution_start=execution_start,
-        execution_end=execution_end,
-        ttl=ttl,
-        suppress_exception=True,
-    )
+    return _send_service_check_result()
 
 
 def _get_objects(type: Any) -> Sequence[Any]:
