@@ -1,9 +1,9 @@
-import json
 import os
 from pathlib import Path
 from typing import Optional, Sequence
 
-from pydantic import BaseModel, Field
+import yaml
+from pydantic import BaseModel
 
 from pretiac.object_types import Payload
 
@@ -29,19 +29,19 @@ class Config(BaseModel):
     :see: `pretiac (JS) <https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/722c6308d79f603a9ad7678609cd907b932c64ab/src/client.ts#L7-L15>`__
     """
 
-    api_endpoint_host: Optional[str] = Field(alias="apiEndpointHost", default=None)
+    api_endpoint_host: Optional[str] = None
     """
     The domain or the IP address of the API endpoint, e. g. ``icinga.example.com``
     or ``localhost``.
     """
 
-    api_endpoint_port: Optional[int] = Field(alias="apiEndpointPort", default=None)
+    api_endpoint_port: Optional[int] = None
     """The TCP port of the API endpoint, for example ``5665``.
 
     :see: `Icinca Object Types (apilistener) <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apilistener>`__
     """
 
-    http_basic_username: Optional[str] = Field(alias="httpBasicUsername", default=None)
+    http_basic_username: Optional[str] = None
     """
     The name of the API user used in the HTTP basic authentification, e. g. ``apiuser``.
 
@@ -54,7 +54,7 @@ class Config(BaseModel):
     :see: `Icinca Object Types (apiuser) <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser>`__
     """
 
-    http_basic_password: Optional[str] = Field(alias="httpBasicPassword", default=None)
+    http_basic_password: Optional[str] = None
     """
     The password of the API user used in the HTTP basic authentification, e. g. ``password``.
 
@@ -67,7 +67,7 @@ class Config(BaseModel):
     :see: `Icinca Object Types <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser>`__
     """
 
-    client_private_key: Optional[str] = Field(alias="clientPrivateKey", default=None)
+    client_private_key: Optional[str] = None
     """
     The file path of the client **RSA private key**.
 
@@ -81,7 +81,7 @@ class Config(BaseModel):
             --csr api-client.csr.pem
     """
 
-    client_certificate: Optional[str] = Field(alias="clientCertificate", default=None)
+    client_certificate: Optional[str] = None
     """
     The file path of the client **certificate**.
 
@@ -94,7 +94,7 @@ class Config(BaseModel):
             --cert api-client.cert.pem
     """
 
-    ca_certificate: Optional[str] = Field(alias="caCertificate", default=None)
+    ca_certificate: Optional[str] = None
     """
     The file path of the Icinga **CA (Certification Authority)**.
 
@@ -106,22 +106,18 @@ class Config(BaseModel):
         scp icinga-master:/var/lib/icinga2/certs/ca.crt .
     """
 
-    suppress_exception: Optional[bool] = Field(alias="suppressException", default=None)
+    suppress_exception: Optional[bool] = None
     """
     If set to ``True``, no exceptions are thrown.
     """
 
-    new_host_defaults: Optional[ObjectConfig] = Field(
-        alias="newHostDefaults", default=None
-    )
+    new_host_defaults: Optional[ObjectConfig] = None
     """If a new host needs to be created, use this defaults."""
 
-    new_service_defaults: Optional[ObjectConfig] = Field(
-        alias="newServiceDefaults", default=None
-    )
+    new_service_defaults: Optional[ObjectConfig] = None
     """If a new service needs to be created, use this defaults."""
 
-    config_file: Optional[Path] = Field(alias="configFile", default=None)
+    config_file: Optional[Path] = None
     """The path of the loaded configuration file."""
 
 
@@ -130,9 +126,9 @@ def load_config(config_file: str | Path | None = None) -> Config:
     Load the configuration file in JSON format.
 
     1. Parameter ``config_file`` of the function.
-    2. Enviroment variable ``ICINGA_API_CLIENT``.
-    3. Configuration file in the home folder ``~/.icinga-api-client.json``.
-    4. Configuration file in ``/etc/icinga-api-client/config.json``.
+    2. Enviroment variable ``PRETIAC_CONFIG_FILE``.
+    3. Configuration file in the home folder ``~/.pretiac.yml``.
+    4. Configuration file in ``/etc/pretiac/config.yml``.
     """
     config_files: list[Path] = []
     if config_file:
@@ -140,10 +136,10 @@ def load_config(config_file: str | Path | None = None) -> Config:
             config_files.append(Path(config_file))
         else:
             config_files.append(config_file)
-    if "ICINGA_API_CLIENT" in os.environ:
-        config_files.append(Path(os.environ["ICINGA_API_CLIENT"]))
-    config_files.append(Path.cwd() / ".icinga-api-client.json")
-    config_files.append(Path("/etc/icinga-api-client/config.json"))
+    if "PRETIAC_CONFIG_FILE" in os.environ:
+        config_files.append(Path(os.environ["PRETIAC_CONFIG_FILE"]))
+    config_files.append(Path.cwd() / ".pretiac.yml")
+    config_files.append(Path("/etc/pretiac/config.yml"))
 
     for path in config_files:
         if path.exists():
@@ -153,7 +149,7 @@ def load_config(config_file: str | Path | None = None) -> Config:
     if not config_file:
         return Config()
 
-    with open(config_file, "r") as stream:
-        config_raw = json.load(stream)
-        config_raw["configFile"] = str(config_file)
+    with open(config_file, "r") as file:
+        config_raw = yaml.safe_load(file)
+        config_raw["config_file"] = str(config_file)
     return Config(**config_raw)

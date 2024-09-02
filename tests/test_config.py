@@ -9,7 +9,7 @@ def test_load_config(config_file: Path) -> None:
     assert config.api_endpoint_port == 5665
     assert config.http_basic_username == "apiuser"
     assert config.http_basic_password == "password"
-    assert "resources/icinga-api-client.json" in str(config.config_file)
+    assert "resources/config.yml" in str(config.config_file)
 
 
 def test_class_object_config() -> None:
