@@ -14,6 +14,7 @@ extensions: list[str] = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinxcontrib.jquery",
+    "sphinx_tags",
 ]
 
 project = "pretiac: A PREtty Typed Icinga2 Api Client in Python"
@@ -60,3 +61,5 @@ autodoc_default_options = {
 }
 
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
+
+tags_create_tags = True

@@ -401,54 +401,50 @@ class CheckableWithRelations:
 #  **************************************************************************/
 
 
-# /**
-#  * ApiUser objects are used for authentication against the `Icinga 2 API <12-icinga2-api.md#icinga2-api-authentication>`__.
-#  *
-#  * @example
-#  *
-#  * ```
-#  * object ApiUser "root" {
-#  *   password = "mysecretapipassword"
-#  *   permissions = [ "*" ]
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `lib/remote/apiuser.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti>`__
-#  * :see: `doc/09-object-types.md L41-L63 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L41-L63>`__
-#  */
 @dataclass
 class ApiUser(ConfigObject):
-    pass
+    """
+    ApiUser objects are used for authentication against the `Icinga 2 API <12-icinga2-api.md#icinga2-api-authentication>`__.
 
 
-#   /**
-#    * Password str. Note: This attribute is hidden in API responses.
-#    *
-#    * @group config
-#    * :see: `lib/remote/apiuser.ti L14 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L14>`__
-#    */
-#   password?: str
+    .. code-block::
 
-#   /**
-#    * Client Common Name (CN).
-#    *
-#    * @group config
-#    * :see: `lib/remote/apiuser.ti L16 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L16>`__
-#    */
-#   client_cn?: str
+        object ApiUser "root" {
+            password = "mysecretapipassword"
+            permissions = [ "*" ]
+        }
 
-#   /**
-#    * Array of permissions. Either as str or dictionary with the keys `permission` and `filter`. The latter must be specified as function.
-#    *
-#    * @group config
-#    * :see: `lib/remote/apiuser.ti L17 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L17>`__
-#    * :see: `lib/remote/apiuser.ti L21-L28 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L21-L28>`__
-#    */
-#   permissions: str[]
-# }
+    .. tags:: Object type, Monitoring object type
+
+    :see: `lib/remote/apiuser.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti>`__
+    :see: `doc/09-object-types.md L41-L63 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L41-L63>`__
+    """
+
+    password: Optional[str] = None
+    """
+    Password string. Note: This attribute is hidden in API responses.
+
+    :see: `lib/remote/apiuser.ti L14 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L14>`__
+    """
+
+    client_cn: Optional[str] = None
+    """
+    Client Common Name (CN).
+
+    .. tags:: config
+
+    :see: `lib/remote/apiuser.ti L16 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L16>`__
+    """
+
+    permissions: Optional[Sequence[str]] = None
+    """
+    Array of permissions. Either as str or dictionary with the keys `permission` and `filter`. The latter must be specified as function.
+
+    .. tags:: config
+
+    :see: `lib/remote/apiuser.ti L17 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L17>`__
+    :see: `lib/remote/apiuser.ti L21-L28 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L21-L28>`__
+    """
 
 
 # /**

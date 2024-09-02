@@ -28,6 +28,7 @@ tox = "^4"
 ruff = "^0"
 Sphinx = "^7"
 sphinx-rtd-theme = "^2"
+sphinx-tags = "^0"
 
 [build-system]
 requires = ["poetry-core"]

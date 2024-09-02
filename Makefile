@@ -42,6 +42,7 @@ type_check:
 	poetry run tox -e type-check
 
 pin_docs_requirements:
+	pipx install pip-tools
 	pip-compile --output-file=docs/requirements.txt docs/requirements.in pyproject.toml
 
 docker_start:

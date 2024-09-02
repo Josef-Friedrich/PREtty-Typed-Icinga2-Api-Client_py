@@ -1,3 +1,4 @@
 sphinx>=7
 sphinx_rtd_theme>=2
 sphinx-argparse>=0
+sphinx-tags>=0
