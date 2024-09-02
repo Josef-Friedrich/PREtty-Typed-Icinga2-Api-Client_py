@@ -1,0 +1,29 @@
+---
+host: RandomHost
+checks:
+  - service: memory
+    check_command: check_linux_memory -f -w 2 -c 0
+
+  - service: procs_zombie
+    check_command: check_procs -w 5 -c 10 -s Z
+
+  - service: procs
+    check_command: check_procs -w 500 -c 600
+
+  - service: swap
+    check_command: check_swap -w 10% -c 5%
+
+  - service: systemd
+    check_command: check_systemd -e mnt-lnas.mount -e mnt-nnasdata.mount -e mnt-nnas.mount -e mnt-wnasdata.mount -e mnt-wnas.mount
+
+  - service: users
+    check_command: check_users -w 2 -c 5
+
+  - service: apt
+    check_command: check_apt
+
+  - service: unattended_upgrades
+    check_command: check_unattended_upgrades
+
+  - service: smart_os
+    check_command: check_smart_attributes -dbj /etc/check_smartdb.json -r '/dev/nvme[0-9]+'

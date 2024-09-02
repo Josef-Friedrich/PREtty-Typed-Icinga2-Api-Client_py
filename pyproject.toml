@@ -20,13 +20,16 @@ classifiers = [
 python = "^3.9"
 requests = "^2"
 types-requests = "^2"
+pyyaml = "^6"
 pydantic = "^2"
+types-pyyaml = "^6"
+
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8"
 tox = "^4"
 ruff = "^0"
-Sphinx = "^7"
+sphinx = "^7"
 sphinx-rtd-theme = "^2"
 sphinx-tags = "^0"
 

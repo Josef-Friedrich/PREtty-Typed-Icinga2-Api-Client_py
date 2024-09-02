@@ -7,9 +7,15 @@ import pytest
 
 from pretiac.client import Client
 
-config_file_path: Path = (
-    Path(__file__).parent / ".." / "resources" / "icinga-api-client.json"
-).resolve()
+
+def get_resources_path(relpath: str | Path) -> Path:
+    """
+    :param relpath: Path relative to ``resources``.
+    """
+    return (Path(__file__).parent / ".." / "resources" / relpath).resolve()
+
+
+config_file_path: Path = get_resources_path("icinga-api-client.json")
 
 
 def set_env_var() -> None:
