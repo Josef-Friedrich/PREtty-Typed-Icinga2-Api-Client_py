@@ -37,6 +37,7 @@ class CheckExecution:
         self.check_command = check_command
         try:
             self.execution_start = time.time()
+            self.execution_end = self.execution_start
             process = subprocess.run(
                 self.check_command, capture_output=True, encoding="utf-8"
             )
