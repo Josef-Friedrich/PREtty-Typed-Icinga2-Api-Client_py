@@ -53,7 +53,6 @@ def main() -> None:
     # status
     sub_parsers.add_parser(
         "status",
-        aliases=("st"),
         help="Retrieve status information and statistics for Icinga 2.",
     )
 

@@ -159,6 +159,9 @@ class ServiceState(Enum):
     CRITICAL = 2
     UNKNOWN = 3
 
+    def __str__(self) -> str:
+        return f"{self.value} ({self.name})"
+
 
 class HostState(Enum):
     """
@@ -169,6 +172,9 @@ class HostState(Enum):
 
     UP = 0
     DOWN = 1
+
+    def __str__(self) -> str:
+        return f"{self.value} ({self.name})"
 
 
 State = HostState | ServiceState | Literal[0, 1, 2, 3] | int

@@ -40,6 +40,7 @@ from pydantic import BaseModel, TypeAdapter
 from pretiac.base import Payload, State
 from pretiac.client import Client
 from pretiac.config import ObjectConfig
+from pretiac.log import logger
 from pretiac.object_types import ApiUser, Service, ServiceState, TimePeriod, User
 from pretiac.status import StatusMessage
 
@@ -105,7 +106,7 @@ def create_host(
     attrs: Optional[Payload] = None,
     object_config: Optional[ObjectConfig] = None,
     suppress_exception: Optional[bool] = None,
-):
+) -> None:
     """
     Create a new host. If no host configuration is specified, the template
     ``generic-host`` is assigned.
@@ -126,6 +127,8 @@ def create_host(
     if config.attrs is None and config.templates is None:
         config.templates = ["generic-host"]
 
+    logger.info("Create host %s", name)
+
     client.objects.create(
         "Host",
         name,
@@ -142,7 +145,7 @@ def create_service(
     attrs: Optional[Payload] = None,
     object_config: Optional[ObjectConfig] = None,
     suppress_exception: Optional[bool] = None,
-):
+) -> None:
     """
     Create a new service. If no service configuration is specified, the dummy check
     command is assigned.
@@ -163,6 +166,9 @@ def create_service(
 
     if config.attrs is None and config.templates is None:
         config.attrs = {"check_command": "dummy"}
+
+    logger.info("Create service %s", name)
+
     client.objects.create(
         "Service",
         f"{host}!{name}",
@@ -234,6 +240,13 @@ def send_service_check_result(
         plugin_output = f"{service}: {exit_status}"
 
     def _send_service_check_result() -> CheckResult | CheckError:
+        name = f"{host}!{service}"
+        logger.info(
+            "Send service check result: %s exit_status: %s plugin_output: %s",
+            name,
+            exit_status,
+            plugin_output,
+        )
         result = client.actions.process_check_result(
             type="Service",
             name=f"{host}!{service}",

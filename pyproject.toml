@@ -42,4 +42,4 @@ docstring-code-format = true
 
 [tool.poetry.scripts]
 # must not be named pretiac.py -> import error
-"pretiac-py" = "pretiac.cli:main"
+"pretiac" = "pretiac.cli:main"

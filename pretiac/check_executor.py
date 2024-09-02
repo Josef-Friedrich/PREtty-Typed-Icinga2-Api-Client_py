@@ -47,6 +47,10 @@ class CheckExecution:
             self.plugin_output = segments[0].strip()
             if len(segments) > 1:
                 self.performance_data = segments[1].strip()
+
+            logger.debug(
+                "CheckExecution: check_command: %s", " ".join(self.check_command)
+            )
         except Exception as e:
             self.exit_status = ServiceState.CRITICAL
             self.plugin_output = f"{e.__class__.__name__}: {e.args}"
@@ -68,6 +72,8 @@ class ServiceCheck:
             execution_start=check.execution_start,
             execution_end=check.execution_end,
             check_command=check.check_command,
+            plugin_output=check.plugin_output,
+            performance_data=check.performance_data,
         )
 
 
