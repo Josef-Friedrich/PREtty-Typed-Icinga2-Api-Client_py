@@ -29,7 +29,7 @@ class CheckExecution:
 
     plugin_output: str
 
-    performance_data: Optional[str]
+    performance_data: Optional[str] = None
 
     def __init__(self, check_command: Union[Sequence[str], str]) -> None:
         if isinstance(check_command, str):
