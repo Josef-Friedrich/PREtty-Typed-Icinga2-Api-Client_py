@@ -130,9 +130,11 @@ class Dictionary:
     pass
 
 
-TimeStamp = float
+Timestamp = float
 """
 for example `1699475880.364077`
+
+:see: `lib/base/value.hpp L15 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/base/value.hpp#L15>`__
 """
 
 
@@ -332,7 +334,7 @@ class Checkable(CustomVarObject):
     icon_image_alt: Optional[str] = None
     """**Optional.** Icon image description for the checkable. Used by external interface only."""
 
-    next_check: Optional[TimeStamp] = None
+    next_check: Optional[Timestamp] = None
 
     check_attempt: Optional[int] = None
 
@@ -344,13 +346,13 @@ class Checkable(CustomVarObject):
 
     last_check_result: Optional[CheckResult] = None
 
-    last_state_change: Optional[TimeStamp] = None
+    last_state_change: Optional[Timestamp] = None
 
-    last_hard_state_change: Optional[TimeStamp] = None
+    last_hard_state_change: Optional[Timestamp] = None
 
-    last_state_unreachable: Optional[TimeStamp] = None
+    last_state_unreachable: Optional[Timestamp] = None
 
-    previous_state_change: Optional[TimeStamp] = None
+    previous_state_change: Optional[Timestamp] = None
 
     severity: Optional[int] = None
 
@@ -358,25 +360,25 @@ class Checkable(CustomVarObject):
 
     handled: Optional[bool] = None
 
-    next_update: Optional[TimeStamp] = None
+    next_update: Optional[Timestamp] = None
 
     force_next_check: Optional[bool] = None
 
     acknowledgement: Optional[int] = None
 
-    acknowledgement_expiry: Optional[TimeStamp] = None
+    acknowledgement_expiry: Optional[Timestamp] = None
 
-    acknowledgement_last_change: Optional[TimeStamp] = None
+    acknowledgement_last_change: Optional[Timestamp] = None
 
     force_next_notification: Optional[bool] = None
 
-    last_check: Optional[TimeStamp] = None
+    last_check: Optional[Timestamp] = None
 
     downtime_depth: Optional[int] = None
 
     flapping_current: Optional[float] = None
 
-    flapping_last_change: Optional[TimeStamp] = None
+    flapping_last_change: Optional[Timestamp] = None
 
     flapping: Optional[bool] = None
 
@@ -1000,22 +1002,22 @@ class Service(Checkable):
     The last hard state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
     """
 
-    last_state_ok: Optional[TimeStamp] = None
+    last_state_ok: Optional[Timestamp] = None
     """
     When the last OK state occurred (as a UNIX timestamp).
     """
 
-    last_state_warning: Optional[TimeStamp] = None
+    last_state_warning: Optional[Timestamp] = None
     """
     When the last WARNING state occurred (as a UNIX timestamp).
     """
 
-    last_state_critical: Optional[TimeStamp] = None
+    last_state_critical: Optional[Timestamp] = None
     """
     When the last CRITICAL state occurred (as a UNIX timestamp).
     """
 
-    last_state_unknown: Optional[TimeStamp] = None
+    last_state_unknown: Optional[Timestamp] = None
     """
     When the last UNKNOWN state occurred (as a UNIX timestamp).
     """

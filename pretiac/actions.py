@@ -25,6 +25,7 @@
 # @contact: christian@jonak.org, fmnisme@gmail.com, tobias@vonderkrone.info
 # @summary: Python library for the Icinga 2 RESTful API
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Optional
 
@@ -66,11 +67,11 @@ class Actions(Base):
         name: str,
         exit_status: State,
         plugin_output: str,
-        performance_data: Optional[list[str] | str] = None,
-        check_command: Optional[list[str] | str] = None,
+        performance_data: Optional[Sequence[str] | str] = None,
+        check_command: Optional[Sequence[str] | str] = None,
         check_source: Optional[str] = None,
-        execution_start: Optional[int] = None,
-        execution_end: Optional[int] = None,
+        execution_start: Optional[float] = None,
+        execution_end: Optional[float] = None,
         ttl: Optional[int] = None,
         filter: Optional[str] = None,
         filter_vars: FilterVars = None,
@@ -115,7 +116,7 @@ class Actions(Base):
                                 'check_source': 'python client'})
 
 
-        :see: https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#process-check-result
+        :see: `doc/12-icinga2-api/#process-check-result <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#process-check-result>`__
         """
         if not name and not filter:
             raise PretiacException("name and filters is empty or none")

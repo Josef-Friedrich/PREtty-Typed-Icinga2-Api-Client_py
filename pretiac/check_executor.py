@@ -4,6 +4,7 @@ Execute checks using subprocess and send it via the API to the monitoring server
 
 import shlex
 import subprocess
+import time
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,8 +18,12 @@ from pretiac.log import logger
 from pretiac.object_types import ServiceState, get_service_state
 
 
-class SubprocessCheck:
+class CheckExecution:
     check_command: Sequence[str]
+
+    execution_start: float
+
+    execution_end: float
 
     exit_status: ServiceState
 
@@ -31,11 +36,17 @@ class SubprocessCheck:
             check_command = shlex.split(check_command)
         self.check_command = check_command
         try:
+            self.execution_start = time.time()
             process = subprocess.run(
                 self.check_command, capture_output=True, encoding="utf-8"
             )
+            self.execution_end = time.time()
             self.exit_status = get_service_state(process.returncode)
-            self.plugin_output = process.stdout.strip()
+            output = process.stdout.strip()
+            segments = output.split("|")
+            self.plugin_output = segments[0].strip()
+            if len(segments) > 1:
+                self.performance_data = segments[1].strip()
         except Exception as e:
             self.exit_status = ServiceState.CRITICAL
             self.plugin_output = f"{e.__class__.__name__}: {e.args}"
@@ -48,12 +59,15 @@ class ServiceCheck:
     host: Optional[str] = None
 
     def check(self):
-        process = subprocess.run(
-            self.check_command, capture_output=True, encoding="utf-8"
-        )
-
-        send_service_check_result(
-            service=self.service, host=self.host, exit_status=process.returncode
+        """Check and send the check result to the monitoring endpoint using the API."""
+        check = CheckExecution(self.check_command)
+        return send_service_check_result(
+            service=self.service,
+            host=self.host,
+            exit_status=check.exit_status,
+            execution_start=check.execution_start,
+            execution_end=check.execution_end,
+            check_command=check.check_command,
         )
 
 

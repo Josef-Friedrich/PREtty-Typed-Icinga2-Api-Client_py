@@ -1,5 +1,5 @@
 from pretiac.check_executor import (
-    SubprocessCheck,
+    CheckExecution,
     _read_check_collection,  # type: ignore
 )
 from pretiac.object_types import ServiceState
@@ -13,9 +13,38 @@ def test_read_collection():
     assert collection.checks[0].check_command == "check_procs -w 500 -c 600"
 
 
-class TestSubprocessCheck:
+class TestClassCheckExecution:
+    class TestAttributes:
+        check = CheckExecution("/usr/lib/nagios/plugins/check_users -w 100 -c 200")
+
+        def test_check_command(self) -> None:
+            assert self.check.check_command == [
+                "/usr/lib/nagios/plugins/check_users",
+                "-w",
+                "100",
+                "-c",
+                "200",
+            ]
+
+        def test_execution_start(self) -> None:
+            assert self.check.execution_start > 0
+
+        def test_execution_end(self) -> None:
+            assert self.check.execution_end > 0
+            assert self.check.execution_end >= self.check.execution_start
+
+        def test_exit_status(self) -> None:
+            assert self.check.exit_status == ServiceState.OK
+
+        def test_plugin_output(self) -> None:
+            assert "USERS OK" in self.check.plugin_output
+
+        def test_performance_data(self) -> None:
+            assert self.check.performance_data
+            assert "users=" in self.check.performance_data
+
     def test_input_string(self) -> None:
-        check = SubprocessCheck("/usr/lib/nagios/plugins/check_users -w 100 -c 200")
+        check = CheckExecution("/usr/lib/nagios/plugins/check_users -w 100 -c 200")
         assert check.exit_status == ServiceState.OK
         assert check.check_command == [
             "/usr/lib/nagios/plugins/check_users",
@@ -26,7 +55,7 @@ class TestSubprocessCheck:
         ]
 
     def test_input_list(self) -> None:
-        check = SubprocessCheck(
+        check = CheckExecution(
             [
                 "/usr/lib/nagios/plugins/check_users",
                 "-w",
@@ -45,7 +74,7 @@ class TestSubprocessCheck:
         ]
 
     def test_critical(self) -> None:
-        check = SubprocessCheck(
+        check = CheckExecution(
             "/usr/lib/nagios/plugins/check_http -H xxxxx.qwsed334rer"
         )
         assert check.exit_status == ServiceState.CRITICAL
@@ -55,7 +84,7 @@ class TestSubprocessCheck:
         )
 
     def test_non_existent_check_command(self) -> None:
-        check = SubprocessCheck("/xxxxx")
+        check = CheckExecution("/xxxxx")
         assert check.exit_status == ServiceState.CRITICAL
         assert check.check_command == [
             "/xxxxx",
