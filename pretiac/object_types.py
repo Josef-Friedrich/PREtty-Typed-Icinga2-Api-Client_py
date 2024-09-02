@@ -172,6 +172,14 @@ class HostState(Enum):
 State = HostState | ServiceState | Literal[0, 1, 2, 3] | int
 
 
+def get_service_state(state: Union[State, Any]) -> ServiceState:
+    if isinstance(state, ServiceState):
+        return state
+    if isinstance(state, int) and 0 <= state <= 3:
+        return ServiceState(state)
+    return ServiceState.CRITICAL
+
+
 @dataclass
 class CheckResult:
     pass

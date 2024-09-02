@@ -2,30 +2,64 @@
 Execute checks using subprocess and send it via the API to the monitoring server.
 """
 
+import shlex
+import subprocess
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import yaml
 from pydantic import TypeAdapter
 
+from pretiac import send_service_check_result
 from pretiac.log import logger
+from pretiac.object_types import ServiceState, get_service_state
+
+
+class SubprocessCheck:
+    check_command: Sequence[str]
+
+    exit_status: ServiceState
+
+    plugin_output: str
+
+    performance_data: Optional[str]
+
+    def __init__(self, check_command: Union[Sequence[str], str]) -> None:
+        if isinstance(check_command, str):
+            check_command = shlex.split(check_command)
+        self.check_command = check_command
+        try:
+            process = subprocess.run(
+                self.check_command, capture_output=True, encoding="utf-8"
+            )
+            self.exit_status = get_service_state(process.returncode)
+            self.plugin_output = process.stdout.strip()
+        except Exception as e:
+            self.exit_status = ServiceState.CRITICAL
+            self.plugin_output = f"{e.__class__.__name__}: {e.args}"
 
 
 @dataclass
-class Check:
+class ServiceCheck:
     service: str
     check_command: str
     host: Optional[str] = None
 
     def check(self):
-        pass
+        process = subprocess.run(
+            self.check_command, capture_output=True, encoding="utf-8"
+        )
+
+        send_service_check_result(
+            service=self.service, host=self.host, exit_status=process.returncode
+        )
 
 
 @dataclass
 class CheckCollection:
-    checks: Sequence[Check]
+    checks: Sequence[ServiceCheck]
     host: Optional[str] = None
 
 

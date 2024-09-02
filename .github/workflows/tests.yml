@@ -37,6 +37,9 @@ jobs:
 
       - run: curl -k -s -S -i -u apiuser:password 'https://localhost:5665/v1'
 
+      - name: Install the monitoring-plugins using apt
+        run: sudo apt-get install -y monitoring-plugins
+
       # https://github.com/marketplace/actions/setup-python
       - uses: actions/setup-python@v5
         with:
