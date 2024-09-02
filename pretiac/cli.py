@@ -2,7 +2,9 @@ from argparse import ArgumentParser
 from pprint import pprint
 
 from pretiac import get_status, send_service_check_result
+from pretiac.check_executor import check
 from pretiac.config import load_config
+from pretiac.log import logger
 
 
 def main() -> None:
@@ -11,14 +13,31 @@ def main() -> None:
         description="Command line interface for the Icinga2 API.",
     )
 
+    # global options
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="count",
+        default=0,
+        help="Increase debug verbosity (use up to 3 times): -d: info -dd: debug -ddd: verbose.",
+    )
+
     sub_parsers = parser.add_subparsers(dest="sub_command", help="sub-command help")
 
-    sub_parsers.add_parser("config", aliases=("c"), help="Dump the configuration")
+    # check
+    check_parser = sub_parsers.add_parser(
+        "check", help="Execute checks and send it to the monitoring server."
+    )
 
+    check_parser.add_argument("--file")
+
+    # config
+    sub_parsers.add_parser("config", help="Dump the configuration")
+
+    # send-service-check-result
     send_parser = sub_parsers.add_parser(
         "send-service-check-result",
-        aliases=("s", "send", "send-service"),
-        help="Send / Process service check results to the specified API endpoint.",
+        help="Send service check results to the specified API endpoint.",
     )
 
     send_parser.add_argument("service")
@@ -31,6 +50,7 @@ def main() -> None:
 
     send_parser.add_argument("--performance-data")
 
+    # status
     sub_parsers.add_parser(
         "status",
         aliases=("st"),
@@ -39,14 +59,16 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if args.sub_command in ("s", "send", "send-service"):
-        args.sub_command = "send-service-check-result"
+    logger.set_level(args.debug)
+    logger.show_levels()
 
-    if args.sub_command == "config":
+    if args.sub_command == "check":
+        check(args.file)
+
+    elif args.sub_command == "config":
         config = load_config()
         pprint(vars(config), indent=4)
-    elif args.sub_command == "status":
-        pprint(get_status(), indent=4)
+
     elif args.sub_command == "send-service-check-result":
         pprint(
             send_service_check_result(
@@ -57,3 +79,6 @@ def main() -> None:
                 performance_data=args.performance_data,
             )
         )
+
+    elif args.sub_command == "status":
+        pprint(get_status(), indent=4)

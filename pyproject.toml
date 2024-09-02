@@ -41,4 +41,5 @@ build-backend = "poetry.core.masonry.api"
 docstring-code-format = true
 
 [tool.poetry.scripts]
-"icinga-api.py" = "pretiac.cli:main"
+# must not be named pretiac.py -> import error
+"pretiac-py" = "pretiac.cli:main"

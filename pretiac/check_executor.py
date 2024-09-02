@@ -10,6 +10,8 @@ from typing import Any, Optional
 import yaml
 from pydantic import TypeAdapter
 
+from pretiac.log import logger
+
 
 @dataclass
 class Check:
@@ -42,7 +44,10 @@ def _read_check_collection(file_path: str | Path) -> CheckCollection:
     return adapter.validate_python(_read_yaml(file_path))
 
 
-def check(file_path: str | Path) -> None:
+def check(file_path: str | Path | None) -> None:
+    logger.info("Read check collection file: %s", file_path)
+    if file_path is None:
+        file_path = "/etc/pretiac/checks.yml"
     collection: CheckCollection = _read_check_collection(file_path)
 
     for check in collection.checks:
