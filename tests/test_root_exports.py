@@ -5,6 +5,8 @@ from pretiac import (
     CheckResult,
     create_host,
     create_service,
+    get_api_user,
+    get_api_users,
     get_client,
     get_services,
     get_time_periods,
@@ -107,3 +109,17 @@ def test_get_users() -> None:
     results = get_users()
     assert isinstance(results[0].name, str)
     assert results[0].type == "User"
+
+
+def test_get_api_users() -> None:
+    results = get_api_users()
+    assert isinstance(results[0].name, str)
+    assert results[0].type == "ApiUser"
+
+
+def test_get_api_user() -> None:
+    result = get_api_user("apiuser")
+    assert result.name == "apiuser"
+    assert result.password is None
+    assert result.client_cn == "my-api-client"
+    assert result.permissions == ["*"]

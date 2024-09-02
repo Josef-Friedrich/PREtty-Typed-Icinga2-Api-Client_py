@@ -40,7 +40,7 @@ from pydantic import BaseModel, TypeAdapter
 from pretiac.base import Payload, State
 from pretiac.client import Client
 from pretiac.config import ObjectConfig
-from pretiac.object_types import Service, ServiceState, TimePeriod, User
+from pretiac.object_types import ApiUser, Service, ServiceState, TimePeriod, User
 from pretiac.status import StatusMessage
 
 __client: Optional[Client] = None
@@ -272,18 +272,27 @@ def send_service_check_result(
     return _send_service_check_result()
 
 
+def _convert_object(result: Any, type: Any) -> Any:
+    adapter = TypeAdapter(type)
+    attrs = result["attrs"]
+    if "__name" in attrs:
+        attrs["name"] = attrs["__name"]
+        del attrs["__name"]
+    return adapter.validate_python(attrs)
+
+
 def _get_objects(type: Any) -> Sequence[Any]:
     client = get_client()
     results = client.objects.list(type.__name__)
-    adapter = TypeAdapter(type)
     objects: list[type] = []
     for result in results:
-        attrs = result["attrs"]
-        if "__name" in attrs:
-            attrs["name"] = attrs["__name"]
-            del attrs["__name"]
-        objects.append(adapter.validate_python(attrs))
+        objects.append(_convert_object(result, type))
     return objects
+
+
+def _get_object(type: Any, name: str) -> Any:
+    client = get_client()
+    return _convert_object(client.objects.get(type.__name__, name), type)
 
 
 def get_services() -> Sequence[Service]:
@@ -296,6 +305,14 @@ def get_time_periods() -> Sequence[TimePeriod]:
 
 def get_users() -> Sequence[User]:
     return _get_objects(User)
+
+
+def get_api_user(name: str) -> ApiUser:
+    return _get_object(ApiUser, name)
+
+
+def get_api_users() -> Sequence[ApiUser]:
+    return _get_objects(ApiUser)
 
 
 def get_status() -> Sequence[StatusMessage]:

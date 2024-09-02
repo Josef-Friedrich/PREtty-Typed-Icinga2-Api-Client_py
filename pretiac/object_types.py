@@ -438,7 +438,7 @@ class ApiUser(ConfigObject):
 
     permissions: Optional[Sequence[str]] = None
     """
-    Array of permissions. Either as str or dictionary with the keys `permission` and `filter`. The latter must be specified as function.
+    Array of permissions. Either as string or dictionary with the keys `permission` and `filter`. The latter must be specified as function.
 
     .. tags:: config
 
