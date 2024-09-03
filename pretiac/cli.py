@@ -1,13 +1,14 @@
 from argparse import ArgumentParser
 from pprint import pprint
 
-from pretiac import get_status, send_service_check_result
+from pretiac import get_client
 from pretiac.check_executor import check
-from pretiac.config import load_config
+from pretiac.config import load_config_file
 from pretiac.log import logger
 
 
 def main() -> None:
+    client = get_client()
     parser = ArgumentParser(
         prog="icinga-api",
         description="Command line interface for the Icinga2 API.",
@@ -65,12 +66,12 @@ def main() -> None:
         check(args.file)
 
     elif args.sub_command == "config":
-        config = load_config()
+        config = load_config_file()
         pprint(vars(config), indent=4)
 
     elif args.sub_command == "send-service-check-result":
         pprint(
-            send_service_check_result(
+            client.send_service_check_result(
                 service=args.service,
                 host=args.host,
                 exit_status=args.exit_status,
@@ -80,4 +81,4 @@ def main() -> None:
         )
 
     elif args.sub_command == "status":
-        pprint(get_status(), indent=4)
+        pprint(client.get_status(), indent=4)

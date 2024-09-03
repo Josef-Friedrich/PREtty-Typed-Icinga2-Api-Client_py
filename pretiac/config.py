@@ -5,6 +5,7 @@ from typing import Optional, Sequence
 import yaml
 from pydantic import BaseModel
 
+from pretiac.exceptions import PretiacException
 from pretiac.object_types import Payload
 
 
@@ -28,6 +29,9 @@ class Config(BaseModel):
     """
     :see: `pretiac (JS) <https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/722c6308d79f603a9ad7678609cd907b932c64ab/src/client.ts#L7-L15>`__
     """
+
+    config_file: Optional[Path] = None
+    """The path of the loaded configuration file."""
 
     api_endpoint_host: Optional[str] = None
     """
@@ -117,11 +121,8 @@ class Config(BaseModel):
     new_service_defaults: Optional[ObjectConfig] = None
     """If a new service needs to be created, use this defaults."""
 
-    config_file: Optional[Path] = None
-    """The path of the loaded configuration file."""
 
-
-def load_config(config_file: str | Path | None = None) -> Config:
+def load_config_file(config_file: str | Path | None = None) -> Config:
     """
     Load the configuration file in JSON format.
 
@@ -153,3 +154,49 @@ def load_config(config_file: str | Path | None = None) -> Config:
         config_raw = yaml.safe_load(file)
         config_raw["config_file"] = str(config_file)
     return Config(**config_raw)
+
+
+def load_config(
+    config_file: Optional[str | Path] = None,
+    api_endpoint_host: Optional[str] = None,
+    api_endpoint_port: Optional[int] = None,
+    http_basic_username: Optional[str] = None,
+    http_basic_password: Optional[str] = None,
+    client_private_key: Optional[str] = None,
+    client_certificate: Optional[str] = None,
+    ca_certificate: Optional[str] = None,
+    suppress_exception: Optional[bool] = None,
+) -> Config:
+    config: Config = load_config_file(config_file)
+
+    if api_endpoint_host is not None:
+        config.api_endpoint_host = api_endpoint_host
+
+    if config.api_endpoint_host is None:
+        raise PretiacException("no domain")
+
+    if api_endpoint_port is not None:
+        config.api_endpoint_port = api_endpoint_port
+
+    if config.api_endpoint_port is None:
+        config.api_endpoint_port = 5665
+
+    if http_basic_username is not None:
+        config.http_basic_username = http_basic_username
+
+    if http_basic_password is not None:
+        config.http_basic_password = http_basic_password
+
+    if client_private_key is not None:
+        config.client_private_key = client_private_key
+
+    if client_certificate is not None:
+        config.client_certificate = client_certificate
+
+    if ca_certificate is not None:
+        config.ca_certificate = ca_certificate
+
+    if suppress_exception is not None:
+        config.suppress_exception = suppress_exception
+
+    return config

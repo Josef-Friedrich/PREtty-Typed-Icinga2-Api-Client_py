@@ -4,11 +4,12 @@ A high level client with typed return values.
 
 import socket
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Any, Optional
 
 from pydantic import BaseModel, TypeAdapter
 
-from pretiac.config import Config, ObjectConfig
+from pretiac.config import Config, ObjectConfig, load_config
 from pretiac.log import logger
 from pretiac.object_types import ApiUser, Service, ServiceState, TimePeriod, User
 from pretiac.raw_client import RawClient
@@ -72,8 +73,38 @@ def _get_host(host: Optional[str] = None) -> str:
 class Client:
     raw_client: RawClient
 
-    def __init__(self, raw_client: RawClient) -> None:
-        self.raw_client = raw_client
+    config: Config
+
+    def __init__(
+        self,
+        config_file: Optional[str | Path] = None,
+        api_endpoint_host: Optional[str] = None,
+        api_endpoint_port: Optional[int] = None,
+        http_basic_username: Optional[str] = None,
+        http_basic_password: Optional[str] = None,
+        client_private_key: Optional[str] = None,
+        client_certificate: Optional[str] = None,
+        ca_certificate: Optional[str] = None,
+        suppress_exception: Optional[bool] = None,
+    ) -> None:
+        """
+        initialize object
+
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+        """
+        self.config = load_config(
+            config_file=config_file,
+            api_endpoint_host=api_endpoint_host,
+            api_endpoint_port=api_endpoint_port,
+            http_basic_username=http_basic_username,
+            http_basic_password=http_basic_password,
+            client_private_key=client_private_key,
+            client_certificate=client_certificate,
+            ca_certificate=ca_certificate,
+            suppress_exception=suppress_exception,
+        )
+
+        self.raw_client = RawClient(self.config)
 
     def create_host(
         self,
@@ -111,10 +142,6 @@ class Client:
             attrs=config.attrs,
             suppress_exception=suppress_exception,
         )
-
-    @property
-    def config(self) -> Config:
-        return self.raw_client.config
 
     def create_service(
         self,

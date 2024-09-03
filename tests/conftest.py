@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from pretiac.client import Client
+from pretiac.config import Config, load_config
 from pretiac.raw_client import RawClient
 
 
@@ -32,8 +33,8 @@ def config_file() -> Path:
 
 
 @pytest.fixture
-def raw_client() -> RawClient:
-    return RawClient(
+def config() -> Config:
+    return load_config(
         api_endpoint_host="localhost",
         api_endpoint_port=5665,
         http_basic_username="apiuser",
@@ -42,5 +43,15 @@ def raw_client() -> RawClient:
 
 
 @pytest.fixture
+def raw_client(config: Config) -> RawClient:
+    return RawClient(config)
+
+
+@pytest.fixture
 def client(raw_client: RawClient) -> Client:
-    return Client(raw_client)
+    return Client(
+        api_endpoint_host="localhost",
+        api_endpoint_port=5665,
+        http_basic_username="apiuser",
+        http_basic_password="password",
+    )

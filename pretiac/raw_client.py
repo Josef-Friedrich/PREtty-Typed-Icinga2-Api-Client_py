@@ -33,13 +33,10 @@ programmatic way using HTTP requests.
 """
 
 from importlib.metadata import version as get_version
-from pathlib import Path
-from typing import Optional
 
 from pretiac.actions import Actions
-from pretiac.config import Config, load_config
+from pretiac.config import Config
 from pretiac.events import Events
-from pretiac.exceptions import PretiacException
 from pretiac.objects import Objects
 from pretiac.status import Status
 from pretiac.templates import Templates
@@ -105,57 +102,17 @@ class RawClient:
 
     templates: Templates
 
-    def __init__(
-        self,
-        api_endpoint_host: Optional[str] = None,
-        api_endpoint_port: Optional[int] = None,
-        http_basic_username: Optional[str] = None,
-        http_basic_password: Optional[str] = None,
-        client_certificate: Optional[str] = None,
-        client_private_key: Optional[str] = None,
-        ca_certificate: Optional[str] = None,
-        config_file: Optional[str | Path] = None,
-        suppress_exception: Optional[bool] = None,
-    ) -> None:
+    def __init__(self, config: Config) -> None:
         """
         initialize object
 
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
         """
-        config: Config = load_config(config_file)
         self.config = config
 
-        if api_endpoint_host is not None:
-            config.api_endpoint_host = api_endpoint_host
-
-        if config.api_endpoint_host is None:
-            raise PretiacException("no domain")
-
-        if api_endpoint_port is not None:
-            config.api_endpoint_port = api_endpoint_port
-
-        if config.api_endpoint_port is None:
-            config.api_endpoint_port = 5665
-
-        self.url = f"https://{config.api_endpoint_host}:{config.api_endpoint_port}"
-
-        if http_basic_username is not None:
-            config.http_basic_username = http_basic_username
-
-        if http_basic_password is not None:
-            config.http_basic_password = http_basic_password
-
-        if client_certificate is not None:
-            config.client_certificate = client_certificate
-
-        if client_private_key is not None:
-            config.client_private_key = client_private_key
-
-        if ca_certificate is not None:
-            config.ca_certificate = ca_certificate
-
-        if suppress_exception is not None:
-            config.suppress_exception = suppress_exception
+        self.url = (
+            f"https://{self.config.api_endpoint_host}:{self.config.api_endpoint_port}"
+        )
 
         self.version = get_version("pretiac")
 
@@ -164,10 +121,3 @@ class RawClient:
         self.objects = Objects(self)
         self.status = Status(self)
         self.templates = Templates(self)
-
-        if (
-            not self.config.http_basic_username
-            and not self.config.http_basic_password
-            and not self.config.client_certificate
-        ):
-            raise PretiacException("Neither username/password nor certificate defined.")

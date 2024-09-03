@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from pretiac.config import ObjectConfig, load_config
+from pretiac.config import ObjectConfig, load_config_file
 
 
 def test_load_config(config_file: Path) -> None:
-    config = load_config(config_file)
+    config = load_config_file(config_file)
     assert config.api_endpoint_host == "localhost"
     assert config.api_endpoint_port == 5665
     assert config.http_basic_username == "apiuser"
