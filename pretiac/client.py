@@ -10,6 +10,7 @@ from typing import Any, Optional
 from pydantic import BaseModel, TypeAdapter
 
 from pretiac.config import Config, ObjectConfig, load_config
+from pretiac.exceptions import PretiacException
 from pretiac.log import logger
 from pretiac.object_types import ApiUser, Service, ServiceState, TimePeriod, User
 from pretiac.raw_client import RawClient
@@ -68,6 +69,20 @@ def _get_host(host: Optional[str] = None) -> str:
     if host is None:
         host = socket.gethostname()
     return host
+
+
+def _get_service_name(
+    name: Optional[str] = None,
+    service: Optional[str] = None,
+    host: Optional[str] = None,
+) -> str:
+    if name is not None:
+        return name
+
+    if service is not None and host is not None:
+        return f"{host}!{service}"
+
+    raise PretiacException("The service name could not be assembled!")
 
 
 class Client:
@@ -138,45 +153,6 @@ class Client:
         self.raw_client.objects.create(
             "Host",
             name,
-            templates=config.templates,
-            attrs=config.attrs,
-            suppress_exception=suppress_exception,
-        )
-
-    def create_service(
-        self,
-        name: str,
-        host: str,
-        templates: Optional[Sequence[str]] = None,
-        attrs: Optional[Payload] = None,
-        object_config: Optional[ObjectConfig] = None,
-        suppress_exception: Optional[bool] = None,
-    ) -> None:
-        """
-        Create a new service. If no service configuration is specified, the dummy check
-        command is assigned.
-
-        :param name: The name of the service.
-        :param host: The name of the host.
-        :param templates: Import existing configuration templates for this
-            object type. Note: These templates must either be statically
-            configured or provided in config packages.
-        :param attrs: Set specific object attributes for this object type.
-        :param object_config: Bundle of all configurations required to create a service.
-        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
-        """
-        config = _normalize_object_config(
-            templates=templates, attrs=attrs, object_config=object_config
-        )
-
-        if config.attrs is None and config.templates is None:
-            config.attrs = {"check_command": "dummy"}
-
-        logger.info("Create service %s", name)
-
-        self.raw_client.objects.create(
-            "Service",
-            f"{host}!{name}",
             templates=config.templates,
             attrs=config.attrs,
             suppress_exception=suppress_exception,
@@ -282,6 +258,85 @@ class Client:
 
     def _get_object(self, type: Any, name: str) -> Any:
         return _convert_object(self.raw_client.objects.get(type.__name__, name), type)
+
+    # service ##################################################################
+
+    def create_service(
+        self,
+        name: str,
+        host: str,
+        display_name: Optional[str] = None,
+        templates: Optional[Sequence[str]] = None,
+        attrs: Optional[Payload] = None,
+        object_config: Optional[ObjectConfig] = None,
+        suppress_exception: Optional[bool] = None,
+    ) -> None:
+        """
+        Create a new service. If no service configuration is specified, the dummy check
+        command is assigned.
+
+        :param name: The name of the service.
+        :param host: The name of the host.
+        :param templates: Import existing configuration templates for this
+            object type. Note: These templates must either be statically
+            configured or provided in config packages.
+        :param attrs: Set specific object attributes for this object type.
+        :param object_config: Bundle of all configurations required to create a service.
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+        """
+        config = _normalize_object_config(
+            templates=templates, attrs=attrs, object_config=object_config
+        )
+
+        if config.attrs is None and config.templates is None:
+            config.attrs = {"check_command": "dummy"}
+
+        if display_name is not None:
+            if config.attrs is None:
+                config.attrs = {}
+            config.attrs["display_name"] = display_name
+
+        logger.info("Create service %s", name)
+
+        self.raw_client.objects.create(
+            "Service",
+            f"{host}!{name}",
+            templates=config.templates,
+            attrs=config.attrs,
+            suppress_exception=suppress_exception,
+        )
+
+    def get_service(
+        self,
+        name: Optional[str] = None,
+        host: Optional[str] = None,
+        service: Optional[str] = None,
+    ) -> Service:
+        """
+        :param name: The full name of the service, for example ``host!service``.
+        :param host: The name of the host.
+        :param service: The name of the service.
+        """
+        return self._get_object(
+            Service, _get_service_name(name=name, service=service, host=host)
+        )
+
+    def delete_service(
+        self,
+        name: Optional[str] = None,
+        host: Optional[str] = None,
+        service: Optional[str] = None,
+    ) -> None:
+        """
+        :param name: The full name of the service, for example ``host!service``.
+        :param host: The name of the host.
+        :param service: The name of the service.
+        """
+        self.raw_client.objects.delete(
+            "Service",
+            _get_service_name(name=name, service=service, host=host),
+            suppress_exception=True,
+        )
 
     def get_services(self) -> Sequence[Service]:
         return self._get_objects(Service)

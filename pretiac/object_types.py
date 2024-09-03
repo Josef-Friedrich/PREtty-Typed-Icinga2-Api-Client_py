@@ -984,6 +984,9 @@ class Service(Checkable):
     display_name: Optional[str] = None
     """
     A short description of the service.
+
+    :see: `doc/09-object-types.md L712 <https://github.com/Icinga/icinga2/blob/0951230ce1be27c9957ef8801be258524524dc01/doc/09-object-types.md?plain=1#L712>`__
+    :see: `lib/icinga/service.ti L34-L42 <https://github.com/Icinga/icinga2/blob/0951230ce1be27c9957ef8801be258524524dc01/lib/icinga/service.ti#L34-L42>`__
     """
 
     host_name: Optional[str] = None
