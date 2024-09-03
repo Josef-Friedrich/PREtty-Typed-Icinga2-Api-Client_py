@@ -38,6 +38,7 @@ from typing import (
 from urllib.parse import urljoin
 
 import requests
+import urllib3
 
 from pretiac.config import Config
 from pretiac.exceptions import PretiacException, PretiacRequestException
@@ -52,6 +53,9 @@ from pretiac.object_types import (
 
 if TYPE_CHECKING:
     from pretiac.client import Client
+
+# https://stackoverflow.com/a/28002687
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def normalize_state(state: State | Any) -> int:
