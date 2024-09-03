@@ -2,12 +2,12 @@ import re
 
 import pytest
 
-from pretiac.client import Client
 from pretiac.exceptions import PretiacRequestException
+from pretiac.raw_client import RawClient
 
 
 class TestList:
-    def test_hosts(self, client: Client) -> None:
+    def test_hosts(self, client: RawClient) -> None:
         results = client.objects.list("Host")
         host = results[0]
         assert host["attrs"]["address"] == "127.0.0.1"
@@ -87,7 +87,7 @@ class TestList:
             ]
         )
 
-    def test_attrs(self, client: Client) -> None:
+    def test_attrs(self, client: RawClient) -> None:
         results = client.objects.list("Host", attrs=("address", "notes"))
         host = results[0]
         assert host["attrs"]["address"] == "127.0.0.1"
@@ -98,30 +98,30 @@ class TestList:
             ]
         )
 
-    def test_commands(self, client: Client) -> None:
+    def test_commands(self, client: RawClient) -> None:
         results = client.objects.list("CheckCommand")
         command = results[0]
         assert isinstance(command["attrs"]["name"], str)
 
-    def test_exception(self, client: Client) -> None:
+    def test_exception(self, client: RawClient) -> None:
         with pytest.raises(PretiacRequestException, match="No objects found."):
             client.objects.list("Host", "XXX")
 
-    def test_suppress_exception(self, client: Client) -> None:
+    def test_suppress_exception(self, client: RawClient) -> None:
         result = client.objects.list("Host", "XXX", suppress_exception=True)
         assert result["error"] == 404
         assert result["status"] == "No objects found."
 
 
 class TestGet:
-    def test_host(self, client: Client) -> None:
+    def test_host(self, client: RawClient) -> None:
         host = client.objects.get("Host", "Host1")
         assert host["attrs"]["name"] == "Host1"
         assert host["attrs"]["address"] == "127.0.0.1"
 
 
 class TestCreate:
-    def test_create(self, client: Client) -> None:
+    def test_create(self, client: RawClient) -> None:
         client.objects.delete("Service", "Host1!custom-load", suppress_exception=True)
         result = client.objects.create(
             "Service",
@@ -132,7 +132,7 @@ class TestCreate:
         assert result["results"][0]["code"] == 200
         assert result["results"][0]["status"] == "Object was created"
 
-    def test_create_minimal_service(self, client: Client) -> None:
+    def test_create_minimal_service(self, client: RawClient) -> None:
         """Create a service with minimal arguments"""
         client.objects.delete("Service", "Host1!custom-load", suppress_exception=True)
         result = client.objects.create(
@@ -143,7 +143,7 @@ class TestCreate:
         assert result["results"][0]["code"] == 200
         assert result["results"][0]["status"] == "Object was created"
 
-    def test_create_minimal_host(self, client: Client) -> None:
+    def test_create_minimal_host(self, client: RawClient) -> None:
         """Create a host with minimal arguments"""
         client.objects.delete("Host", "NewHost", suppress_exception=True)
         result = client.objects.create(
@@ -152,7 +152,7 @@ class TestCreate:
         assert result["results"][0]["code"] == 200
         assert result["results"][0]["status"] == "Object was created"
 
-    def test_create_minimal_host2(self, client: Client) -> None:
+    def test_create_minimal_host2(self, client: RawClient) -> None:
         """Create a host with minimal arguments (only templates)"""
         client.objects.delete("Host", "NewHost", suppress_exception=True)
         result = client.objects.create(
@@ -161,7 +161,7 @@ class TestCreate:
         assert result["results"][0]["code"] == 200
         assert result["results"][0]["status"] == "Object was created"
 
-    def test_error_attribute_not_empty(self, client: Client) -> None:
+    def test_error_attribute_not_empty(self, client: RawClient) -> None:
         result = client.objects.create(
             "Service",
             "Host1!xxx",
@@ -175,7 +175,7 @@ class TestCreate:
         )
         assert error["status"] == "Object could not be created."
 
-    def test_error_unknown_attr(self, client: Client) -> None:
+    def test_error_unknown_attr(self, client: RawClient) -> None:
         result = client.objects.create(
             "Service",
             "Host1!xxx",

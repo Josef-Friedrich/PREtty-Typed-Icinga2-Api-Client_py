@@ -13,7 +13,7 @@ from pretiac import (
     get_users,
     send_service_check_result,
 )
-from pretiac.client import Client
+from pretiac.raw_client import RawClient
 
 
 def test_get_client() -> None:
@@ -21,7 +21,7 @@ def test_get_client() -> None:
     assert client.config.http_basic_username == "apiuser"
 
 
-def test_create_host(client: Client) -> None:
+def test_create_host(client: RawClient) -> None:
     client.objects.delete("Host", "MyNewHost", suppress_exception=True)
     create_host("MyNewHost")
     host = client.objects.get("Host", "MyNewHost")
@@ -29,14 +29,14 @@ def test_create_host(client: Client) -> None:
 
 
 class TestCreateService:
-    def test_create_service(self, client: Client) -> None:
+    def test_create_service(self, client: RawClient) -> None:
         client.objects.delete("Service", "MyNewService", suppress_exception=True)
         create_service("MyNewService", "Host1")
         service = client.objects.get("Service", "Host1!MyNewService")
         assert service["name"] == "Host1!MyNewService"
         client.objects.delete("Service", "MyNewService", suppress_exception=True)
 
-    def test_name_with_spaces(self, client: Client) -> None:
+    def test_name_with_spaces(self, client: RawClient) -> None:
         name = "rsync host:/data/ssd/ /ssd/"
         client.objects.delete("Service", name, suppress_exception=True)
         create_service(name, "Host1")
@@ -61,7 +61,7 @@ class TestSendServiceCheckResult:
         )
         assert result.code == 200
 
-    def test_error(self, client: Client) -> None:
+    def test_error(self, client: RawClient) -> None:
         client.objects.delete("Service", "Host1!unknown", suppress_exception=True)
 
         result = send_service_check_result(
@@ -75,7 +75,7 @@ class TestSendServiceCheckResult:
         assert result.status == "No objects found."
         assert result.error == 404
 
-    def test_send_service_check_result_safe(self, client: Client) -> None:
+    def test_send_service_check_result_safe(self, client: RawClient) -> None:
         client.objects.delete("Service", "NewHost!NewService", suppress_exception=True)
         client.objects.delete("Host", "NewHost", suppress_exception=True)
 

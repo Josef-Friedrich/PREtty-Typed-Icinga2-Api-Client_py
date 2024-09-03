@@ -32,7 +32,7 @@ Icinga 2 API client exceptions
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pretiac.base import Payload
+    from pretiac.request_handler import Payload
 
 
 class PretiacException(Exception):

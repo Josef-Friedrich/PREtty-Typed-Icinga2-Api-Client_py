@@ -26,7 +26,9 @@
 # @summary: Python library for the Icinga 2 RESTful API
 
 """
-Icinga 2 API client base
+Provides the base class :class:`RequestHandler` that is inherited by the different
+endpoint classes, for example the class ``Events`` handles the ``v1/events`` endpoint,
+the class ``Objects`` handles the ``v1/objects`` entpoint and so on...
 """
 
 from typing import (
@@ -52,7 +54,7 @@ from pretiac.object_types import (
 )
 
 if TYPE_CHECKING:
-    from pretiac.client import Client
+    from pretiac.raw_client import RawClient
 
 # https://stackoverflow.com/a/28002687
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -66,21 +68,21 @@ def normalize_state(state: State | Any) -> int:
     raise PretiacException("invalid")
 
 
-class Base:
+class RequestHandler:
     """
-    Icinga 2 API Base class
+    Handles the HTTP requests to the Icinga2 API.
     """
 
-    client: "Client"
+    raw_client: "RawClient"
 
     base_url_path: Optional[str] = None
 
-    def __init__(self, client: "Client") -> None:
+    def __init__(self, client: "RawClient") -> None:
         """
         initialize object
         """
 
-        self.client = client
+        self.raw_client = client
         self.stream_cache = ""
 
     @property
@@ -91,7 +93,7 @@ class Base:
 
     @property
     def config(self) -> Config:
-        return self.client.config
+        return self.raw_client.config
 
     def _create_session(self, method: RequestMethod = "POST") -> requests.Session:
         """
@@ -116,7 +118,7 @@ class Base:
                 self.config.http_basic_password,
             )
         session.headers = {
-            "User-Agent": "Python-pretiac/{0}".format(self.client.version),
+            "User-Agent": "Python-pretiac/{0}".format(self.raw_client.version),
             "X-HTTP-Method-Override": method.upper(),
             "Accept": "application/json",
         }
@@ -153,7 +155,7 @@ class Base:
         :returns: the response as json
         """
 
-        request_url = urljoin(self.client.url, url_path)
+        request_url = urljoin(self.raw_client.url, url_path)
 
         # create session
         session = self._create_session(method)

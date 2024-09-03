@@ -34,9 +34,9 @@ import urllib.parse
 from collections.abc import Sequence
 from typing import Any, Optional, Union
 
-from pretiac.base import Base
 from pretiac.exceptions import PretiacException
 from pretiac.object_types import FilterVars, ObjectTypeName, Payload
+from pretiac.request_handler import RequestHandler
 
 
 def _normalize_name(name: str) -> str:
@@ -128,7 +128,7 @@ class Host:
     last_check_result: CheckResult
 
 
-class Objects(Base):
+class Objects(RequestHandler):
     """
     Icinga 2 API objects class
     """

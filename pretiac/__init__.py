@@ -37,14 +37,14 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, TypeAdapter
 
-from pretiac.base import Payload, State
-from pretiac.client import Client
 from pretiac.config import ObjectConfig
 from pretiac.log import logger
 from pretiac.object_types import ApiUser, Service, ServiceState, TimePeriod, User
+from pretiac.raw_client import RawClient
+from pretiac.request_handler import Payload, State
 from pretiac.status import StatusMessage
 
-__client: Optional[Client] = None
+__client: Optional[RawClient] = None
 
 
 def get_client(
@@ -56,10 +56,10 @@ def get_client(
     key: Optional[str] = None,
     ca_certificate: Optional[str] = None,
     config_file: Optional[str | Path] = None,
-) -> Client:
+) -> RawClient:
     global __client
     if not __client:
-        __client = Client(
+        __client = RawClient(
             domain=domain,
             port=port,
             api_user=api_user,

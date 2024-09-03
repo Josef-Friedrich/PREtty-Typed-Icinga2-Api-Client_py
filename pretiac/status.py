@@ -35,8 +35,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, Optional
 
-from pretiac.base import Base
 from pretiac.object_types import Value
+from pretiac.request_handler import RequestHandler
 
 StatusType = Literal[
     "ApiListener",
@@ -59,7 +59,7 @@ StatusType = Literal[
 ]
 
 
-class Status(Base):
+class Status(RequestHandler):
     """
     Icinga 2 API status class
 

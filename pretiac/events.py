@@ -32,8 +32,8 @@ Icinga 2 API events
 from collections.abc import Sequence
 from typing import Any, Generator, Literal, Optional
 
-from pretiac.base import Base
 from pretiac.object_types import FilterVars, Payload
+from pretiac.request_handler import RequestHandler
 
 EventStreamType = Literal[
     "CheckResult",  # Check results for hosts and services.
@@ -53,7 +53,7 @@ EventStreamType = Literal[
 ]
 
 
-class Events(Base):
+class Events(RequestHandler):
     """
     Icinga 2 API events class
     """

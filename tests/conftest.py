@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from pretiac.client import Client
+from pretiac.raw_client import RawClient
 
 
 def get_resources_path(relpath: str | Path) -> Path:
@@ -31,7 +31,7 @@ def config_file() -> Path:
 
 
 @pytest.fixture
-def client() -> Client:
-    return Client(
+def client() -> RawClient:
+    return RawClient(
         domain="localhost", port=5665, api_user="apiuser", password="password"
     )

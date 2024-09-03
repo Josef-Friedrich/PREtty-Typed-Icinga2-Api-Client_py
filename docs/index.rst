@@ -8,8 +8,8 @@ Welcome to pretiac's documentation!
 
 .. automodule:: pretiac
 .. automodule:: pretiac.actions
-.. automodule:: pretiac.base
-.. automodule:: pretiac.client
+.. automodule:: pretiac.request_handler
+.. automodule:: pretiac.raw_client
 .. automodule:: pretiac.config
 .. automodule:: pretiac.events
 .. automodule:: pretiac.exceptions

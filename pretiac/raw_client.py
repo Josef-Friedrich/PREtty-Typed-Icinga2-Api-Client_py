@@ -45,9 +45,9 @@ from pretiac.status import Status
 from pretiac.templates import Templates
 
 
-class Client:
+class RawClient:
     """
-    Icinga 2 Client class
+    This raw client is a thin wrapper around the Icinga2 REST API.
 
     You can use the client with either username/password combination or using certificates.
 
@@ -71,7 +71,6 @@ class Client:
         )
 
     If your public and private are in the same file, just use the `certificate` parameter.
-
 
     To verify the server certificate specify a ca file as `ca_file` parameter.
 

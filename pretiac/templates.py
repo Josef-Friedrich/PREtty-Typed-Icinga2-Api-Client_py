@@ -8,10 +8,10 @@ https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#config-templates
 
 from typing import Any, Optional
 
-from pretiac.base import Base, ObjectTypeName, Payload
+from pretiac.request_handler import ObjectTypeName, Payload, RequestHandler
 
 
-class Templates(Base):
+class Templates(RequestHandler):
     base_url_path = "v1/templates"
 
     def list(self, object_type: ObjectTypeName, filter: Optional[str] = None) -> Any:

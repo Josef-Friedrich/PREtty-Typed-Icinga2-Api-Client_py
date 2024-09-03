@@ -29,16 +29,16 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Optional
 
-from pretiac.base import (
-    Base,
-    Payload,
-    State,
-    normalize_state,
-)
 from pretiac.exceptions import PretiacException
 from pretiac.object_types import (
     FilterVars,
     HostOrService,
+)
+from pretiac.request_handler import (
+    Payload,
+    RequestHandler,
+    State,
+    normalize_state,
 )
 
 
@@ -54,7 +54,7 @@ class ResultContainer:
     results: list[Result]
 
 
-class Actions(Base):
+class Actions(RequestHandler):
     """
     Icinga 2 API actions class
     """
