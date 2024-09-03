@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+from pretiac.client import Client
 from pretiac.raw_client import RawClient
 
 
@@ -38,3 +39,8 @@ def raw_client() -> RawClient:
         http_basic_username="apiuser",
         http_basic_password="password",
     )
+
+
+@pytest.fixture
+def client(raw_client: RawClient) -> Client:
+    return Client(raw_client)

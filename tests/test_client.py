@@ -1,53 +1,38 @@
-"""Test the functions from the root ``__init__.py``."""
-
-from pretiac import (
-    CheckError,
-    CheckResult,
-    create_host,
-    create_service,
-    get_api_user,
-    get_api_users,
-    get_client,
-    get_services,
-    get_time_periods,
-    get_users,
-    send_service_check_result,
-)
+from pretiac.client import CheckError, CheckResult, Client
 from pretiac.raw_client import RawClient
 
 
-def test_get_client() -> None:
-    client = get_client()
+def test_config(client: Client) -> None:
     assert client.config.http_basic_username == "apiuser"
 
 
-def test_create_host(raw_client: RawClient) -> None:
+def test_create_host(client: Client, raw_client: RawClient) -> None:
     raw_client.objects.delete("Host", "MyNewHost", suppress_exception=True)
-    create_host("MyNewHost")
+    client.create_host("MyNewHost")
     host = raw_client.objects.get("Host", "MyNewHost")
     assert host["name"] == "MyNewHost"
 
 
 class TestCreateService:
-    def test_create_service(self, raw_client: RawClient) -> None:
+    def test_create_service(self, client: Client, raw_client: RawClient) -> None:
         raw_client.objects.delete("Service", "MyNewService", suppress_exception=True)
-        create_service("MyNewService", "Host1")
+        client.create_service("MyNewService", "Host1")
         service = raw_client.objects.get("Service", "Host1!MyNewService")
         assert service["name"] == "Host1!MyNewService"
         raw_client.objects.delete("Service", "MyNewService", suppress_exception=True)
 
-    def test_name_with_spaces(self, raw_client: RawClient) -> None:
+    def test_name_with_spaces(self, client: Client, raw_client: RawClient) -> None:
         name = "rsync host:/data/ssd/ /ssd/"
         raw_client.objects.delete("Service", name, suppress_exception=True)
-        create_service(name, "Host1")
+        client.create_service(name, "Host1")
         service = raw_client.objects.get("Service", f"Host1!{name}")
         assert service["name"] == f"Host1!{name}"
         raw_client.objects.delete("Service", name, suppress_exception=True)
 
 
 class TestSendServiceCheckResult:
-    def test_success(self) -> None:
-        result = send_service_check_result(
+    def test_success(self, client: Client) -> None:
+        result = client.send_service_check_result(
             service="ssh",
             host="Host1",
             exit_status=2,
@@ -61,10 +46,10 @@ class TestSendServiceCheckResult:
         )
         assert result.code == 200
 
-    def test_error(self, raw_client: RawClient) -> None:
+    def test_error(self, client: Client, raw_client: RawClient) -> None:
         raw_client.objects.delete("Service", "Host1!unknown", suppress_exception=True)
 
-        result = send_service_check_result(
+        result = client.send_service_check_result(
             service="unknown",
             host="Host1",
             exit_status=2,
@@ -75,13 +60,15 @@ class TestSendServiceCheckResult:
         assert result.status == "No objects found."
         assert result.error == 404
 
-    def test_send_service_check_result_safe(self, raw_client: RawClient) -> None:
+    def test_send_service_check_result_safe(
+        self, client: Client, raw_client: RawClient
+    ) -> None:
         raw_client.objects.delete(
             "Service", "NewHost!NewService", suppress_exception=True
         )
         raw_client.objects.delete("Host", "NewHost", suppress_exception=True)
 
-        result = send_service_check_result(
+        result = client.send_service_check_result(
             service="NewService", host="NewHost", exit_status=2, plugin_output="test"
         )
         assert isinstance(result, CheckResult)
@@ -97,32 +84,34 @@ class TestSendServiceCheckResult:
         raw_client.objects.delete("Host", "NewHost", suppress_exception=True)
 
 
-def test_get_services() -> None:
-    results = get_services()
+def test_get_services(
+    client: Client,
+) -> None:
+    results = client.get_services()
     assert isinstance(results[0].name, str)
     assert results[0].type == "Service"
 
 
-def test_get_time_periods() -> None:
-    results = get_time_periods()
+def test_get_time_periods(client: Client) -> None:
+    results = client.get_time_periods()
     assert isinstance(results[0].name, str)
     assert results[0].type == "TimePeriod"
 
 
-def test_get_users() -> None:
-    results = get_users()
+def test_get_users(client: Client) -> None:
+    results = client.get_users()
     assert isinstance(results[0].name, str)
     assert results[0].type == "User"
 
 
-def test_get_api_users() -> None:
-    results = get_api_users()
+def test_get_api_users(client: Client) -> None:
+    results = client.get_api_users()
     assert isinstance(results[0].name, str)
     assert results[0].type == "ApiUser"
 
 
-def test_get_api_user() -> None:
-    result = get_api_user("apiuser")
+def test_get_api_user(client: Client) -> None:
+    result = client.get_api_user("apiuser")
     assert result.name == "apiuser"
     assert result.password is None
     assert result.client_cn == "my-api-client"
