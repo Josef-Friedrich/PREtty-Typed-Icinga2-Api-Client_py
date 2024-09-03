@@ -60,12 +60,12 @@ def get_client(
     global __client
     if not __client:
         __client = RawClient(
-            domain=domain,
-            port=port,
-            api_user=api_user,
-            password=password,
-            certificate=certificate,
-            key=key,
+            api_endpoint_host=domain,
+            api_endpoint_port=port,
+            http_basic_username=api_user,
+            http_basic_password=password,
+            client_certificate=certificate,
+            client_private_key=key,
             ca_certificate=ca_certificate,
             config_file=config_file,
         )

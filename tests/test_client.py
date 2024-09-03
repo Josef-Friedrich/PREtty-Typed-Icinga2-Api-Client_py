@@ -21,28 +21,28 @@ def test_get_client() -> None:
     assert client.config.http_basic_username == "apiuser"
 
 
-def test_create_host(client: RawClient) -> None:
-    client.objects.delete("Host", "MyNewHost", suppress_exception=True)
+def test_create_host(raw_client: RawClient) -> None:
+    raw_client.objects.delete("Host", "MyNewHost", suppress_exception=True)
     create_host("MyNewHost")
-    host = client.objects.get("Host", "MyNewHost")
+    host = raw_client.objects.get("Host", "MyNewHost")
     assert host["name"] == "MyNewHost"
 
 
 class TestCreateService:
-    def test_create_service(self, client: RawClient) -> None:
-        client.objects.delete("Service", "MyNewService", suppress_exception=True)
+    def test_create_service(self, raw_client: RawClient) -> None:
+        raw_client.objects.delete("Service", "MyNewService", suppress_exception=True)
         create_service("MyNewService", "Host1")
-        service = client.objects.get("Service", "Host1!MyNewService")
+        service = raw_client.objects.get("Service", "Host1!MyNewService")
         assert service["name"] == "Host1!MyNewService"
-        client.objects.delete("Service", "MyNewService", suppress_exception=True)
+        raw_client.objects.delete("Service", "MyNewService", suppress_exception=True)
 
-    def test_name_with_spaces(self, client: RawClient) -> None:
+    def test_name_with_spaces(self, raw_client: RawClient) -> None:
         name = "rsync host:/data/ssd/ /ssd/"
-        client.objects.delete("Service", name, suppress_exception=True)
+        raw_client.objects.delete("Service", name, suppress_exception=True)
         create_service(name, "Host1")
-        service = client.objects.get("Service", f"Host1!{name}")
+        service = raw_client.objects.get("Service", f"Host1!{name}")
         assert service["name"] == f"Host1!{name}"
-        client.objects.delete("Service", name, suppress_exception=True)
+        raw_client.objects.delete("Service", name, suppress_exception=True)
 
 
 class TestSendServiceCheckResult:
@@ -61,8 +61,8 @@ class TestSendServiceCheckResult:
         )
         assert result.code == 200
 
-    def test_error(self, client: RawClient) -> None:
-        client.objects.delete("Service", "Host1!unknown", suppress_exception=True)
+    def test_error(self, raw_client: RawClient) -> None:
+        raw_client.objects.delete("Service", "Host1!unknown", suppress_exception=True)
 
         result = send_service_check_result(
             service="unknown",
@@ -75,9 +75,11 @@ class TestSendServiceCheckResult:
         assert result.status == "No objects found."
         assert result.error == 404
 
-    def test_send_service_check_result_safe(self, client: RawClient) -> None:
-        client.objects.delete("Service", "NewHost!NewService", suppress_exception=True)
-        client.objects.delete("Host", "NewHost", suppress_exception=True)
+    def test_send_service_check_result_safe(self, raw_client: RawClient) -> None:
+        raw_client.objects.delete(
+            "Service", "NewHost!NewService", suppress_exception=True
+        )
+        raw_client.objects.delete("Host", "NewHost", suppress_exception=True)
 
         result = send_service_check_result(
             service="NewService", host="NewHost", exit_status=2, plugin_output="test"
@@ -89,8 +91,10 @@ class TestSendServiceCheckResult:
         )
         assert result.code == 200
 
-        client.objects.delete("Service", "NewHost!NewService", suppress_exception=True)
-        client.objects.delete("Host", "NewHost", suppress_exception=True)
+        raw_client.objects.delete(
+            "Service", "NewHost!NewService", suppress_exception=True
+        )
+        raw_client.objects.delete("Host", "NewHost", suppress_exception=True)
 
 
 def test_get_services() -> None:

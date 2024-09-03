@@ -5,8 +5,8 @@ from pretiac.raw_client import RawClient
 
 
 class TestProcessCheckResult:
-    def test_success(self, client: RawClient) -> None:
-        result = client.actions.process_check_result(
+    def test_success(self, raw_client: RawClient) -> None:
+        result = raw_client.actions.process_check_result(
             "Service", "Host1!ssh", 2, "SSH failed"
         )
         assert len(result["results"]) == 1
@@ -16,22 +16,22 @@ class TestProcessCheckResult:
             == "Successfully processed check result for object 'Host1!ssh'."
         )
 
-        service = client.objects.get("Service", "Host1!ssh")
+        service = raw_client.objects.get("Service", "Host1!ssh")
         assert service["attrs"]["state"] == 2
 
-        client.actions.process_check_result("Service", "Host1!ssh", 0, "SSH failed")
+        raw_client.actions.process_check_result("Service", "Host1!ssh", 0, "SSH failed")
 
-        service = client.objects.get("Service", "Host1!ssh")
+        service = raw_client.objects.get("Service", "Host1!ssh")
         assert service["attrs"]["state"] == 0
 
-    def test_failure_unknown_service(self, client: RawClient) -> None:
+    def test_failure_unknown_service(self, raw_client: RawClient) -> None:
         with pytest.raises(PretiacException, match="No objects found."):
-            client.actions.process_check_result(
+            raw_client.actions.process_check_result(
                 "Service", "Host1!unknown_service", 3, "Unknown Service"
             )
 
-    def test_failure_unknown_host_unknown_service(self, client: RawClient) -> None:
-        result = client.actions.process_check_result(
+    def test_failure_unknown_host_unknown_service(self, raw_client: RawClient) -> None:
+        result = raw_client.actions.process_check_result(
             "Service",
             "UnknownHost!unknown_service",
             3,

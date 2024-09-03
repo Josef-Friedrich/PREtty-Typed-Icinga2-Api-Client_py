@@ -31,7 +31,10 @@ def config_file() -> Path:
 
 
 @pytest.fixture
-def client() -> RawClient:
+def raw_client() -> RawClient:
     return RawClient(
-        domain="localhost", port=5665, api_user="apiuser", password="password"
+        api_endpoint_host="localhost",
+        api_endpoint_port=5665,
+        http_basic_username="apiuser",
+        http_basic_password="password",
     )

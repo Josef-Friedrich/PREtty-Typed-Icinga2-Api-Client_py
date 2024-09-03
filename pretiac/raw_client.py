@@ -107,12 +107,12 @@ class RawClient:
 
     def __init__(
         self,
-        domain: Optional[str] = None,
-        port: Optional[int] = None,
-        api_user: Optional[str] = None,
-        password: Optional[str] = None,
-        certificate: Optional[str] = None,
-        key: Optional[str] = None,
+        api_endpoint_host: Optional[str] = None,
+        api_endpoint_port: Optional[int] = None,
+        http_basic_username: Optional[str] = None,
+        http_basic_password: Optional[str] = None,
+        client_certificate: Optional[str] = None,
+        client_private_key: Optional[str] = None,
         ca_certificate: Optional[str] = None,
         config_file: Optional[str | Path] = None,
         suppress_exception: Optional[bool] = None,
@@ -125,31 +125,31 @@ class RawClient:
         config: Config = load_config(config_file)
         self.config = config
 
-        if domain is not None:
-            config.api_endpoint_host = domain
+        if api_endpoint_host is not None:
+            config.api_endpoint_host = api_endpoint_host
 
         if config.api_endpoint_host is None:
             raise PretiacException("no domain")
 
-        if port is not None:
-            config.api_endpoint_port = port
+        if api_endpoint_port is not None:
+            config.api_endpoint_port = api_endpoint_port
 
         if config.api_endpoint_port is None:
             config.api_endpoint_port = 5665
 
         self.url = f"https://{config.api_endpoint_host}:{config.api_endpoint_port}"
 
-        if api_user is not None:
-            config.http_basic_username = api_user
+        if http_basic_username is not None:
+            config.http_basic_username = http_basic_username
 
-        if password is not None:
-            config.http_basic_password = password
+        if http_basic_password is not None:
+            config.http_basic_password = http_basic_password
 
-        if certificate is not None:
-            config.client_certificate = certificate
+        if client_certificate is not None:
+            config.client_certificate = client_certificate
 
-        if key is not None:
-            config.client_private_key = key
+        if client_private_key is not None:
+            config.client_private_key = client_private_key
 
         if ca_certificate is not None:
             config.ca_certificate = ca_certificate
