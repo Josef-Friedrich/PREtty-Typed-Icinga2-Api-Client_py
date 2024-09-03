@@ -14,6 +14,7 @@ import yaml
 from pydantic import TypeAdapter
 
 from pretiac import get_client
+from pretiac.client import CheckError, CheckResult
 from pretiac.log import logger
 from pretiac.object_types import ServiceState, get_service_state
 
@@ -60,10 +61,17 @@ class CheckExecution:
 @dataclass
 class ServiceCheck:
     service: str
-    check_command: str
-    host: Optional[str] = None
+    """The name of the service."""
 
-    def check(self):
+    check_command: str
+
+    host: Optional[str] = None
+    """The name of the host."""
+
+    display_name: Optional[str] = None
+    """A short description of the service, if it needs to be created."""
+
+    def check(self) -> CheckResult | CheckError:
         """Check and send the check result to the monitoring endpoint using the API."""
         check = CheckExecution(self.check_command)
         return get_client().send_service_check_result(
@@ -75,6 +83,7 @@ class ServiceCheck:
             check_command=check.check_command,
             plugin_output=check.plugin_output,
             performance_data=check.performance_data,
+            display_name=self.display_name,
         )
 
 

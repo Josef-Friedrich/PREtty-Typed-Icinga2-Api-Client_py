@@ -158,97 +158,6 @@ class Client:
             suppress_exception=suppress_exception,
         )
 
-    def send_service_check_result(
-        self,
-        service: str,
-        host: Optional[str] = None,
-        exit_status: Optional[State] = ServiceState.OK,
-        plugin_output: Optional[str] = None,
-        performance_data: Optional[Sequence[str] | str] = None,
-        check_command: Optional[Sequence[str] | str] = None,
-        check_source: Optional[str] = None,
-        execution_start: Optional[float] = None,
-        execution_end: Optional[float] = None,
-        ttl: Optional[int] = None,
-        create: bool = True,
-    ) -> CheckResult | CheckError:
-        """
-        Send a check result for a service and create the host or the service if necessary.
-
-        :param service: The name of the service.
-        :param host: The name of the host.
-        :param exit_status: For services: ``0=OK``, ``1=WARNING``, ``2=CRITICAL``,
-            ``3=UNKNOWN``, for hosts: ``0=UP``, ``1=DOWN``.
-        :param plugin_output: One or more lines of the plugin main output. Does **not**
-            contain the performance data.
-        :param performance_data: The performance data.
-        :param check_command: The first entry should be the check commands path, then
-            one entry for each command line option followed by an entry for each of its
-            argument. Alternativly a single string can be used.
-        :param check_source: Usually the name of the ``command_endpoint``.
-        :param execution_start: The timestamp where a script/process started its
-            execution.
-        :param execution_end: The timestamp where a script/process ended its execution.
-            This timestamp is used in features to determine e.g. the metric timestamp.
-        :param ttl: Time-to-live duration in seconds for this check result. The next
-            expected check result is ``now + ttl`` where freshness checks are executed.
-        :param create: Whether non-existent services and hosts should be created.
-        """
-        host = _get_host(host)
-
-        if exit_status is None:
-            exit_status = ServiceState.OK
-
-        if plugin_output is None:
-            plugin_output = f"{service}: {exit_status}"
-
-        def _send_service_check_result() -> CheckResult | CheckError:
-            name = f"{host}!{service}"
-            logger.info(
-                "Send service check result: %s exit_status: %s plugin_output: %s",
-                name,
-                exit_status,
-                plugin_output,
-            )
-            result = self.raw_client.actions.process_check_result(
-                type="Service",
-                name=f"{host}!{service}",
-                exit_status=exit_status,
-                plugin_output=plugin_output,
-                performance_data=performance_data,
-                check_command=check_command,
-                check_source=check_source,
-                execution_start=execution_start,
-                execution_end=execution_end,
-                ttl=ttl,
-                suppress_exception=True,
-            )
-            if "results" in result and len(result["results"]) > 0:
-                return CheckResult(**result["results"][0])
-            return CheckError(**result)
-
-        result: CheckResult | CheckError = _send_service_check_result()
-
-        if isinstance(result, CheckResult):
-            return result
-
-        if not create:
-            return result
-
-        self.create_host(
-            name=host,
-            object_config=self.config.new_host_defaults,
-            suppress_exception=True,
-        )
-        self.create_service(
-            name=service,
-            host=host,
-            object_config=self.config.new_host_defaults,
-            suppress_exception=True,
-        )
-
-        return _send_service_check_result()
-
     def _get_objects(self, type: Any) -> Sequence[Any]:
         results = self.raw_client.objects.list(type.__name__)
         objects: list[type] = []
@@ -259,7 +168,7 @@ class Client:
     def _get_object(self, type: Any, name: str) -> Any:
         return _convert_object(self.raw_client.objects.get(type.__name__, name), type)
 
-    # service ##################################################################
+    # service ##########################################################################
 
     def create_service(
         self,
@@ -277,6 +186,7 @@ class Client:
 
         :param name: The name of the service.
         :param host: The name of the host.
+        :param display_name: A short description of the service.
         :param templates: Import existing configuration templates for this
             object type. Note: These templates must either be statically
             configured or provided in config packages.
@@ -341,17 +251,119 @@ class Client:
     def get_services(self) -> Sequence[Service]:
         return self._get_objects(Service)
 
+    def send_service_check_result(
+        self,
+        service: str,
+        host: Optional[str] = None,
+        exit_status: Optional[State] = ServiceState.OK,
+        plugin_output: Optional[str] = None,
+        performance_data: Optional[Sequence[str] | str] = None,
+        check_command: Optional[Sequence[str] | str] = None,
+        check_source: Optional[str] = None,
+        execution_start: Optional[float] = None,
+        execution_end: Optional[float] = None,
+        ttl: Optional[int] = None,
+        create: bool = True,
+        display_name: Optional[str] = None,
+    ) -> CheckResult | CheckError:
+        """
+        Send a check result for a service and create the host or the service if necessary.
+
+        :param service: The name of the service.
+        :param host: The name of the host.
+        :param exit_status: For services: ``0=OK``, ``1=WARNING``, ``2=CRITICAL``,
+            ``3=UNKNOWN``, for hosts: ``0=UP``, ``1=DOWN``.
+        :param plugin_output: One or more lines of the plugin main output. Does **not**
+            contain the performance data.
+        :param performance_data: The performance data.
+        :param check_command: The first entry should be the check commands path, then
+            one entry for each command line option followed by an entry for each of its
+            argument. Alternativly a single string can be used.
+        :param check_source: Usually the name of the ``command_endpoint``.
+        :param execution_start: The timestamp where a script/process started its
+            execution.
+        :param execution_end: The timestamp where a script/process ended its execution.
+            This timestamp is used in features to determine e.g. the metric timestamp.
+        :param ttl: Time-to-live duration in seconds for this check result. The next
+            expected check result is ``now + ttl`` where freshness checks are executed.
+        :param create: Whether non-existent services and hosts should be created.
+        :param display_name: A short description of the service, if it needs to be created.
+        """
+        host = _get_host(host)
+
+        if exit_status is None:
+            exit_status = ServiceState.OK
+
+        if plugin_output is None:
+            plugin_output = f"{service}: {exit_status}"
+
+        def _send_service_check_result() -> CheckResult | CheckError:
+            name = f"{host}!{service}"
+            logger.info(
+                "Send service check result: %s exit_status: %s plugin_output: %s",
+                name,
+                exit_status,
+                plugin_output,
+            )
+            result = self.raw_client.actions.process_check_result(
+                type="Service",
+                name=f"{host}!{service}",
+                exit_status=exit_status,
+                plugin_output=plugin_output,
+                performance_data=performance_data,
+                check_command=check_command,
+                check_source=check_source,
+                execution_start=execution_start,
+                execution_end=execution_end,
+                ttl=ttl,
+                suppress_exception=True,
+            )
+            if "results" in result and len(result["results"]) > 0:
+                return CheckResult(**result["results"][0])
+            return CheckError(**result)
+
+        result: CheckResult | CheckError = _send_service_check_result()
+
+        if isinstance(result, CheckResult):
+            return result
+
+        if not create:
+            return result
+
+        self.create_host(
+            name=host,
+            object_config=self.config.new_host_defaults,
+            suppress_exception=True,
+        )
+        self.create_service(
+            name=service,
+            host=host,
+            object_config=self.config.new_host_defaults,
+            suppress_exception=True,
+            display_name=display_name,
+        )
+
+        return _send_service_check_result()
+
+    # time_period ######################################################################
+
     def get_time_periods(self) -> Sequence[TimePeriod]:
         return self._get_objects(TimePeriod)
 
+    # user #############################################################################
+
     def get_users(self) -> Sequence[User]:
         return self._get_objects(User)
+
+    # api_user #########################################################################
 
     def get_api_user(self, name: str) -> ApiUser:
         return self._get_object(ApiUser, name)
 
     def get_api_users(self) -> Sequence[ApiUser]:
         return self._get_objects(ApiUser)
+
+    # status ###########################################################################
 
     def get_status(self) -> Sequence[StatusMessage]:
         result = self.raw_client.status.list()
