@@ -1,5 +1,5 @@
 """
-Listed in the order as in this `Markdown document <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md>`__
+Listed in the order as in this `Markdown document <https://github.com/Icinga/icinga2/blob/master/doc/09-object-types.md>`__
 """
 
 from collections.abc import Sequence
@@ -91,9 +91,9 @@ https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 """
 
 
-# /***************************************************************************
-#  * Delegated interfaces and types
-#  **************************************************************************/
+########################################################################################
+# Delegated interfaces and types
+########################################################################################
 
 
 @dataclass
@@ -193,9 +193,9 @@ class CheckResult:
     pass
 
 
-# /***************************************************************************
-#  * Interface from which the object types inherit
-#  **************************************************************************/
+########################################################################################
+# Interface from which the object types inherit
+########################################################################################
 
 
 @dataclass
@@ -326,19 +326,19 @@ class Checkable(CustomVarObject):
     flapping_threshold_high: Optional[float] = None
 
     notes: Optional[str] = None
-    """ **Optional.** Notes for the checkable."""
+    """ Optional. Notes for the checkable."""
 
     notes_url: Optional[str] = None
-    """**Optional.** URL for notes for the checkable (for example, in notification commands)."""
+    """Optional. URL for notes for the checkable (for example, in notification commands)."""
 
     action_url: Optional[str] = None
-    """**Optional.** URL for actions for the checkable (for example, an external graphing tool)."""
+    """Optional. URL for actions for the checkable (for example, an external graphing tool)."""
 
     icon_image: Optional[str] = None
-    """**Optional.** Icon image for the checkable. Used by external interfaces only."""
+    """Optional. Icon image for the checkable. Used by external interfaces only."""
 
     icon_image_alt: Optional[str] = None
-    """**Optional.** Icon image description for the checkable. Used by external interface only."""
+    """Optional. Icon image description for the checkable. Used by external interface only."""
 
     next_check: Optional[Timestamp] = None
 
@@ -408,13 +408,13 @@ class CheckableWithRelations:
 #   command_endpoint?: Endpoint
 # }
 
-# /***************************************************************************
-#  * The individual object types
-#  **************************************************************************/
+########################################################################################
+# The individual object types
+########################################################################################
 
-# /***************************************************************************
-#  * Monitoring Objects
-#  **************************************************************************/
+########################################################################################
+# Monitoring Objects
+########################################################################################
 
 
 @dataclass
@@ -463,278 +463,276 @@ class ApiUser(ConfigObject):
     """
 
 
-# /**
-#  * A check command definition. Additional default command custom variables can be
-#  * defined here.
-#  *
-#  * @example
-#  *
-#  * ```
-#  * object CheckCommand "http" {
-#  *   command = [ PluginDir + "/check_http" ]
-#  *
-#  *   arguments = {
-#  *     "-H" = "$http_vhost$"
-#  *     "-I" = "$http_address$"
-#  *     "-u" = "$http_uri$"
-#  *     "-p" = "$http_port$"
-#  *     "-S" = {
-#  *       set_if = "$http_ssl$"
-#  *     }
-#  *     "--sni" = {
-#  *       set_if = "$http_sni$"
-#  *     }
-#  *     "-a" = {
-#  *       value = "$http_auth_pair$"
-#  *       description = "Username:password on sites with basic authentication"
-#  *     }
-#  *     "--no-body" = {
-#  *       set_if = "$http_ignore_body$"
-#  *     }
-#  *     "-r" = "$http_expect_body_regex$"
-#  *     "-w" = "$http_warn_time$"
-#  *     "-c" = "$http_critical_time$"
-#  *     "-e" = "$http_expect$"
-#  *   }
-#  *
-#  *   vars.http_address = "$address$"
-#  *   vars.http_ssl = false
-#  *   vars.http_sni = false
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L65-L114 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L65-L114>`__
-#  * :see: `lib/icinga/command.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti>`__
-#  */
+# A check command definition. Additional default command custom variables can be
+# defined here.
+#
+# @example
+#
+# ```
+# object CheckCommand "http" {
+#   command = [ PluginDir + "/check_http" ]
+#
+#   arguments = {
+#     "-H" = "$http_vhost$"
+#     "-I" = "$http_address$"
+#     "-u" = "$http_uri$"
+#     "-p" = "$http_port$"
+#     "-S" = {
+#       set_if = "$http_ssl$"
+#     }
+#     "--sni" = {
+#       set_if = "$http_sni$"
+#     }
+#     "-a" = {
+#       value = "$http_auth_pair$"
+#       description = "Username:password on sites with basic authentication"
+#     }
+#     "--no-body" = {
+#       set_if = "$http_ignore_body$"
+#     }
+#     "-r" = "$http_expect_body_regex$"
+#     "-w" = "$http_warn_time$"
+#     "-c" = "$http_critical_time$"
+#     "-e" = "$http_expect$"
+#   }
+#
+#   vars.http_address = "$address$"
+#   vars.http_ssl = false
+#   vars.http_sni = false
+# }
+# ```
+#
+# @category Object type
+# @category Monitoring object type
+#
+# :see: `doc/09-object-types.md L65-L114 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L65-L114>`__
+# :see: `lib/icinga/command.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti>`__
+# /
 @dataclass
 class CheckCommand:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
-# /**
-#  *
-#  * Command arguments can be defined as key-value-pairs in the `arguments`
-#  * dictionary. Best practice is to assign a dictionary as value which
-#  * provides additional details such as the `description` next to the `value`.
-#  *
-#  * @example
-#  *
-#  * ```
-#  *   arguments = {
-#  *     "--parameter" = {
-#  *       description = "..."
-#  *       value = "..."
-#  *     }
-#  *   }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L117-L150 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L117-L150>`__
-#  * :see: `lib/icinga/command.ti L30-L46 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L30-L46>`__
-#  */
+#
+# Command arguments can be defined as key-value-pairs in the `arguments`
+# dictionary. Best practice is to assign a dictionary as value which
+# provides additional details such as the `description` next to the `value`.
+#
+# @example
+#
+# ```
+#   arguments = {
+#     "--parameter" = {
+#       description = "..."
+#       value = "..."
+#     }
+#   }
+# ```
+#
+# @category Object type
+# @category Monitoring object type
+#
+# /
 @dataclass
 class CheckCommandArguments:
-    pass
+    """
+
+    .. tags:: Object type, Monitoring object type
+
+    :see: `doc/09-object-types.md L117-L150 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L117-L150>`__
+    :see: `lib/icinga/command.ti L30-L46 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L30-L46>`__
+    """
 
 
-# /**
-#  * Dependency objects are used to specify dependencies between hosts and services. Dependencies
-#  * can be defined as Host-to-Host, Service-to-Service, Service-to-Host, or Host-to-Service
-#  * relations.
-#  *
-#  * > **Best Practice**
-#  * >
-#  * > Rather than creating a `Dependency` object for a specific host or service it is usually easier
-#  * > to just create a `Dependency` template and use the `apply` keyword to assign the
-#  * > dependency to a float of hosts or services. Use the `to` keyword to set the specific target
-#  * > type for `Host` or `Service`.
-#  * > Check the `dependencies <03-monitoring-basics.md#dependencies>`__ chapter for detailed examples.
-#  *
-#  * @example Service-to-Service
-#  *
-#  * ```
-#  * object Dependency "webserver-internet" {
-#  *   parent_host_name = "internet"
-#  *   parent_service_name = "ping4"
-#  *
-#  *   child_host_name = "webserver"
-#  *   child_service_name = "ping4"
-#  *
-#  *   states = [ OK, Warning ]
-#  *
-#  *   disable_checks = true
-#  * }
-#  * ```
-#  *
-#  * @example Host-to-Host
-#  *
-#  * ```
-#  * object Dependency "webserver-internet" {
-#  *   parent_host_name = "internet"
-#  *
-#  *   child_host_name = "webserver"
-#  *
-#  *   states = [ Up ]
-#  *
-#  *   disable_checks = true
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L153-L258 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L153-L258>`__
-#  */
+# Dependency objects are used to specify dependencies between hosts and services. Dependencies
+# can be defined as Host-to-Host, Service-to-Service, Service-to-Host, or Host-to-Service
+# relations.
+#
+# > Best Practice
+# >
+# > Rather than creating a `Dependency` object for a specific host or service it is usually easier
+# > to just create a `Dependency` template and use the `apply` keyword to assign the
+# > dependency to a float of hosts or services. Use the `to` keyword to set the specific target
+# > type for `Host` or `Service`.
+# > Check the `dependencies <03-monitoring-basics.md#dependencies>`__ chapter for detailed examples.
+#
+# @example Service-to-Service
+#
+# ```
+# object Dependency "webserver-internet" {
+#   parent_host_name = "internet"
+#   parent_service_name = "ping4"
+#
+#   child_host_name = "webserver"
+#   child_service_name = "ping4"
+#
+#   states = [ OK, Warning ]
+#
+#   disable_checks = true
+# }
+# ```
+#
+# @example Host-to-Host
+#
+# ```
+# object Dependency "webserver-internet" {
+#   parent_host_name = "internet"
+#
+#   child_host_name = "webserver"
+#
+#   states = [ Up ]
+#
+#   disable_checks = true
+# }
+# ```
+#
+# :see: `doc/09-object-types.md L153-L258 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L153-L258>`__
+# /
 @dataclass
 class Dependency:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
-# /**
-#  * Endpoint objects are used to specify connection information for remote
-#  * Icinga 2 instances. More details can be found in the `distributed monitoring chapter <06-distributed-monitoring.md#distributed-monitoring>`__.
-#  *
-#  * @example
-#  *
-#  * ```
-#  * object Endpoint "icinga2-agent1.localdomain" {
-#  *   host = "192.168.56.111"
-#  *   port = 5665
-#  *   log_duration = 1d
-#  * }
-#  * ```
-#  *
-#  * @example (disable replay log):
-#  *
-#  * ```
-#  * object Endpoint "icinga2-agent1.localdomain" {
-#  *   host = "192.168.5.111"
-#  *   port = 5665
-#  *   log_duration = 0
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L260-L293 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L260-L293>`__
-#  */
+# Endpoint objects are used to specify connection information for remote
+# Icinga 2 instances. More details can be found in the `distributed monitoring chapter <06-distributed-monitoring.md#distributed-monitoring>`__.
+#
+# @example
+#
+# ```
+# object Endpoint "icinga2-agent1.localdomain" {
+#   host = "192.168.56.111"
+#   port = 5665
+#   log_duration = 1d
+# }
+# ```
+#
+# @example (disable replay log):
+#
+# ```
+# object Endpoint "icinga2-agent1.localdomain" {
+#   host = "192.168.5.111"
+#   port = 5665
+#   log_duration = 0
+# }
+# ```
+#
+# :see: `doc/09-object-types.md L260-L293 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L260-L293>`__
+# /
 @dataclass
 class Endpoint:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
-# /**
-#  * An event command definition.
-#  *
-#  * @example
-#  *
-#  * ```
-#  * object EventCommand "restart-httpd-event" {
-#  *   command = "/opt/bin/restart-httpd.sh"
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L295-L320 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L295-L320>`__
-#  */
+# An event command definition.
+#
+# @example
+#
+# ```
+# object EventCommand "restart-httpd-event" {
+#   command = "/opt/bin/restart-httpd.sh"
+# }
+# ```
+#
+# :see: `doc/09-object-types.md L295-L320 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L295-L320>`__
+# /
 @dataclass
 class EventCommand:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
-# /**
-#  * A host.
-#  *
-#  * @example
-#  *
-#  * ```
-#  * object Host "icinga2-agent1.localdomain" {
-#  *   display_name = "Linux Client 1"
-#  *   address = "192.168.56.111"
-#  *   address6 = "2a00:1450:4001:815::2003"
-#  *
-#  *   groups = [ "linux-servers" ]
-#  *
-#  *   check_command = "hostalive"
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L323-L413 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L323-L413>`__
-#  * :see: `lib/icinga/host.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti>`__
-#  */
+# A host.
+#
+# @example
+#
+# ```
+# object Host "icinga2-agent1.localdomain" {
+#   display_name = "Linux Client 1"
+#   address = "192.168.56.111"
+#   address6 = "2a00:1450:4001:815::2003"
+#
+#   groups = [ "linux-servers" ]
+#
+#   check_command = "hostalive"
+# }
+# ```
+#
+# @category Object type
+# @category Monitoring object type
+#
+# :see: `doc/09-object-types.md L323-L413 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L323-L413>`__
+# :see: `lib/icinga/host.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti>`__
+# /
 @dataclass
 class Host(Checkable):
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
-#   /**
 #    * A list of host groups this host belongs to.
 #    *
 #    * :see: `lib/icinga/host.ti L18-L20 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L18-L20>`__
 #    */
 #   groups: str[]
 
-#   /**
+
 #    * A short description of the host (e.g. displayed by external interfaces instead of the name if set).
 #    *
 #    * :see: `lib/icinga/host.ti L22-L30 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L22-L30>`__
 #    */
 #   display_name: str
 
-#   /**
+
 #    * The host's IPv4 address. Available as command runtime macro `$address$` if set.
 #    *
 #    * :see: `lib/icinga/host.ti L32 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L32>`__
 #    */
 #   address: str
 
-#   /**
+
 #    * The host's IPv6 address. Available as command runtime macro `$address6$` if set.
 #    *
 #    * :see: `lib/icinga/host.ti L33 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L33>`__
 #    */
 #   address6: str
 
-#   /**
+
 #    * The current state (0 = UP, 1 = DOWN).
 #    *
 #    * :see: `lib/icinga/host.ti L35-L37 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L35-L37>`__
 #    */
 #   state: HostState
 
-#   /**
+
 #    * The previous state (0 = UP, 1 = DOWN).
 #    *
 #    * :see: `lib/icinga/host.ti L38-L40 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L38-L40>`__
 #    */
 #   last_state: HostState
 
-#   /**
+
 #    * The last hard state (0 = UP, 1 = DOWN).
 #    *
 #    * :see: `lib/icinga/host.ti L41-L43 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L41-L43>`__
 #    */
 #   last_hard_state: HostState
 
-#   /**
+
 #    * When the last UP state occurred (as a UNIX timestamp).
 #    *
 #    * :see: `lib/icinga/host.ti L44 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L44>`__
 #    */
 #   last_state_up: TimeStamp
 
-#   /**
+
 #    * When the last DOWN state occurred (as a UNIX timestamp).
 #    *
 #    * :see: `lib/icinga/host.ti L45 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L45>`__
@@ -743,198 +741,191 @@ class Host(Checkable):
 # }
 
 
-# /**
-#  * A group of hosts.
-#  *
-#  * > **Best Practice**
-#  * >
-#  * > Assign host group members using the `group assign <17-language-reference.md#group-assign>`__ rules.
-#  *
-#  * @example
-#  *
-#  * ```
-#  * object HostGroup "linux-servers" {
-#  *   display_name = "Linux Servers"
-#  *
-#  *   assign where host.vars.os == "Linux"
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L417-L440 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L417-L440>`__
-#  */
+# A group of hosts.
+#
+# > Best Practice
+# >
+# > Assign host group members using the `group assign <17-language-reference.md#group-assign>`__ rules.
+#
+# @example
+#
+# ```
+# object HostGroup "linux-servers" {
+#   display_name = "Linux Servers"
+#
+#   assign where host.vars.os == "Linux"
+# }
+# ```
+#
+# :see: `doc/09-object-types.md L417-L440 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L417-L440>`__
+# /
 @dataclass
 class HostGroup:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
-# /**
-#  * Notification objects are used to specify how users should be notified in case
-#  * of host and service state changes and other events.
-#  *
-#  * > **Best Practice**
-#  * >
-#  * > Rather than creating a `Notification` object for a specific host or service it is
-#  * > usually easier to just create a `Notification` template and use the `apply` keyword
-#  * > to assign the notification to a float of hosts or services. Use the `to` keyword
-#  * > to set the specific target type for `Host` or `Service`.
-#  * > Check the `notifications <03-monitoring-basics.md#alert-notifications>`__ chapter for detailed examples.
-#  *
-#  * Example:
-#  *
-#  * ```
-#  * object Notification "localhost-ping-notification" {
-#  *   host_name = "localhost"
-#  *   service_name = "ping4"
-#  *
-#  *   command = "mail-notification"
-#  *
-#  *   users = [ "user1", "user2" ] // reference to User objects
-#  *
-#  *   types = [ Problem, Recovery ]
-#  *   states = [ Critical, Warning, OK ]
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L444-L527 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L444-L527>`__
-#  */
+# Notification objects are used to specify how users should be notified in case
+# of host and service state changes and other events.
+#
+# > Best Practice
+# >
+# > Rather than creating a `Notification` object for a specific host or service it is
+# > usually easier to just create a `Notification` template and use the `apply` keyword
+# > to assign the notification to a float of hosts or services. Use the `to` keyword
+# > to set the specific target type for `Host` or `Service`.
+# > Check the `notifications <03-monitoring-basics.md#alert-notifications>`__ chapter for detailed examples.
+#
+# Example:
+#
+# ```
+# object Notification "localhost-ping-notification" {
+#   host_name = "localhost"
+#   service_name = "ping4"
+#
+#   command = "mail-notification"
+#
+#   users = [ "user1", "user2" ] // reference to User objects
+#
+#   types = [ Problem, Recovery ]
+#   states = [ Critical, Warning, OK ]
+# }
+# ```
+#
+# :see: `doc/09-object-types.md L444-L527 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L444-L527>`__
+# /
 @dataclass
 class Notification:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
-# /**
-#  * A notification command definition.
-#  *
-#  * @example
-#  *
-#  * ```
-#  * object NotificationCommand "mail-service-notification" {
-#  *   command = [ ConfigDir + "/scripts/mail-service-notification.sh" ]
-#  *
-#  *   arguments += {
-#  *     "-4" = {
-#  *       required = true
-#  *       value = "$notification_address$"
-#  *     }
-#  *     "-6" = "$notification_address6$"
-#  *     "-b" = "$notification_author$"
-#  *     "-c" = "$notification_comment$"
-#  *     "-d" = {
-#  *       required = true
-#  *       value = "$notification_date$"
-#  *     }
-#  *     "-e" = {
-#  *       required = true
-#  *       value = "$notification_servicename$"
-#  *     }
-#  *     "-f" = {
-#  *       value = "$notification_from$"
-#  *       description = "Set from address. Requires GNU mailutils (Debian/Ubuntu) or mailx (RHEL/SUSE)"
-#  *     }
-#  *     "-i" = "$notification_icingaweb2url$"
-#  *     "-l" = {
-#  *       required = true
-#  *       value = "$notification_hostname$"
-#  *     }
-#  *     "-n" = {
-#  *       required = true
-#  *       value = "$notification_hostdisplayname$"
-#  *     }
-#  *     "-o" = {
-#  *       required = true
-#  *       value = "$notification_serviceoutput$"
-#  *     }
-#  *     "-r" = {
-#  *       required = true
-#  *       value = "$notification_useremail$"
-#  *     }
-#  *     "-s" = {
-#  *       required = true
-#  *       value = "$notification_servicestate$"
-#  *     }
-#  *     "-t" = {
-#  *       required = true
-#  *       value = "$notification_type$"
-#  *     }
-#  *     "-u" = {
-#  *       required = true
-#  *       value = "$notification_servicedisplayname$"
-#  *     }
-#  *     "-v" = "$notification_logtosyslog$"
-#  *   }
-#  *
-#  *   vars += {
-#  *     notification_address = "$address$"
-#  *     notification_address6 = "$address6$"
-#  *     notification_author = "$notification.author$"
-#  *     notification_comment = "$notification.comment$"
-#  *     notification_type = "$notification.type$"
-#  *     notification_date = "$icinga.long_date_time$"
-#  *     notification_hostname = "$host.name$"
-#  *     notification_hostdisplayname = "$host.display_name$"
-#  *     notification_servicename = "$service.name$"
-#  *     notification_serviceoutput = "$service.output$"
-#  *     notification_servicestate = "$service.state$"
-#  *     notification_useremail = "$user.email$"
-#  *     notification_servicedisplayname = "$service.display_name$"
-#  *   }
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L530-L622 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L530-L622>`__
-#  */
+# A notification command definition.
+#
+# @example
+#
+# ```
+# object NotificationCommand "mail-service-notification" {
+#   command = [ ConfigDir + "/scripts/mail-service-notification.sh" ]
+#
+#   arguments += {
+#     "-4" = {
+#       required = true
+#       value = "$notification_address$"
+#     }
+#     "-6" = "$notification_address6$"
+#     "-b" = "$notification_author$"
+#     "-c" = "$notification_comment$"
+#     "-d" = {
+#       required = true
+#       value = "$notification_date$"
+#     }
+#     "-e" = {
+#       required = true
+#       value = "$notification_servicename$"
+#     }
+#     "-f" = {
+#       value = "$notification_from$"
+#       description = "Set from address. Requires GNU mailutils (Debian/Ubuntu) or mailx (RHEL/SUSE)"
+#     }
+#     "-i" = "$notification_icingaweb2url$"
+#     "-l" = {
+#       required = true
+#       value = "$notification_hostname$"
+#     }
+#     "-n" = {
+#       required = true
+#       value = "$notification_hostdisplayname$"
+#     }
+#     "-o" = {
+#       required = true
+#       value = "$notification_serviceoutput$"
+#     }
+#     "-r" = {
+#       required = true
+#       value = "$notification_useremail$"
+#     }
+#     "-s" = {
+#       required = true
+#       value = "$notification_servicestate$"
+#     }
+#     "-t" = {
+#       required = true
+#       value = "$notification_type$"
+#     }
+#     "-u" = {
+#       required = true
+#       value = "$notification_servicedisplayname$"
+#     }
+#     "-v" = "$notification_logtosyslog$"
+#   }
+#
+#   vars += {
+#     notification_address = "$address$"
+#     notification_address6 = "$address6$"
+#     notification_author = "$notification.author$"
+#     notification_comment = "$notification.comment$"
+#     notification_type = "$notification.type$"
+#     notification_date = "$icinga.long_date_time$"
+#     notification_hostname = "$host.name$"
+#     notification_hostdisplayname = "$host.display_name$"
+#     notification_servicename = "$service.name$"
+#     notification_serviceoutput = "$service.output$"
+#     notification_servicestate = "$service.state$"
+#     notification_useremail = "$user.email$"
+#     notification_servicedisplayname = "$service.display_name$"
+#   }
+# }
+# ```
+#
+# :see: `doc/09-object-types.md L530-L622 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L530-L622>`__
+# /
 @dataclass
 class NotificationCommand:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
-# /**
-#  * ScheduledDowntime objects can be used to set up recurring downtimes for hosts/services.
-#  *
-#  * > **Best Practice**
-#  * >
-#  * > Rather than creating a `ScheduledDowntime` object for a specific host or service it is usually easier
-#  * > to just create a `ScheduledDowntime` template and use the `apply` keyword to assign the
-#  * > scheduled downtime to a float of hosts or services. Use the `to` keyword to set the specific target
-#  * > type for `Host` or `Service`.
-#  * > Check the `recurring downtimes <08-advanced-topics.md#recurring-downtimes>`__ example for details.
-#  *
-#  * Example:
-#  *
-#  * ```
-#  * object ScheduledDowntime "some-downtime" {
-#  *   host_name = "localhost"
-#  *   service_name = "ping4"
-#  *
-#  *   author = "icingaadmin"
-#  *   comment = "Some comment"
-#  *
-#  *   fixed = false
-#  *   duration = 30m
-#  *
-#  *   ranges = {
-#  *     "sunday" = "02:00-03:00"
-#  *   }
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L624-L674 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L624-L674>`__
-#  */
+# ScheduledDowntime objects can be used to set up recurring downtimes for hosts/services.
+#
+# > Best Practice
+# >
+# > Rather than creating a `ScheduledDowntime` object for a specific host or service it is usually easier
+# > to just create a `ScheduledDowntime` template and use the `apply` keyword to assign the
+# > scheduled downtime to a float of hosts or services. Use the `to` keyword to set the specific target
+# > type for `Host` or `Service`.
+# > Check the `recurring downtimes <08-advanced-topics.md#recurring-downtimes>`__ example for details.
+#
+# Example:
+#
+# ```
+# object ScheduledDowntime "some-downtime" {
+#   host_name = "localhost"
+#   service_name = "ping4"
+#
+#   author = "icingaadmin"
+#   comment = "Some comment"
+#
+#   fixed = false
+#   duration = 30m
+#
+#   ranges = {
+#     "sunday" = "02:00-03:00"
+#   }
+# }
+# ```
+#
+#
+# :see: `doc/09-object-types.md L624-L674 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L624-L674>`__
+# /
 @dataclass
 class ScheduledDowntime:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
 @dataclass
@@ -943,7 +934,7 @@ class Service(Checkable):
     Service objects describe network services and how they should be checked
     by Icinga 2.
 
-    **Best Practice**
+    Best Practice
 
     Rather than creating a ``Service`` object for a specific host it is usually easier
     to just create a ``Service`` template and use the ``apply`` keyword to assign the
@@ -971,6 +962,7 @@ class Service(Checkable):
             groups = [ "all-services", "snmp" ]
         }
 
+    .. tags:: Object type, Monitoring object type
 
     :see: `lib/icinga/service.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/service.ti>`__
     :see: `doc/09-object-types.md L677-L781 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L677-L781>`__
@@ -1032,29 +1024,27 @@ class Service(Checkable):
     """
 
 
-# /**
-#  * A group of services.
-#  *
-#  * > **Best Practice**
-#  * >
-#  * > Assign service group members using the `group assign <17-language-reference.md#group-assign>`__ rules.
-#  *
-#  * Example:
-#  *
-#  * ```
-#  * object ServiceGroup "snmp" {
-#  *   display_name = "SNMP services"
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L784-L805 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L784-L805>`__
-#  */
+# A group of services.
+#
+# > Best Practice
+# >
+# > Assign service group members using the `group assign <17-language-reference.md#group-assign>`__ rules.
+#
+# Example:
+#
+# ```
+# object ServiceGroup "snmp" {
+#   display_name = "SNMP services"
+# }
+# ```
+#
+# :see: `doc/09-object-types.md L784-L805 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L784-L805>`__
+# /
 @dataclass
 class ServiceGroup:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
 @dataclass
@@ -1102,6 +1092,8 @@ class TimePeriod(CustomVarObject):
         }
 
     Additional examples can be found `here <08-advanced-topics.md#timeperiods>`__.
+
+    .. tags:: Object type, Monitoring object type
 
     :see: `doc/09-object-types.md L809-L869 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/doc/09-object-types.md?plain=1#L807-L867>`__
 
@@ -1184,6 +1176,8 @@ class User(CustomVarObject):
         Recovery
         FlappingStart
         FlappingEnd
+
+    .. tags:: Object type, Monitoring object type
 
     :see: `lib/icinga/user.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti>`__
     :see: `doc/09-object-types.md L872-L937 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L872-L937>`__
@@ -1271,399 +1265,222 @@ class User(CustomVarObject):
     """
 
 
-# /**
-#  * A user group.
-#  *
-#  * > **Best Practice**
-#  * >
-#  * > Assign user group members using the `group assign <17-language-reference.md#group-assign>`__ rules.
-#  *
-#  * Example:
-#  *
-#  * ```
-#  * object UserGroup "icingaadmins" {
-#  *     display_name = "Icinga 2 Admin Group"
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L939-L960 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L939-L960>`__
-#  */
+# A user group.
+#
+# > Best Practice
+# >
+# > Assign user group members using the `group assign <17-language-reference.md#group-assign>`__ rules.
+#
+# Example:
+#
+# ```
+# object UserGroup "icingaadmins" {
+#     display_name = "Icinga 2 Admin Group"
+# }
+# ```
+#
+# /
 @dataclass
 class UserGroup:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+
+    :see: `doc/09-object-types.md L939-L960 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L939-L960>`__
+    """
 
 
-# /**
-#  * Zone objects are used to specify which Icinga 2 instances are located in a zone.
-#  * Please read the `distributed monitoring chapter <06-distributed-monitoring.md#distributed-monitoring>`__ for additional details.
-#  * Example:
-#  *
-#  * ```
-#  * object Zone "master" {
-#  *   endpoints = [ "icinga2-master1.localdomain", "icinga2-master2.localdomain" ]
-#  *
-#  * }
-#  *
-#  * object Zone "satellite" {
-#  *   endpoints = [ "icinga2-satellite1.localdomain" ]
-#  *   parent = "master"
-#  * }
-#  * ```
-#  *
-#  * @category Object type
-#  * @category Monitoring object type
-#  *
-#  * :see: `doc/09-object-types.md L963-L989 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L963-L989>`__
-#  */
+# Zone objects are used to specify which Icinga 2 instances are located in a zone.
+# Please read the `distributed monitoring chapter <06-distributed-monitoring.md#distributed-monitoring>`__ for additional details.
+# Example:
+#
+# ```
+# object Zone "master" {
+#   endpoints = [ "icinga2-master1.localdomain", "icinga2-master2.localdomain" ]
+#
+# }
+#
+# object Zone "satellite" {
+#   endpoints = [ "icinga2-satellite1.localdomain" ]
+#   parent = "master"
+# }
+# ```
+
+
+# :see: `doc/09-object-types.md L963-L989 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L963-L989>`__
+# /
 @dataclass
 class Zone:
-    pass
+    """
+    .. tags:: Object type, Monitoring object type
+    """
 
 
-# /***************************************************************************
-#  * Runtime Objects
-#  **************************************************************************/
+########################################################################################
+# Runtime Objects
+########################################################################################
 
 
-# /**
-#  * @category Object type
-#  * @category Runtime object type
-#  */
 @dataclass
 class Comment:
-    pass
+    """
+    .. tags:: Object type, Runtime object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Runtime object type
-#  */
 @dataclass
 class Downtime:
-    pass
+    """
+    .. tags:: Object type, Runtime object type
+    """
 
 
-# /***************************************************************************
-#  * Features
-#  **************************************************************************/
+########################################################################################
+# Features
+########################################################################################
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class ApiListener:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class CheckerComponent:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class CompatLogger:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class ElasticsearchWriter:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class ExternalCommandListener:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class FileLogger:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class GelfWriter:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class GraphiteWriter:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class IcingaApplication:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class IcingaDB:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class IdoMySqlConnection:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class IdoPgsqlConnection:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class InfluxdbWriter:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class Influxdb2Writer:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class JournaldLogger:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class LiveStatusListener:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class NotificationComponent:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class OpenTsdbWriter:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class PerfdataWriter:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class SyslogLogger:
-    pass
+    """
+    .. tags:: Object type, Feature object type
+    """
 
 
-# /**
-#  * @category Object type
-#  * @category Feature object type
-#  */
 @dataclass
 class WindowsEventLogLogger:
-    pass
-
-
-# export type ObjectType =
-#   // Monitoring
-#   | ApiUser
-#   | CheckCommand
-#   | CheckCommandArguments
-#   | Dependency
-#   | Endpoint
-#   | EventCommand
-#   | Host
-#   | HostGroup
-#   | Notification
-#   | NotificationCommand
-#   | ScheduledDowntime
-#   | Service
-#   | ServiceGroup
-#   | User
-#   | UserGroup
-#   | Zone
-#   // Runtime
-#   | Comment
-#   | Downtime
-#   // Feature
-#   | ApiListener
-#   | CheckerComponent
-#   | CompatLogger
-#   | ElasticsearchWriter
-#   | ExternalCommandListener
-#   | FileLogger
-#   | GelfWriter
-#   | GraphiteWriter
-#   | IcingaApplication
-#   | IcingaDB
-#   | IdoMySqlConnection
-#   | IdoPgsqlConnection
-#   | InfluxdbWriter
-#   | Influxdb2Writer
-#   | JournaldLogger
-#   | LiveStatusListener
-#   | NotificationComponent
-#   | OpenTsdbWriter
-#   | PerfdataWriter
-#   | SyslogLogger
-#   | WindowsEventLogLogger
-
-# export type ObjectByName<T> = T extends 'ApiUser'
-#   ? ApiUser
-#   : T extends 'CheckCommand'
-#   ? CheckCommand
-#   : T extends 'CheckCommandArguments'
-#   ? CheckCommandArguments
-#   : T extends 'Dependency'
-#   ? Dependency
-#   : T extends 'Endpoint'
-#   ? Endpoint
-#   : T extends 'EventCommand'
-#   ? EventCommand
-#   : T extends 'Host'
-#   ? Host
-#   : T extends 'HostGroup'
-#   ? HostGroup
-#   : T extends 'Notification'
-#   ? Notification
-#   : T extends 'NotificationCommand'
-#   ? NotificationCommand
-#   : T extends 'ScheduledDowntime'
-#   ? ScheduledDowntime
-#   : T extends 'Service'
-#   ? Service
-#   : T extends 'ServiceGroup'
-#   ? ServiceGroup
-#   : T extends 'TimePeriod'
-#   ? TimePeriod
-#   : T extends 'User'
-#   ? User
-#   : T extends 'UserGroup'
-#   ? UserGroup
-#   : T extends 'Zone'
-#   ? Zone
-#   : // Runtime
-#   T extends 'Comment'
-#   ? Comment
-#   : T extends 'Downtime'
-#   ? Downtime
-#   : // Feature
-#   T extends 'ApiListener'
-#   ? ApiListener
-#   : T extends 'CheckerComponent'
-#   ? CheckerComponent
-#   : T extends 'CompatLogger'
-#   ? CompatLogger
-#   : T extends 'ElasticsearchWriter'
-#   ? ElasticsearchWriter
-#   : T extends 'ExternalCommandListener'
-#   ? ExternalCommandListener
-#   : T extends 'FileLogger'
-#   ? FileLogger
-#   : T extends 'GelfWriter'
-#   ? GelfWriter
-#   : T extends 'GraphiteWriter'
-#   ? GraphiteWriter
-#   : T extends 'IcingaApplication'
-#   ? IcingaApplication
-#   : T extends 'IcingaDB'
-#   ? IcingaDB
-#   : T extends 'IdoMySqlConnection'
-#   ? IdoMySqlConnection
-#   : T extends 'IdoPgsqlConnection'
-#   ? IdoPgsqlConnection
-#   : T extends 'InfluxdbWriter'
-#   ? InfluxdbWriter
-#   : T extends 'Influxdb2Writer'
-#   ? Influxdb2Writer
-#   : T extends 'JournaldLogger'
-#   ? JournaldLogger
-#   : T extends 'LiveStatusListener'
-#   ? LiveStatusListener
-#   : T extends 'NotificationComponent'
-#   ? NotificationComponent
-#   : T extends 'OpenTsdbWriter'
-#   ? OpenTsdbWriter
-#   : T extends 'PerfdataWriter'
-#   ? PerfdataWriter
-#   : T extends 'SyslogLogger'
-#   ? SyslogLogger
-#   : T extends 'WindowsEventLogLogger'
-#   ? WindowsEventLogLogger
-#   : never
+    """
+    .. tags:: Object type, Feature object type
+    """

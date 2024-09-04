@@ -12,7 +12,7 @@ from pydantic import BaseModel, TypeAdapter
 from pretiac.config import Config, ObjectConfig, load_config
 from pretiac.exceptions import PretiacException
 from pretiac.log import logger
-from pretiac.object_types import ApiUser, Service, ServiceState, TimePeriod, User
+from pretiac.object_types import ApiUser, Host, Service, ServiceState, TimePeriod, User
 from pretiac.raw_client import RawClient
 from pretiac.request_handler import Payload, State
 from pretiac.status import StatusMessage
@@ -189,6 +189,15 @@ class Client:
             suppress_exception=suppress_exception,
         )
 
+    def get_host(self, name: str) -> Host:
+        """
+        :param name: The name of the host.
+        """
+        return self._get_object(Host, name)
+
+    def get_hosts(self) -> Sequence[Host]:
+        return self._get_objects(Host)
+
     # service ##########################################################################
 
     def create_service(
@@ -270,6 +279,9 @@ class Client:
             Service, _get_service_name(name=name, service=service, host=host)
         )
 
+    def get_services(self) -> Sequence[Service]:
+        return self._get_objects(Service)
+
     def delete_service(
         self,
         name: Optional[str] = None,
@@ -286,9 +298,6 @@ class Client:
             _get_service_name(name=name, service=service, host=host),
             suppress_exception=True,
         )
-
-    def get_services(self) -> Sequence[Service]:
-        return self._get_objects(Service)
 
     def send_service_check_result(
         self,
