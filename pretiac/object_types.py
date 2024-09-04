@@ -3,7 +3,6 @@ Listed in the order as in this `Markdown document <https://github.com/Icinga/ici
 """
 
 from collections.abc import Sequence
-from dataclasses import dataclass
 from enum import Enum
 from typing import (
     Any,
@@ -11,6 +10,8 @@ from typing import (
     Optional,
     Union,
 )
+
+from pydantic.dataclasses import dataclass
 
 MonitoringObjectName = Literal[
     "ApiUser",
@@ -648,7 +649,7 @@ class EventCommand:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class Host(Checkable):
     """
     A host.
@@ -925,7 +926,7 @@ class ScheduledDowntime:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class Service(Checkable):
     """
     Service objects describe network services and how they should be checked
