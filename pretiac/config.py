@@ -35,8 +35,8 @@ class Config(BaseModel):
 
     api_endpoint_host: Optional[str] = None
     """
-    The domain or the IP address of the API endpoint, e. g. ``icinga.example.com``
-    or ``localhost``.
+    The domain or the IP address of the API endpoint, e. g. ``icinga.example.com``,
+    ``localhost`` or ``127.0.0.1``.
     """
 
     api_endpoint_port: Optional[int] = None
@@ -73,7 +73,8 @@ class Config(BaseModel):
 
     client_private_key: Optional[str] = None
     """
-    The file path of the client **RSA private key**.
+    The file path of the client’s **private RSA key**, for example
+    ``/etc/pretiac/api-client.key.pem``.
 
     The RSA private key is created with this command:
 

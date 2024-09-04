@@ -49,6 +49,26 @@ def get_client(
     ca_certificate: Optional[str] = None,
     suppress_exception: Optional[bool] = None,
 ) -> Client:
+    """
+    Get the default client.
+
+    :param config_file: The path of the configuration file to load.
+    :param api_endpoint_host: The domain or the IP address of the API
+        endpoint, e. g. ``icinga.example.com``, ``localhost`` or ``127.0.0.1``.
+    :param api_endpoint_port: The TCP port of the API endpoint, for example
+        ``5665``.
+    :param http_basic_username: The name of the API user used in the HTTP basic
+        authentification, e. g. ``apiuser``.
+    :param http_basic_password: The password of the API user used in the HTTP
+        basic authentification, e. g. ``password``.
+    :param client_private_key: The file path of the client’s **private RSA
+        key**, for example ``/etc/pretiac/api-client.key.pem``.
+    :param client_certificate: The file path of the client’s **certificate**,
+        for example ``/etc/pretiac/api-client.cert.pem``.
+    :param ca_certificate: The file path of the Icinga **CA (Certification
+        Authority)**, for example ``/var/lib/icinga2/certs/ca.crt``.
+    :param suppress_exception: If set to ``True``, no exceptions are thrown.
+    """
     global __client
     if not __client:
         __client = Client(

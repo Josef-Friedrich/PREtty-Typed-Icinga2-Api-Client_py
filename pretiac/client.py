@@ -87,6 +87,12 @@ def _get_service_name(
 
 
 class Client:
+    """The high level client with typed output.
+
+
+    It is a wrapper around the :class:`RawClient`.
+    """
+
     raw_client: RawClient
 
     config: Config

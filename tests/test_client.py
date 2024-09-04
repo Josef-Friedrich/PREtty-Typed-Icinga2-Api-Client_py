@@ -6,6 +6,18 @@ def test_config(client: Client) -> None:
     assert client.config.http_basic_username == "apiuser"
 
 
+def test_api_enpoint_host_ip() -> None:
+    client = Client(
+        api_endpoint_host="127.0.0.1",
+        api_endpoint_port=5665,
+        http_basic_username="apiuser",
+        http_basic_password="password",
+    )
+    host = client.get_host("Host1")
+    assert host
+    assert host.name == "Host1"
+
+
 class TestHost:
     class TestCreate:
         def test_only_name(self, client: Client) -> None:
