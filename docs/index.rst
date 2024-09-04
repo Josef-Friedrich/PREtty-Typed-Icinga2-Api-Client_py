@@ -7,17 +7,12 @@ Welcome to pretiac's documentation!
 ===================================
 
 .. automodule:: pretiac
-.. automodule:: pretiac.actions
 .. automodule:: pretiac.client
 .. automodule:: pretiac.config
-.. automodule:: pretiac.events
 .. automodule:: pretiac.exceptions
 .. automodule:: pretiac.object_types
-.. automodule:: pretiac.objects
 .. automodule:: pretiac.raw_client
 .. automodule:: pretiac.request_handler
-.. automodule:: pretiac.status
-.. automodule:: pretiac.templates
 
 .. toctree::
    :maxdepth: 2

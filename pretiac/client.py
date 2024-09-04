@@ -13,9 +13,8 @@ from pretiac.config import Config, ObjectConfig, load_config
 from pretiac.exceptions import PretiacException
 from pretiac.log import logger
 from pretiac.object_types import ApiUser, Host, Service, ServiceState, TimePeriod, User
-from pretiac.raw_client import RawClient
+from pretiac.raw_client import RawClient, StatusMessage
 from pretiac.request_handler import Payload, State
-from pretiac.status import StatusMessage
 
 
 def _normalize_object_config(
@@ -196,7 +195,7 @@ class Client:
         return self._get_object(Host, name)
 
     def get_hosts(self) -> Sequence[Host]:
-        return self._get_objects(Host)
+        return self._get_objects(Service)
 
     # service ##########################################################################
 
