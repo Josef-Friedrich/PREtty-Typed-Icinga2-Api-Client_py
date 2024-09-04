@@ -13,7 +13,7 @@ from typing import Any, Optional, Union
 import yaml
 from pydantic import TypeAdapter
 
-from pretiac import get_client
+from pretiac import set_default_client
 from pretiac.client import CheckError, CheckResult
 from pretiac.log import logger
 from pretiac.object_types import ServiceState, get_service_state
@@ -74,7 +74,7 @@ class ServiceCheck:
     def check(self) -> CheckResult | CheckError:
         """Check and send the check result to the monitoring endpoint using the API."""
         check = CheckExecution(self.check_command)
-        return get_client().send_service_check_result(
+        return set_default_client().send_service_check_result(
             service=self.service,
             host=self.host,
             exit_status=check.exit_status,

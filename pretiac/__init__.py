@@ -38,7 +38,7 @@ from pretiac.client import Client
 __client: Optional[Client] = None
 
 
-def get_client(
+def set_default_client(
     config_file: Optional[str | Path] = None,
     api_endpoint_host: Optional[str] = None,
     api_endpoint_port: Optional[int] = None,
@@ -50,7 +50,7 @@ def get_client(
     suppress_exception: Optional[bool] = None,
 ) -> Client:
     """
-    Get the default client.
+    Set and configure the default client.
 
     :param config_file: The path of the configuration file to load.
     :param api_endpoint_host: The domain or the IP address of the API
@@ -70,16 +70,25 @@ def get_client(
     :param suppress_exception: If set to ``True``, no exceptions are thrown.
     """
     global __client
+    __client = Client(
+        config_file=config_file,
+        api_endpoint_host=api_endpoint_host,
+        api_endpoint_port=api_endpoint_port,
+        http_basic_username=http_basic_username,
+        http_basic_password=http_basic_password,
+        client_private_key=client_private_key,
+        client_certificate=client_certificate,
+        ca_certificate=ca_certificate,
+        suppress_exception=suppress_exception,
+    )
+    return __client
+
+
+def get_default_client() -> Client:
+    """
+    Get the default client.
+    """
+    global __client
     if not __client:
-        __client = Client(
-            config_file=config_file,
-            api_endpoint_host=api_endpoint_host,
-            api_endpoint_port=api_endpoint_port,
-            http_basic_username=http_basic_username,
-            http_basic_password=http_basic_password,
-            client_private_key=client_private_key,
-            client_certificate=client_certificate,
-            ca_certificate=ca_certificate,
-            suppress_exception=suppress_exception,
-        )
+        __client = Client()
     return __client

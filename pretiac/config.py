@@ -131,6 +131,8 @@ def load_config_file(config_file: str | Path | None = None) -> Config:
     2. Enviroment variable ``PRETIAC_CONFIG_FILE``.
     3. Configuration file in the home folder ``~/.pretiac.yml``.
     4. Configuration file in ``/etc/pretiac/config.yml``.
+
+    :param config_file: The path of the configuration file to load.
     """
     config_files: list[Path] = []
     if config_file:
@@ -168,6 +170,24 @@ def load_config(
     ca_certificate: Optional[str] = None,
     suppress_exception: Optional[bool] = None,
 ) -> Config:
+    """
+    :param config_file: The path of the configuration file to load.
+    :param api_endpoint_host: The domain or the IP address of the API
+        endpoint, e. g. ``icinga.example.com``, ``localhost`` or ``127.0.0.1``.
+    :param api_endpoint_port: The TCP port of the API endpoint, for example
+        ``5665``.
+    :param http_basic_username: The name of the API user used in the HTTP basic
+        authentification, e. g. ``apiuser``.
+    :param http_basic_password: The password of the API user used in the HTTP
+        basic authentification, e. g. ``password``.
+    :param client_private_key: The file path of the client’s **private RSA
+        key**, for example ``/etc/pretiac/api-client.key.pem``.
+    :param client_certificate: The file path of the client’s **certificate**,
+        for example ``/etc/pretiac/api-client.cert.pem``.
+    :param ca_certificate: The file path of the Icinga **CA (Certification
+        Authority)**, for example ``/var/lib/icinga2/certs/ca.crt``.
+    :param suppress_exception: If set to ``True``, no exceptions are thrown.
+    """
     config: Config = load_config_file(config_file)
 
     if api_endpoint_host is not None:

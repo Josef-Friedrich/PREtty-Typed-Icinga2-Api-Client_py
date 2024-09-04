@@ -1,14 +1,14 @@
 from argparse import ArgumentParser
 from pprint import pprint
 
-from pretiac import get_client
+from pretiac import set_default_client
 from pretiac.check_executor import check
 from pretiac.config import load_config_file
 from pretiac.log import logger
 
 
 def main() -> None:
-    client = get_client()
+    client = set_default_client()
     parser = ArgumentParser(
         prog="icinga-api",
         description="Command line interface for the Icinga2 API.",
