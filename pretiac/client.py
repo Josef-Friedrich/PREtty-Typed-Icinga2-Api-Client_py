@@ -121,6 +121,18 @@ class Client:
 
         self.raw_client = RawClient(self.config)
 
+    def _get_objects(self, type: Any) -> Sequence[Any]:
+        results = self.raw_client.objects.list(type.__name__)
+        objects: list[type] = []
+        for result in results:
+            objects.append(_convert_object(result, type))
+        return objects
+
+    def _get_object(self, type: Any, name: str) -> Any:
+        return _convert_object(self.raw_client.objects.get(type.__name__, name), type)
+
+    # host #############################################################################
+
     def create_host(
         self,
         name: str,
@@ -140,6 +152,25 @@ class Client:
         :param attrs: Set specific object attributes for this object type.
         :param object_config: Bundle of all configurations required to create a host.
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+
+        The method call
+
+        .. code-block::
+
+            client.create_host(name='framework')
+
+        creates for example a configuration file in the location
+        ``/var/lib/icinga2/api/packages/_api/33d433c5-2c2f-4159-84fc-41395ddcd04d/conf.d/hosts/framework.conf``
+        with the content:
+
+        .. code-block::
+
+            object Host "framework" {
+                import "generic-host"
+
+                version = 1725393956.244954
+                zone = "master"
+            }
         """
         config = _normalize_object_config(
             templates=templates, attrs=attrs, object_config=object_config
@@ -157,16 +188,6 @@ class Client:
             attrs=config.attrs,
             suppress_exception=suppress_exception,
         )
-
-    def _get_objects(self, type: Any) -> Sequence[Any]:
-        results = self.raw_client.objects.list(type.__name__)
-        objects: list[type] = []
-        for result in results:
-            objects.append(_convert_object(result, type))
-        return objects
-
-    def _get_object(self, type: Any, name: str) -> Any:
-        return _convert_object(self.raw_client.objects.get(type.__name__, name), type)
 
     # service ##########################################################################
 
@@ -193,6 +214,24 @@ class Client:
         :param attrs: Set specific object attributes for this object type.
         :param object_config: Bundle of all configurations required to create a service.
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+
+        .. code-block::
+
+            client.create_service(name='procs_zombie', host='framework', display_name='Zombie processes')
+
+        Creates a configuration file like
+        ``/var/lib/icinga2/api/packages/_api/33d433c5-2c2f-4159-84fc-41395ddcd04d/conf.d/services/framework!procs_zombie.conf``
+        this one:
+
+        .. code-block::
+
+            object Service "procs_zombie" {
+                check_command = "dummy"
+                display_name = "Zombie processes"
+                host_name = "framework"
+                version = 1725393956.973319
+                zone = "master"
+            }
         """
         config = _normalize_object_config(
             templates=templates, attrs=attrs, object_config=object_config

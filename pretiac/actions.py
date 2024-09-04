@@ -106,14 +106,17 @@ class Actions(RequestHandler):
 
         .. code-block:: python
 
-            process_check_result('Service',
-                                'myhost.domain!ping4',
-                                'exit_status': 2,
-                                'plugin_output': 'PING CRITICAL - Packet loss = 100%',
-                                'performance_data': [
-                                    'rta=5000.000000ms;3000.000000;5000.000000;0.000000',
-                                    'pl=100%;80;100;0'],
-                                'check_source': 'python client'})
+            raw_client.process_check_result(
+                "Service",
+                "myhost.domain!ping4",
+                exit_status=2,
+                plugin_output="PING CRITICAL - Packet loss = 100%",
+                performance_data=[
+                    "rta=5000.000000ms;3000.000000;5000.000000;0.000000",
+                    "pl=100%;80;100;0",
+                ],
+                check_source="python client",
+            )
 
 
         :see: `doc/12-icinga2-api/#process-check-result <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#process-check-result>`__
@@ -173,25 +176,22 @@ class Actions(RequestHandler):
 
         .. code-block:: python
 
-            reschedule_check('Service'
-                            'service.name=="ping4")
+            raw_client.reschedule_check("Service", 'service.name=="ping4"')
 
         example 2:
 
         .. code-block:: python
 
-            reschedule_check("Host", 'host.name=="localhost"', "1577833200")
+            raw_client.reschedule_check("Host", 'host.name=="localhost"', "1577833200")
 
         :param object_type: Host or Service
         :param filters: filters matched object(s)
-        :type filters: string
         :param filter_vars: variables used in the for filters expression
         :param next_check: timestamp to run the check
-        :type next_check: int
         :param force: ignore period restrictions and disabled checks
-        :type force: bool
+
         :returns: the response as json
-        :rtype: dictionary
+
         """
 
         url = "{}/{}".format(self.base_url_path, "reschedule-check")
@@ -236,7 +236,6 @@ class Actions(RequestHandler):
         :param filter_vars: variables used in the filters expression
 
         :returns: the response as json
-        :rtype: dictionary
         """
 
         url = "{}/{}".format(self.base_url_path, "send-custom-notification")
@@ -355,13 +354,10 @@ class Actions(RequestHandler):
                                 'service.state==2')
 
         :param object_type: Host or Service
-        :type object_type: string
         :param filters: filters matched object(s)
-        :type filters: string
         :param filter_vars: variables used in the filters expression
 
         :returns: the response as json
-        :rtype: dictionary
         """
 
         url = "{}/{}".format(self.base_url_path, "remove-acknowledgement")
@@ -398,7 +394,6 @@ class Actions(RequestHandler):
         :param filters: filters matched object(s)
         :param author: name of the author
         :param comment: comment text
-        :type comment: string
         :param filter_vars: variables used in the filters expression
 
         :returns: the response as json

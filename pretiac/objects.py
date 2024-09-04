@@ -213,37 +213,37 @@ class Objects(RequestHandler):
 
         .. code-block:: python
 
-            client.objects.list("Host")
+            raw_client.objects.list("Host")
 
         List the service ``ping4`` of host ``webserver01.domain!ping4``:
 
         .. code-block:: python
 
-            client.objects.list("Service", "webserver01.domain!ping4")
+            raw_client.objects.list("Service", "webserver01.domain!ping4")
 
         Get all hosts but limit attributes to `address` and `state`:
 
         .. code-block:: python
 
-            client.objects.list("Host", attrs=["address", "state"])
+            raw_client.objects.list("Host", attrs=["address", "state"])
 
         Get all hosts which have ``webserver`` in their host name:
 
         .. code-block:: python
 
-            client.objects.list("Host", filters='match("webserver*", host.name)')
+            raw_client.objects.list("Host", filters='match("webserver*", host.name)')
 
         Get all services and the joined host name:
 
         .. code-block:: python
 
-            client.objects.list("Service", joins=["host.name"])
+            raw_client.objects.list("Service", joins=["host.name"])
 
         Get all services and all supported joins:
 
         .. code-block:: python
 
-            client.objects.list("Service", joins=True)
+            raw_client.objects.list("Service", joins=True)
 
         Get all services which names start with ``vHost`` and are assigned to hosts named ``webserver*`` using ``filter_vars``:
 
@@ -251,7 +251,7 @@ class Objects(RequestHandler):
 
             hostname_pattern = "webserver*"
             service_pattern = "vHost*"
-            client.objects.list(
+            raw_client.objects.list(
                 "Service",
                 filters="match(hpattern, host.name) && match(spattern, service.name)",
                 filter_vars={"hpattern": hostname_pattern, "spattern": service_pattern},
@@ -310,25 +310,25 @@ class Objects(RequestHandler):
 
         .. code-block:: python
 
-            client.objects.get("Host", "webserver01.domain")
+            raw_client.objects.get("Host", "webserver01.domain")
 
         Get service ``ping4`` of host ``webserver01.domain``:
 
         .. code-block:: python
 
-            client.objects.get("Service", "webserver01.domain!ping4")
+            raw_client.objects.get("Service", "webserver01.domain!ping4")
 
         Get host ``webserver01.domain`` but the attributes ``address`` and ``state``:
 
         .. code-block:: python
 
-            client.objects.get("Host", "webserver01.domain", attrs=["address", "state"])
+            raw_client.objects.get("Host", "webserver01.domain", attrs=["address", "state"])
 
         Get service ``ping4`` of host ``webserver01.domain`` and the host attributes:
 
         .. code-block:: python
 
-            client.objects.get("Service", "webserver01.domain!ping4", joins=True)
+            raw_client.objects.get("Service", "webserver01.domain!ping4", joins=True)
         """
 
         return self.list(
@@ -360,7 +360,7 @@ class Objects(RequestHandler):
 
         .. code-block:: python
 
-            client.objects.create(
+            raw_client.objects.create(
                 "Host", "localhost", ["generic-host"], {"address": "127.0.0.1"}
             )
 
@@ -368,7 +368,7 @@ class Objects(RequestHandler):
 
         .. code-block:: python
 
-            client.objects.create(
+            raw_client.objects.create(
                 "Service",
                 "testhost3!dummy",
                 {"check_command": "dummy"},
@@ -408,22 +408,22 @@ class Objects(RequestHandler):
         :param object_type: The type of the object, for example ``Service``,
             ``Host`` or ``User``.
         :param name: the name of the object
-        :type name: string
         :param attrs: object's attributes to change
-        :type attrs: dictionary
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
         Change the ip address of a host:
 
         .. code-block:: python
 
-            client.objects.update("Host", "localhost", {"address": "127.0.1.1"})
+            raw_client.objects.update("Host", "localhost", {"address": "127.0.1.1"})
 
         Update a service and change the check interval:
 
         .. code-block:: python
 
-            client.objects.update("Service", "testhost3!dummy", {"check_interval": "10m"})
+            raw_client.objects.update(
+                "Service", "testhost3!dummy", {"check_interval": "10m"}
+            )
 
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#modifying-objects>`__
         """
@@ -460,13 +460,13 @@ class Objects(RequestHandler):
 
         .. code-block:: python
 
-            delete("Host", "localhost")
+            raw_client.objects.delete("Host", "localhost")
 
         Delete all services matching ``vhost*``:
 
         .. code-block:: python
 
-            delete("Service", filters='match("vhost*", service.name)')
+            raw_client.objects.delete("Service", filters='match("vhost*", service.name)')
 
         :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-objects>`_
         """
