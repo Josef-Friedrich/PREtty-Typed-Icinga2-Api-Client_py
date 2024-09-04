@@ -648,97 +648,94 @@ class EventCommand:
     """
 
 
-# A host.
-#
-# @example
-#
-# ```
-# object Host "icinga2-agent1.localdomain" {
-#   display_name = "Linux Client 1"
-#   address = "192.168.56.111"
-#   address6 = "2a00:1450:4001:815::2003"
-#
-#   groups = [ "linux-servers" ]
-#
-#   check_command = "hostalive"
-# }
-# ```
-#
-# @category Object type
-# @category Monitoring object type
-#
-# :see: `doc/09-object-types.md L323-L413 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L323-L413>`__
-# :see: `lib/icinga/host.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti>`__
-# /
 @dataclass
 class Host(Checkable):
     """
+    A host.
+
+    .. code-block::
+
+        object Host "icinga2-agent1.localdomain" {
+            display_name = "Linux Client 1"
+            address = "192.168.56.111"
+            address6 = "2a00:1450:4001:815::2003"
+
+            groups = [ "linux-servers" ]
+
+            check_command = "hostalive"
+        }
+
+    :see: `Icinga2 documentation: Host <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#host>`__
+    :see: `doc/09-object-types.md L323-L413 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L323-L413>`__
+    :see: `lib/icinga/host.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti>`__
+
     .. tags:: Object type, Monitoring object type
     """
 
+    groups: Optional[str] = None
+    """
 
-#    * A list of host groups this host belongs to.
-#    *
-#    * :see: `lib/icinga/host.ti L18-L20 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L18-L20>`__
-#    */
-#   groups: str[]
+     A list of host groups this host belongs to.
 
+     :see: `lib/icinga/host.ti L18-L20 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L18-L20>`__
+    """
 
-#    * A short description of the host (e.g. displayed by external interfaces instead of the name if set).
-#    *
-#    * :see: `lib/icinga/host.ti L22-L30 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L22-L30>`__
-#    */
-#   display_name: str
+    display_name: Optional[str] = None
+    """
+    A short description of the host (e.g. displayed by external interfaces instead of the name if set).
 
+    :see: `lib/icinga/host.ti L22-L30 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L22-L30>`__
+    """
 
-#    * The host's IPv4 address. Available as command runtime macro `$address$` if set.
-#    *
-#    * :see: `lib/icinga/host.ti L32 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L32>`__
-#    */
-#   address: str
+    address: Optional[str] = None
+    """
+    The host's IPv4 address. Available as command runtime macro ``$address$`` if set.
 
+    :see: `lib/icinga/host.ti L32 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L32>`__
+    """
 
-#    * The host's IPv6 address. Available as command runtime macro `$address6$` if set.
-#    *
-#    * :see: `lib/icinga/host.ti L33 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L33>`__
-#    */
-#   address6: str
+    address6: Optional[str] = None
+    """
+    The host's IPv6 address. Available as command runtime macro ``$address6$`` if set.
 
+    :see: `lib/icinga/host.ti L33 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L33>`__
+    """
 
-#    * The current state (0 = UP, 1 = DOWN).
-#    *
-#    * :see: `lib/icinga/host.ti L35-L37 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L35-L37>`__
-#    */
-#   state: HostState
+    state: Optional[HostState] = None
+    """
 
+    The current state (0 = UP, 1 = DOWN).
 
-#    * The previous state (0 = UP, 1 = DOWN).
-#    *
-#    * :see: `lib/icinga/host.ti L38-L40 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L38-L40>`__
-#    */
-#   last_state: HostState
+    :see: `lib/icinga/host.ti L35-L37 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L35-L37>`__
+    """
 
+    last_state: Optional[HostState] = None
+    """
+    The previous state (0 = UP, 1 = DOWN).
 
-#    * The last hard state (0 = UP, 1 = DOWN).
-#    *
-#    * :see: `lib/icinga/host.ti L41-L43 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L41-L43>`__
-#    */
-#   last_hard_state: HostState
+    :see: `lib/icinga/host.ti L38-L40 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L38-L40>`__
+    """
 
+    last_hard_state: Optional[HostState] = None
+    """
+    The last hard state (0 = UP, 1 = DOWN).
 
-#    * When the last UP state occurred (as a UNIX timestamp).
-#    *
-#    * :see: `lib/icinga/host.ti L44 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L44>`__
-#    */
-#   last_state_up: TimeStamp
+    :see: `lib/icinga/host.ti L41-L43 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L41-L43>`__
+    """
 
+    last_state_up: Optional[Timestamp] = None
+    """
+    When the last UP state occurred (as a UNIX timestamp).
 
-#    * When the last DOWN state occurred (as a UNIX timestamp).
-#    *
-#    * :see: `lib/icinga/host.ti L45 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L45>`__
-#    */
-#   last_state_down: TimeStamp
-# }
+    :see: `lib/icinga/host.ti L44 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L44>`__
+    """
+
+    last_state_down: Optional[Timestamp] = None
+    """
+    When the last DOWN state occurred (as a UNIX timestamp).
+
+    :see: `lib/icinga/host.ti L45 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L45>`__
+    """
 
 
 # A group of hosts.
