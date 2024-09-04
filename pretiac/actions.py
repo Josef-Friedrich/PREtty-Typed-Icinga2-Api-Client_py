@@ -27,7 +27,7 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
 from pretiac.exceptions import PretiacException
 from pretiac.object_types import (
@@ -76,7 +76,7 @@ class Actions(RequestHandler):
         filter: Optional[str] = None,
         filter_vars: FilterVars = None,
         suppress_exception: Optional[bool] = None,
-    ):
+    ) -> Any:
         """Process a check result for a host or a service.
 
         Send a ``POST`` request to the URL endpoint ``/v1/actions/process-check-result``.
@@ -119,7 +119,7 @@ class Actions(RequestHandler):
             )
 
 
-        :see: `doc/12-icinga2-api/#process-check-result <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#process-check-result>`__
+        :see: `Icinga2 API-Documentation: doc/12-icinga2-api/#process-check-result <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#process-check-result>`__
         """
         if not name and not filter:
             raise PretiacException("name and filters is empty or none")
@@ -168,7 +168,7 @@ class Actions(RequestHandler):
         filter_vars: FilterVars = None,
         next_check: Optional[int] = None,
         force_check: Optional[bool] = True,
-    ):
+    ) -> Any:
         """
         Reschedule a check for hosts and services.
 
@@ -182,7 +182,7 @@ class Actions(RequestHandler):
 
         .. code-block:: python
 
-            raw_client.reschedule_check("Host", 'host.name=="localhost"', "1577833200")
+            raw_client.reschedule_check("Host", 'host.name=="localhost"', 1577833200)
 
         :param object_type: Host or Service
         :param filters: filters matched object(s)
@@ -192,6 +192,7 @@ class Actions(RequestHandler):
 
         :returns: the response as json
 
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#reschedule-check
         """
 
         url = "{}/{}".format(self.base_url_path, "reschedule-check")
@@ -236,6 +237,8 @@ class Actions(RequestHandler):
         :param filter_vars: variables used in the filters expression
 
         :returns: the response as json
+
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#send-custom-notification
         """
 
         url = "{}/{}".format(self.base_url_path, "send-custom-notification")
@@ -276,7 +279,8 @@ class Actions(RequestHandler):
         :param filter_vars: variables used in the filters expression
 
         :returns: the response as json
-        :rtype: dictionary
+
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#delay-notification
         """
 
         url = "{}/{}".format(self.base_url_path, "delay-notification")
@@ -317,7 +321,8 @@ class Actions(RequestHandler):
         :param persistent: the comment will remain after the acknowledgement recovers or expires
 
         :returns: the response as json
-        :rtype: dictionary
+
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#acknowledge-problem
         """
 
         url = "{}/{}".format(self.base_url_path, "acknowledge-problem")
@@ -343,21 +348,25 @@ class Actions(RequestHandler):
 
     def remove_acknowledgement(
         self, object_type: HostOrService, filters: str, filter_vars: FilterVars = None
-    ):
+    ) -> Any:
         """
         Remove the acknowledgement for services or hosts.
 
         example 1:
+
         .. code-block:: python
 
-            remove_acknowledgement(object_type='Service',
-                                'service.state==2')
+            raw_client.actions.remove_acknowledgement(
+                object_type="Service", filters="service.state==2"
+            )
 
         :param object_type: Host or Service
         :param filters: filters matched object(s)
         :param filter_vars: variables used in the filters expression
 
         :returns: the response as json
+
+        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-acknowledgement>`__
         """
 
         url = "{}/{}".format(self.base_url_path, "remove-acknowledgement")
@@ -375,7 +384,7 @@ class Actions(RequestHandler):
         author: str,
         comment: str,
         filter_vars: FilterVars = None,
-    ):
+    ) -> Any:
         """
         Add a comment from an author to services or hosts.
 
@@ -397,7 +406,8 @@ class Actions(RequestHandler):
         :param filter_vars: variables used in the filters expression
 
         :returns: the response as json
-        :rtype: dictionary
+
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#add-comment
         """
 
         url = "{}/{}".format(self.base_url_path, "add-comment")
@@ -419,7 +429,7 @@ class Actions(RequestHandler):
         name: Optional[str] = None,
         filters: Optional[str] = None,
         filter_vars: FilterVars = None,
-    ):
+    ) -> Any:
         """
         Remove a comment using its name or filters.
 
@@ -442,7 +452,8 @@ class Actions(RequestHandler):
         :param filter_vars: variables used in the filters expression
 
         :returns: the response as json
-        :rtype: dictionary
+
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-comment
         """
 
         if not name and not filters:
@@ -474,7 +485,7 @@ class Actions(RequestHandler):
         all_services: Optional[bool] = None,
         trigger_name: Optional[str] = None,
         child_options: Optional[str] = None,
-    ):
+    ) -> Any:
         """
         Schedule a downtime for hosts and services.
 
@@ -520,7 +531,8 @@ class Actions(RequestHandler):
         :param child_options: schedule child downtimes.
 
         :returns: the response as json
-        :rtype: dictionary
+
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#schedule-downtime
         """
 
         url = "{}/{}".format(self.base_url_path, "schedule-downtime")
@@ -553,7 +565,7 @@ class Actions(RequestHandler):
         name: Optional[str] = None,
         filters: Optional[str] = None,
         filter_vars: FilterVars = None,
-    ):
+    ) -> Any:
         """
         Remove the downtime using its name or filters.
 
@@ -575,7 +587,8 @@ class Actions(RequestHandler):
         :param filter_vars: variables used in the filters expression
 
         :returns: the response as json
-        :rtype: dictionary
+
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-downtime
         """
 
         if not name and not filters:
@@ -593,7 +606,7 @@ class Actions(RequestHandler):
 
         return self._request("POST", url, payload)
 
-    def shutdown_process(self):
+    def shutdown_process(self) -> Any:
         """
         Shuts down Icinga2. May or may not return.
 
@@ -602,13 +615,15 @@ class Actions(RequestHandler):
         .. code-block:: python
 
             shutdown_process()
+
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#shutdown-process
         """
 
         url = "{}/{}".format(self.base_url_path, "shutdown-process")
 
         return self._request("POST", url)
 
-    def restart_process(self):
+    def restart_process(self) -> Any:
         """
         Restarts Icinga2. May or may not return.
 
@@ -617,13 +632,15 @@ class Actions(RequestHandler):
         .. code-block:: python
 
             restart_process()
+
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#restart-process
         """
 
         url = "{}/{}".format(self.base_url_path, "restart-process")
 
         return self._request("POST", url)
 
-    def generate_ticket(self, host_common_name: str):
+    def generate_ticket(self, host_common_name: str) -> Any:
         """
         Generates a PKI ticket for CSR auto-signing.
         This can be used in combination with satellite/client
@@ -636,6 +653,8 @@ class Actions(RequestHandler):
             generate_ticket("my-server-name")
 
         :param host_common_name: the host's common name for which the ticket should be generated.
+
+        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#generate-ticket
         """
 
         if not host_common_name:
