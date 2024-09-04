@@ -5,13 +5,32 @@ Listed in the order as in this `Markdown document <https://github.com/Icinga/ici
 from collections.abc import Sequence
 from enum import Enum
 from typing import (
+    Annotated,
     Any,
     Literal,
     Optional,
+    TypeAlias,
     Union,
 )
 
+from pydantic import BeforeValidator
 from pydantic.dataclasses import dataclass
+
+
+def _empty_str_to_none(v: str | None) -> str | None:
+    if v is None:
+        return None
+    if v == "":
+        return None
+    return v
+
+
+# https://github.com/pydantic/pydantic/discussions/2687#discussioncomment-9893991
+OptionalStr: TypeAlias = Annotated[Optional[str], BeforeValidator(_empty_str_to_none)]
+"""
+An empty string is set to None by the Pydantic validator.
+"""
+
 
 MonitoringObjectName = Literal[
     "ApiUser",
@@ -209,7 +228,8 @@ class ConfigObject:
     """:see: `lib/base/configobject.ti L59-L68 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L59-L68>`__"""
 
     type: Optional[str] = None
-    zone: Optional[str] = None
+
+    zone: OptionalStr = None
     """:see: `lib/base/configobject.ti L69 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L69>`__"""
 
     package: Optional[str] = None
@@ -326,19 +346,19 @@ class Checkable(CustomVarObject):
 
     flapping_threshold_high: Optional[float] = None
 
-    notes: Optional[str] = None
+    notes: OptionalStr = None
     """ Optional. Notes for the checkable."""
 
-    notes_url: Optional[str] = None
+    notes_url: OptionalStr = None
     """Optional. URL for notes for the checkable (for example, in notification commands)."""
 
-    action_url: Optional[str] = None
+    action_url: OptionalStr = None
     """Optional. URL for actions for the checkable (for example, an external graphing tool)."""
 
-    icon_image: Optional[str] = None
+    icon_image: OptionalStr = None
     """Optional. Icon image for the checkable. Used by external interfaces only."""
 
-    icon_image_alt: Optional[str] = None
+    icon_image_alt: OptionalStr = None
     """Optional. Icon image description for the checkable. Used by external interface only."""
 
     next_check: Optional[Timestamp] = None

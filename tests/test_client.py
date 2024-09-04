@@ -16,6 +16,7 @@ class TestHost:
     def test_get(self, client: Client) -> None:
         host = client.get_host("Host1")
         assert host.name == "Host1"
+        assert host.notes is None
 
 
 class TestService:
