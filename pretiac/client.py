@@ -154,6 +154,7 @@ class Client:
     def create_host(
         self,
         name: str,
+        display_name: Optional[str] = None,
         templates: Optional[Sequence[str]] = None,
         attrs: Optional[Payload] = None,
         object_config: Optional[ObjectConfig] = None,
@@ -164,6 +165,7 @@ class Client:
         ``generic-host`` is assigned.
 
         :param name: The name of the host.
+        :param display_name: A short description of the host.
         :param templates: Import existing configuration templates for this
             object type. Note: These templates must either be statically
             configured or provided in config packages.
@@ -196,6 +198,11 @@ class Client:
 
         if config.attrs is None and config.templates is None:
             config.templates = ["generic-host"]
+
+        if display_name is not None:
+            if config.attrs is None:
+                config.attrs = {}
+            config.attrs["display_name"] = display_name
 
         logger.info("Create host %s", name)
 

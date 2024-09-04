@@ -7,23 +7,34 @@ def test_config(client: Client) -> None:
 
 
 class TestHost:
-    def test_create(self, client: Client) -> None:
-        name = "MyNewHost"
-        client.delete_host(name)
-        host = client.create_host(name)
-        assert host
-        assert host.name == name
-        client.delete_host(name)
+    class TestCreate:
+        def test_only_name(self, client: Client) -> None:
+            name = "MyNewHost"
+            client.delete_host(name)
+            host = client.create_host(name)
+            assert host
+            assert host.name == name
+            client.delete_host(name)
 
-    def test_get(self, client: Client) -> None:
-        host = client.get_host("Host1")
-        assert host
-        assert host.name == "Host1"
-        assert host.notes is None
+        def test_display_name(self, client: Client) -> None:
+            name = "MyNewHost"
+            display_name = "My display name"
+            client.delete_host(name)
+            host = client.create_host(name, display_name=display_name)
+            assert host
+            assert host.display_name == display_name
+            client.delete_host(name)
 
-    def test_get_none(self, client: Client) -> None:
-        host = client.get_host("unknown")
-        assert host is None
+    class TestGet:
+        def test_success(self, client: Client) -> None:
+            host = client.get_host("Host1")
+            assert host
+            assert host.name == "Host1"
+            assert host.notes is None
+
+        def test_none(self, client: Client) -> None:
+            host = client.get_host("unknown")
+            assert host is None
 
     def test_get_all(self, client: Client) -> None:
         hosts = client.get_hosts()
