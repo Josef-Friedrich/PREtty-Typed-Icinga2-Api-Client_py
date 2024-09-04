@@ -672,7 +672,7 @@ class Host(Checkable):
     .. tags:: Object type, Monitoring object type
     """
 
-    groups: Optional[str] = None
+    groups: Optional[Sequence[str]] = None
     """
 
      A list of host groups this host belongs to.
