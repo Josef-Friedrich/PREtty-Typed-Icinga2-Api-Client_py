@@ -46,6 +46,8 @@ def _normalize_object_config(
 
 
 def _convert_object(result: Any, type: Any) -> Any:
+    if result is None:
+        return None
     adapter = TypeAdapter(type)
     attrs = result["attrs"]
     if "__name" in attrs:
@@ -128,7 +130,24 @@ class Client:
         return objects
 
     def _get_object(self, type: Any, name: str) -> Any:
-        return _convert_object(self.raw_client.objects.get(type.__name__, name), type)
+        return _convert_object(
+            self.raw_client.objects.get(
+                object_type=type.__name__, name=name, suppress_exception=True
+            ),
+            type,
+        )
+
+    # Listed in the same order as in this `Markdown document <https://github.com/Icinga/icinga2/blob/master/doc/09-object-types.md>`__.
+
+    # CRUD: create_object get_object get_objects delete_object
+
+    # api_user #########################################################################
+
+    def get_api_user(self, name: str) -> ApiUser:
+        return self._get_object(ApiUser, name)
+
+    def get_api_users(self) -> Sequence[ApiUser]:
+        return self._get_objects(ApiUser)
 
     # host #############################################################################
 
@@ -139,7 +158,7 @@ class Client:
         attrs: Optional[Payload] = None,
         object_config: Optional[ObjectConfig] = None,
         suppress_exception: Optional[bool] = None,
-    ) -> None:
+    ) -> Optional[Host]:
         """
         Create a new host. If no host configuration is specified, the template
         ``generic-host`` is assigned.
@@ -187,15 +206,29 @@ class Client:
             attrs=config.attrs,
             suppress_exception=suppress_exception,
         )
+        return self.get_host(name=name)
 
-    def get_host(self, name: str) -> Host:
+    def get_host(self, name: str) -> Optional[Host]:
         """
+        Get a single host.
+
         :param name: The name of the host.
         """
         return self._get_object(Host, name)
 
     def get_hosts(self) -> Sequence[Host]:
-        return self._get_objects(Service)
+        """Get all hosts."""
+        return self._get_objects(Host)
+
+    def delete_host(self, name: str) -> None:
+        """Delete a single host.
+
+        :param name: The name of the host."""
+        self.raw_client.objects.delete(
+            "Host",
+            name,
+            suppress_exception=True,
+        )
 
     # service ##########################################################################
 
@@ -401,14 +434,6 @@ class Client:
 
     def get_users(self) -> Sequence[User]:
         return self._get_objects(User)
-
-    # api_user #########################################################################
-
-    def get_api_user(self, name: str) -> ApiUser:
-        return self._get_object(ApiUser, name)
-
-    def get_api_users(self) -> Sequence[ApiUser]:
-        return self._get_objects(ApiUser)
 
     # status ###########################################################################
 

@@ -1038,9 +1038,11 @@ class Objects(RequestHandler):
             raw_client.objects.get("Service", "webserver01.domain!ping4", joins=True)
         """
 
-        return self.list(
+        result = self.list(
             object_type, name, attrs, joins=joins, suppress_exception=suppress_exception
-        )[0]
+        )
+        if "error" not in result:
+            return result[0]
 
     def create(
         self,

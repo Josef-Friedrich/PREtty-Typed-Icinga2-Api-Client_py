@@ -1,5 +1,7 @@
 """
-Listed in the order as in this `Markdown document <https://github.com/Icinga/icinga2/blob/master/doc/09-object-types.md>`__
+All available config object types.
+
+Listed in the same order as in this `Markdown document <https://github.com/Icinga/icinga2/blob/master/doc/09-object-types.md>`__.
 """
 
 from collections.abc import Sequence
