@@ -53,6 +53,9 @@ class CheckExecution:
             logger.debug(
                 "CheckExecution: check_command: %s", " ".join(self.check_command)
             )
+        except FileNotFoundError:
+            self.exit_status = ServiceState.CRITICAL
+            self.plugin_output = f"Plugin not found: {self.check_command[0]}"
         except Exception as e:
             self.exit_status = ServiceState.CRITICAL
             self.plugin_output = f"{e.__class__.__name__}: {e.args}"
@@ -60,6 +63,15 @@ class CheckExecution:
 
 @dataclass
 class ServiceCheck:
+    """
+    .. code-block:: yaml
+
+        - service: procs_zombie
+          display_name: Zombie processes
+          check_command: check_procs --warning=5 --critical=10 -s Z
+
+    """
+
     service: str
     """The name of the service."""
 
@@ -70,6 +82,10 @@ class ServiceCheck:
 
     display_name: Optional[str] = None
     """A short description of the service, if it needs to be created."""
+
+    def set_host(self, host: Optional[str]) -> None:
+        if self.host is None:
+            self.host = host
 
     def check(self) -> CheckResult | CheckError:
         """Check and send the check result to the monitoring endpoint using the API."""
@@ -89,8 +105,30 @@ class ServiceCheck:
 
 @dataclass
 class CheckCollection:
+    """
+    .. code-block:: yaml
+
+        ---
+        host: wrasp-passive
+
+        checks:
+
+        - service: memory
+            check_command: check_linux_memory -f -w 2 -c 0
+
+        - service: procs_zombie
+            display_name: Zombie processes
+            check_command: check_procs --warning=5 --critical=10 -s Z
+
+    """
+
     checks: Sequence[ServiceCheck]
     host: Optional[str] = None
+
+    def run_checks(self) -> None:
+        for check in self.checks:
+            check.set_host(self.host)
+            check.check()
 
 
 def _read_yaml(file_path: str | Path) -> Any:
@@ -113,6 +151,4 @@ def check(file_path: str | Path | None) -> None:
     if file_path is None:
         file_path = "/etc/pretiac/checks.yml"
     collection: CheckCollection = _read_check_collection(file_path)
-
-    for check in collection.checks:
-        check.check()
+    collection.run_checks()
