@@ -239,6 +239,24 @@ class TestObjects:
             assert result["results"][0]["code"] == 200
             assert result["results"][0]["status"] == "Object was created"
 
+        def test_create_host_with_notes(self, raw_client: RawClient) -> None:
+            host = "HostWithNotes"
+
+            def delete() -> None:
+                raw_client.objects.delete("Host", host, suppress_exception=True)
+
+            delete()
+            raw_client.objects.create(
+                "Host",
+                host,
+                templates=["passive-host"],
+                attrs={"notes": "A Note"},
+                suppress_exception=True,
+            )
+            result = raw_client.objects.get("Host", host)
+            assert result["attrs"]["notes"] == "A Note"
+            delete()
+
         def test_error_attribute_not_empty(self, raw_client: RawClient) -> None:
             result = raw_client.objects.create(
                 "Service",
