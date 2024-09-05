@@ -3,8 +3,8 @@ api_endpoint_port: 5665
 http_basic_username: apiuser
 http_basic_password: password
 new_host_defaults:
-  template: passive-host
+  templates: [passive-host]
 new_service_defaults:
-  template: passive-service
+  templates: [passive-service]
   attrs:
-    check_interval: monthly
+    check_interval: 120

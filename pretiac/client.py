@@ -265,7 +265,7 @@ class Client:
         attrs: Optional[Payload] = None,
         object_config: Optional[ObjectConfig] = None,
         suppress_exception: Optional[bool] = None,
-    ) -> None:
+    ) -> Optional[Service]:
         """
         Create a new service. If no service configuration is specified, the dummy check
         command is assigned.
@@ -319,6 +319,7 @@ class Client:
             attrs=config.attrs,
             suppress_exception=suppress_exception,
         )
+        return self.get_service(host=host, service=name)
 
     def get_service(
         self,
@@ -442,7 +443,7 @@ class Client:
         self.create_service(
             name=service,
             host=host,
-            object_config=self.config.new_host_defaults,
+            object_config=self.config.new_service_defaults,
             suppress_exception=True,
             display_name=display_name,
         )
