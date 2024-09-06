@@ -16,7 +16,6 @@ def test_get_object_types_names() -> None:
     assert get_object_types_names() == [
         "ApiUser",
         "CheckCommand",
-        "CheckCommandArguments",
         "Dependency",
         "Endpoint",
         "EventCommand",
@@ -61,7 +60,6 @@ def test_object_type_names_snake() -> None:
     assert object_type_names_snake == [
         "api_user",
         "check_command",
-        "check_command_arguments",
         "dependency",
         "endpoint",
         "event_command",

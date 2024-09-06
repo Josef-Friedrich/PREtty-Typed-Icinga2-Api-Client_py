@@ -15,6 +15,7 @@ from pretiac.log import logger
 from pretiac.object_types import (
     ApiUser,
     CheckCommand,
+    Dependency,
     Host,
     Service,
     ServiceState,
@@ -174,10 +175,15 @@ class Client:
     def get_api_users(self) -> Sequence[ApiUser]:
         return self._get_objects(ApiUser)
 
-    # check_command #########################################################################
+    # check_command ####################################################################
 
     def get_check_commands(self) -> Sequence[CheckCommand]:
         return self._get_objects(CheckCommand)
+
+    # Dependency ##########################################################
+
+    def get_dependencys(self) -> Sequence[Dependency]:
+        return self._get_objects(Dependency)
 
     # host #############################################################################
 

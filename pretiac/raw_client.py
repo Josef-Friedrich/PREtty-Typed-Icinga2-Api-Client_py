@@ -47,6 +47,7 @@ from pretiac.object_types import (
     ObjectTypeName,
     Payload,
     Value,
+    pluralize_to_lower_object_type_name,
 )
 from pretiac.request_handler import (
     RequestHandler,
@@ -937,57 +938,6 @@ class ObjectsUrlEndpoint(RequestHandler):
 
     path_prefix = "objects"
 
-    @staticmethod
-    def _convert_object_type(object_type: Optional[ObjectTypeName] = None) -> str:
-        """
-        check if the object_type is a valid Icinga 2 object type
-        """
-
-        type_conv = {
-            "ApiListener": "apilisteners",
-            "ApiUser": "apiusers",
-            "CheckCommand": "checkcommands",
-            "Arguments": "argumentss",
-            "CheckerComponent": "checkercomponents",
-            "CheckResultReader": "checkresultreaders",
-            "Comment": "comments",
-            "CompatLogger": "compatloggers",
-            "Dependency": "dependencies",
-            "Downtime": "downtimes",
-            "Endpoint": "endpoints",
-            "EventCommand": "eventcommands",
-            "ExternalCommandListener": "externalcommandlisteners",
-            "FileLogger": "fileloggers",
-            "GelfWriter": "gelfwriters",
-            "GraphiteWriter": "graphitewriters",
-            "Host": "hosts",
-            "HostGroup": "hostgroups",
-            "IcingaApplication": "icingaapplications",
-            "IdoMySqlConnection": "idomysqlconnections",
-            "IdoPgSqlConnection": "idopgsqlconnections",
-            "LiveStatusListener": "livestatuslisteners",
-            "Notification": "notifications",
-            "NotificationCommand": "notificationcommands",
-            "NotificationComponent": "notificationcomponents",
-            "OpenTsdbWriter": "opentsdbwriters",
-            "PerfdataWriter": "perfdatawriters",
-            "ScheduledDowntime": "scheduleddowntimes",
-            "Service": "services",
-            "ServiceGroup": "servicegroups",
-            "StatusDataWriter": "statusdatawriters",
-            "SyslogLogger": "syslogloggers",
-            "TimePeriod": "timeperiods",
-            "User": "users",
-            "UserGroup": "usergroups",
-            "Zone": "zones",
-        }
-        if object_type not in type_conv:
-            raise PretiacException(
-                f'Icinga 2 object type "{object_type}" does not exist.'
-            )
-
-        return type_conv[object_type]
-
     def list(
         self,
         object_type: ObjectTypeName,
@@ -1062,7 +1012,7 @@ class ObjectsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
         """
 
-        url_path = self._convert_object_type(object_type)
+        url_path = pluralize_to_lower_object_type_name(object_type)
         if name:
             url_path += f"/{_normalize_name(name)}"
 
@@ -1188,7 +1138,7 @@ class ObjectsUrlEndpoint(RequestHandler):
 
         return self._request(
             "PUT",
-            f"{self._convert_object_type(object_type)}/{_normalize_name(name)}",
+            f"{pluralize_to_lower_object_type_name(object_type)}/{_normalize_name(name)}",
             payload,
             suppress_exception=suppress_exception,
         )
@@ -1227,7 +1177,7 @@ class ObjectsUrlEndpoint(RequestHandler):
         """
         return self._request(
             "POST",
-            f"{self._convert_object_type(object_type)}/{name}",
+            f"{pluralize_to_lower_object_type_name(object_type)}/{name}",
             attrs,
             suppress_exception=suppress_exception,
         )
@@ -1267,7 +1217,7 @@ class ObjectsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#deleting-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-objects>`__
         """
 
-        object_type_url_path = self._convert_object_type(object_type)
+        object_type_url_path = pluralize_to_lower_object_type_name(object_type)
 
         payload: Payload = {}
         if filters:
@@ -1398,7 +1348,7 @@ class TemplatesUrlEndpoint(RequestHandler):
             payload["filter"] = filter
         return self._request(
             "GET",
-            self._pluralize(object_type),
+            pluralize_to_lower_object_type_name(object_type),
             payload,
         )
 

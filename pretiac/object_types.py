@@ -39,7 +39,7 @@ An empty string is set to None by the Pydantic validator.
 MonitoringObjectName = Literal[
     "ApiUser",
     "CheckCommand",
-    "CheckCommandArguments",
+    # "CheckCommandArguments", used in CheckCommand
     "Dependency",
     "Endpoint",
     "EventCommand",
@@ -118,14 +118,23 @@ object_type_names_snake = list(
 )
 
 
-def normalize_to_plural_snake_object_type_name(name: str) -> str:
+def normalize_to_plural_snake_object_type_name(object_type_name: str) -> str:
     """
+    for example: ``ApiUser`` to ``api_users``
+
     :returns: A pluralized object type name in the snake case.
     """
-    snake = _convert_pascal_to_snake_case(name)
+    snake = _convert_pascal_to_snake_case(object_type_name)
     if snake in object_type_names_snake:
         return f"{snake}s"
     return snake
+
+
+def pluralize_to_lower_object_type_name(object_type_name: ObjectTypeName) -> str:
+    """
+    for example: ``ApiUser`` to ``apiusers``
+    """
+    return f"{object_type_name.lower()}s"
 
 
 HostOrService = Literal["Host", "Service"]
@@ -519,9 +528,28 @@ class Function:
 
 
 @dataclass(config={"extra": "forbid"})
-class ArgumentDictionary:
+class CheckCommandArguments:
     """
-    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/command.ti#L33-L45
+    Command arguments can be defined as key-value-pairs in the `arguments`
+    dictionary. Best practice is to assign a dictionary as value which
+    provides additional details such as the `description` next to the `value`.
+
+    Example
+
+    .. code-block::
+
+        arguments = {
+            "--parameter" = {
+                description = "..."
+                value = "..."
+            }
+        }
+
+    .. tags:: Object type, Monitoring object type
+
+    :see: `doc/09-object-types.md L117-L150 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L117-L150>`__
+    :see: `lib/icinga/command.ti L30-L46 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L30-L46>`__
+    :see: `lib/icinga/command.ti L33-L45 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/command.ti#L33-L45>`__
     """
 
     key: Optional[str] = None
@@ -607,7 +635,7 @@ class CheckCommand(CustomVarObject):
     """
 
     arguments: Optional[
-        Union[dict[str, Union[ArgumentDictionary, str, Sequence[str], Payload]], str]
+        Union[dict[str, Union[CheckCommandArguments, str, Sequence[str], Payload]], str]
     ] = None
     """
     **Optional.** A dictionary of command arguments.
@@ -624,31 +652,6 @@ class CheckCommand(CustomVarObject):
 
     vars: dict[str, Any] | None = None
     """**Optional.** A dictionary containing custom variables that are specific to this command."""
-
-
-@dataclass(config={"extra": "forbid"})
-class CheckCommandArguments:
-    """
-    Command arguments can be defined as key-value-pairs in the `arguments`
-    dictionary. Best practice is to assign a dictionary as value which
-    provides additional details such as the `description` next to the `value`.
-
-    Example
-
-    .. code-block::
-
-        arguments = {
-            "--parameter" = {
-                description = "..."
-                value = "..."
-            }
-        }
-
-    .. tags:: Object type, Monitoring object type
-
-    :see: `doc/09-object-types.md L117-L150 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L117-L150>`__
-    :see: `lib/icinga/command.ti L30-L46 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L30-L46>`__
-    """
 
 
 @dataclass(config={"extra": "forbid"})
