@@ -5,7 +5,7 @@ from pretiac import set_default_client
 from pretiac.check_executor import check
 from pretiac.config import load_config_file
 from pretiac.log import logger
-
+from rich import print
 
 def main() -> None:
     client = set_default_client()
@@ -67,7 +67,7 @@ def main() -> None:
 
     elif args.sub_command == "config":
         config = load_config_file()
-        pprint(vars(config), indent=4)
+        print(config)
 
     elif args.sub_command == "send-service-check-result":
         pprint(
@@ -81,4 +81,4 @@ def main() -> None:
         )
 
     elif args.sub_command == "status":
-        pprint(client.get_status(), indent=4)
+        print(client.get_status())
