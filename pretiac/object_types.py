@@ -220,7 +220,7 @@ class CheckResult:
 ########################################################################################
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class ConfigObject:
     """
     :see: `lib/base/configobject.ti L57-L92 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L57-L92>`__
@@ -263,7 +263,7 @@ class ConfigObject:
     """:see: `lib/base/configobject.ti L88-L90 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L88-L90>`__"""
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class CustomVarObject(ConfigObject):
     """
     :see: `lib/icinga/customvarobject.ti L10 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/customvarobject.ti#L10>`__
@@ -275,7 +275,7 @@ class CustomVarObject(ConfigObject):
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class Checkable(CustomVarObject):
     """
     :see: `lib/icinga/checkable.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/checkable.ti>`__
@@ -425,7 +425,7 @@ class Checkable(CustomVarObject):
 ########################################################################################
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class ApiUser(ConfigObject):
     """
     ApiUser objects are used for authentication against the `Icinga 2 API <12-icinga2-api.md#icinga2-api-authentication>`__.
@@ -471,7 +471,7 @@ class ApiUser(ConfigObject):
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class CheckCommand:
     """
     A check command definition. Additional default command custom variables can be
@@ -520,7 +520,7 @@ class CheckCommand:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class CheckCommandArguments:
     """
     Command arguments can be defined as key-value-pairs in the `arguments`
@@ -545,7 +545,7 @@ class CheckCommandArguments:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class Dependency:
     """
     Dependency objects are used to specify dependencies between hosts and services. Dependencies
@@ -588,7 +588,7 @@ class Dependency:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class Endpoint:
     """
     Endpoint objects are used to specify connection information for remote
@@ -620,7 +620,7 @@ class Endpoint:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class EventCommand:
     """
     An event command definition.
@@ -728,7 +728,7 @@ class Host(Checkable):
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class HostGroup:
     """
     A group of hosts.
@@ -747,7 +747,7 @@ class HostGroup:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class Notification:
     """
     Notification objects are used to specify how users should be notified in case
@@ -775,7 +775,7 @@ class Notification:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class NotificationCommand:
     """
     A notification command definition.
@@ -860,7 +860,7 @@ class NotificationCommand:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class ScheduledDowntime:
     """
     ScheduledDowntime objects can be used to set up recurring downtimes for hosts/services.
@@ -987,7 +987,7 @@ class Service(Checkable):
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class ServiceGroup:
     """
     A group of services.
@@ -1006,7 +1006,18 @@ class ServiceGroup:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
+class TimePeriodSegment:
+    """
+    :see: `lib/icinga/timeperiod.cpp L84-L87 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/timeperiod.cpp#L84-L87>`__
+    """
+
+    begin: int
+
+    end: int
+
+
+@dataclass(config={"extra": "forbid"})
 class TimePeriod(CustomVarObject):
     """
     Time periods can be used to specify when hosts/services should be checked or to limit
@@ -1055,41 +1066,73 @@ class TimePeriod(CustomVarObject):
     .. tags:: Object type, Monitoring object type
 
     :see: `doc/09-object-types.md L809-L869 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/doc/09-object-types.md?plain=1#L807-L867>`__
-
-    https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L11-L39
+    :see: `lib/icinga/timeperiod.ti L11-L39 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L11-L39>`__
     """
 
     display_name: Optional[str] = None
     """
     A short description of the time period.
+
+    :see: `lib/icinga/timeperiod.ti L13-L21 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L13-L21>`__
     """
 
     ranges: Optional[dict[str, str]] = None
     """
     A dictionary containing information which days and durations apply to this timeperiod.
+
+    :see: `lib/icinga/timeperiod.ti L22 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L22>`__
+    """
+
+    update: Optional[Payload] = None
+    """
+    :see: `lib/icinga/timeperiod.ti L23 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L23>`__
     """
 
     prefer_includes: Optional[bool] = None
     """
     Whether to prefer timeperiods ``includes`` or ``excludes``. Default to true.
+
+    :see: `lib/icinga/timeperiod.ti L24-L26 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L24-L26>`__
     """
 
     excludes: Optional[Sequence[str]] = None
     """
     An array of timeperiods, which should exclude from your timerange.
+
+    :see: `lib/icinga/timeperiod.ti L27-L29 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L27-L29>`__
     """
 
     includes: Optional[Sequence[str]] = None
     """
     An array of timeperiods, which should include into your timerange.
+
+    :see: `lib/icinga/timeperiod.ti L30-L32 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L30-L32>`__
+    """
+
+    valid_begin: Optional[Timestamp] = None
+    """
+    :see: `lib/icinga/timeperiod.ti L33 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L33>`__
+    """
+
+    valid_end: Optional[Timestamp] = None
+    """
+    :see: `lib/icinga/timeperiod.ti L34 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L34>`__
+    """
+
+    segments: Optional[Sequence[TimePeriodSegment]] = None
+    """
+    :see: `lib/icinga/timeperiod.ti L35 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L35>`__
+    """
+
+    is_inside: Optional[bool] = None
+    """
+    :see: `lib/icinga/timeperiod.ti L36-L38 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L36-L38>`__
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class User(CustomVarObject):
-    """
-
-    A user.
+    """A user.
 
     Example:
 
@@ -1224,7 +1267,7 @@ class User(CustomVarObject):
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class UserGroup:
     """
     A user group.
@@ -1243,7 +1286,7 @@ class UserGroup:
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class Zone:
     """
     Zone objects are used to specify which Icinga 2 instances are located in a zone.
@@ -1272,14 +1315,14 @@ class Zone:
 ########################################################################################
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class Comment:
     """
     .. tags:: Object type, Runtime object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class Downtime:
     """
     .. tags:: Object type, Runtime object type
@@ -1291,147 +1334,147 @@ class Downtime:
 ########################################################################################
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class ApiListener:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class CheckerComponent:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class CompatLogger:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class ElasticsearchWriter:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class ExternalCommandListener:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class FileLogger:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class GelfWriter:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class GraphiteWriter:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class IcingaApplication:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class IcingaDB:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class IdoMySqlConnection:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class IdoPgsqlConnection:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class InfluxdbWriter:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class Influxdb2Writer:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class JournaldLogger:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class LiveStatusListener:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class NotificationComponent:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class OpenTsdbWriter:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class PerfdataWriter:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class SyslogLogger:
     """
     .. tags:: Object type, Feature object type
     """
 
 
-@dataclass
+@dataclass(config={"extra": "forbid"})
 class WindowsEventLogLogger:
     """
     .. tags:: Object type, Feature object type
