@@ -10,6 +10,7 @@ from pretiac.object_types import Payload
 
 
 class ObjectConfig(BaseModel):
+    model_config = {"extra": "forbid"}
     """
     Bundles all configuration required to create an object.
     """
@@ -26,6 +27,8 @@ class ObjectConfig(BaseModel):
 
 
 class Config(BaseModel):
+    model_config = {"extra": "forbid"}
+
     """
     :see: `pretiac (JS) <https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/722c6308d79f603a9ad7678609cd907b932c64ab/src/client.ts#L7-L15>`__
     """

@@ -89,6 +89,4 @@ class TestClassCheckExecution:
         assert check.check_command == [
             "/xxxxx",
         ]
-        assert (
-            check.plugin_output == "FileNotFoundError: (2, 'No such file or directory')"
-        )
+        assert check.plugin_output == "Plugin not found: /xxxxx"
