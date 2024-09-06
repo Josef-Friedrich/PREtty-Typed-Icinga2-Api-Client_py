@@ -207,7 +207,7 @@ class ActionsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#reschedule-check <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#reschedule-check>`__
         """
 
-        url = "{}/{}".format(self.base_url_path, "reschedule-check")
+        url = f"{self.base_url_path}/reschedule-check"
 
         payload: Payload = {
             "type": object_type,
@@ -253,7 +253,7 @@ class ActionsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#send-custom-notification <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#send-custom-notification>`__
         """
 
-        url = "{}/{}".format(self.base_url_path, "send-custom-notification")
+        url = f"{self.base_url_path}/send-custom-notification"
 
         payload: Payload = {
             "type": object_type,
@@ -295,7 +295,7 @@ class ActionsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#delay-notification <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#delay-notification>`__
         """
 
-        url = "{}/{}".format(self.base_url_path, "delay-notification")
+        url = f"{self.base_url_path}/delay-notification"
 
         payload: Payload = {
             "type": object_type,
@@ -337,7 +337,7 @@ class ActionsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#acknowledge-problem <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#acknowledge-problem>`__
         """
 
-        url = "{}/{}".format(self.base_url_path, "acknowledge-problem")
+        url = f"{self.base_url_path}/acknowledge-problem"
 
         payload: Payload = {
             "type": object_type,
@@ -381,7 +381,7 @@ class ActionsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#remove-acknowledgement <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-acknowledgement>`__
         """
 
-        url = "{}/{}".format(self.base_url_path, "remove-acknowledgement")
+        url = f"{self.base_url_path}/remove-acknowledgement"
 
         payload: Payload = {"type": object_type, "filter": filters}
         if filter_vars:
@@ -422,7 +422,7 @@ class ActionsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#add-comment <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#add-comment>`__
         """
 
-        url = "{}/{}".format(self.base_url_path, "add-comment")
+        url = f"{self.base_url_path}/add-comment"
 
         payload: Payload = {
             "type": object_type,
@@ -471,7 +471,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if not name and not filters:
             raise PretiacException("name and filters is empty or none")
 
-        url = "{}/{}".format(self.base_url_path, "remove-comment")
+        url = f"{self.base_url_path}/remove-comment"
 
         payload: Payload = {"type": object_type}
         if name:
@@ -547,7 +547,7 @@ class ActionsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#schedule-downtime <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#schedule-downtime>`__
         """
 
-        url = "{}/{}".format(self.base_url_path, "schedule-downtime")
+        url = f"{self.base_url_path}/schedule-downtime"
 
         payload: Payload = {
             "type": object_type,
@@ -606,7 +606,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if not name and not filters:
             raise PretiacException("name and filters is empty or none")
 
-        url = "{}/{}".format(self.base_url_path, "remove-downtime")
+        url = f"{self.base_url_path}/remove-downtime"
 
         payload: Payload = {"type": object_type}
         if name:
@@ -631,7 +631,7 @@ class ActionsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#shutdown-process <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#shutdown-process>`__
         """
 
-        url = "{}/{}".format(self.base_url_path, "shutdown-process")
+        url = f"{self.base_url_path}/shutdown-process"
 
         return self._request("POST", url)
 
@@ -648,7 +648,7 @@ class ActionsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#restart-process <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#restart-process>`__
         """
 
-        url = "{}/{}".format(self.base_url_path, "restart-process")
+        url = f"{self.base_url_path}/restart-process"
 
         return self._request("POST", url)
 
@@ -672,7 +672,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if not host_common_name:
             raise PretiacException("host_common_name is empty or none")
 
-        url = "{}/{}".format(self.base_url_path, "generate-ticket")
+        url = f"{self.base_url_path}/generate-ticket"
 
         payload = {"cn": host_common_name}
 
@@ -973,7 +973,7 @@ class ObjectsUrlEndpoint(RequestHandler):
         }
         if object_type not in type_conv:
             raise PretiacException(
-                'Icinga 2 object type "{}" does not exist.'.format(object_type)
+                f'Icinga 2 object type "{object_type}" does not exist.'
             )
 
         return type_conv[object_type]
@@ -1052,11 +1052,9 @@ class ObjectsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
         """
 
-        url_path = "{}/{}".format(
-            self.base_url_path, self._convert_object_type(object_type)
-        )
+        url_path = f"{self.base_url_path}/{self._convert_object_type(object_type)}"
         if name:
-            url_path += "/{}".format(_normalize_name(name))
+            url_path += f"/{_normalize_name(name)}"
 
         payload: Payload = {}
         if attrs:
@@ -1180,11 +1178,7 @@ class ObjectsUrlEndpoint(RequestHandler):
 
         return self._request(
             "PUT",
-            "{}/{}/{}".format(
-                self.base_url,
-                self._convert_object_type(object_type),
-                _normalize_name(name),
-            ),
+            f"{self.base_url}/{self._convert_object_type(object_type)}/{_normalize_name(name)}",
             payload,
             suppress_exception=suppress_exception,
         )
@@ -1223,9 +1217,7 @@ class ObjectsUrlEndpoint(RequestHandler):
         """
         return self._request(
             "POST",
-            "{}/{}/{}".format(
-                self.base_url, self._convert_object_type(object_type), name
-            ),
+            f"{self.base_url}/{self._convert_object_type(object_type)}/{name}",
             attrs,
             suppress_exception=suppress_exception,
         )
@@ -1275,9 +1267,9 @@ class ObjectsUrlEndpoint(RequestHandler):
         if cascade:
             payload["cascade"] = 1
 
-        url = "{}/{}".format(self.base_url_path, object_type_url_path)
+        url = f"{self.base_url_path}/{object_type_url_path}"
         if name:
-            url += "/{}".format(_normalize_name(name))
+            url += f"/{_normalize_name(name)}"
 
         return self._request(
             "DELETE", url, payload, suppress_exception=suppress_exception

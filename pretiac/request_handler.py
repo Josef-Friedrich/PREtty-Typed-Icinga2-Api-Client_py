@@ -118,7 +118,7 @@ class RequestHandler:
                 self.config.http_basic_password,
             )
         session.headers = {
-            "User-Agent": "Python-pretiac/{0}".format(self.raw_client.version),
+            "User-Agent": f"Python-pretiac/{self.raw_client.version}",
             "X-HTTP-Method-Override": method.upper(),
             "Accept": "application/json",
         }
@@ -182,11 +182,7 @@ class RequestHandler:
             and not 200 <= response.status_code <= 299
         ):
             raise PretiacRequestException(
-                'Request "{}" failed with status {}: {}'.format(
-                    response.url,
-                    response.status_code,
-                    response.text,
-                ),
+                f'Request "{response.url}" failed with status {response.status_code}: {response.text}',
                 response.json(),
             )
 
