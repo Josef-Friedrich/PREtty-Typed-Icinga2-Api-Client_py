@@ -69,10 +69,10 @@ class ResultContainer:
 
 class ActionsUrlEndpoint(RequestHandler):
     """
-    Connects to the URL endpoint ``v1/actions`` of the Icinga2 API.
+    Connects to the URL endpoint ``actions`` of the Icinga2 API.
     """
 
-    base_url_path = "v1/actions"
+    path_prefix = "actions"
 
     def process_check_result(
         self,
@@ -92,7 +92,7 @@ class ActionsUrlEndpoint(RequestHandler):
     ) -> Any:
         """Process a check result for a host or a service.
 
-        Send a ``POST`` request to the URL endpoint ``/v1/actions/process-check-result``.
+        Send a ``POST`` request to the URL endpoint ``actions/process-check-result``.
 
         :param type: ``Host`` or ``Service``.
         :param name: The name of the object.
@@ -142,8 +142,6 @@ class ActionsUrlEndpoint(RequestHandler):
         if type not in ["Host", "Service"]:
             raise PretiacException('type needs to be "Host" or "Service".')
 
-        url = f"{self.base_url}/process-check-result"
-
         payload: Payload = {
             "type": type,
             "exit_status": normalize_state(exit_status),
@@ -170,7 +168,10 @@ class ActionsUrlEndpoint(RequestHandler):
             payload["filter_vars"] = filter_vars
 
         return self._request(
-            "POST", url, payload, suppress_exception=suppress_exception
+            "POST",
+            "process-check-result",
+            payload,
+            suppress_exception=suppress_exception,
         )
 
     def reschedule_check(
@@ -207,8 +208,6 @@ class ActionsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#reschedule-check <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#reschedule-check>`__
         """
 
-        url = f"{self.base_url_path}/reschedule-check"
-
         payload: Payload = {
             "type": object_type,
             "filter": filters,
@@ -219,7 +218,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        return self._request("POST", url, payload)
+        return self._request("POST", "reschedule-check", payload)
 
     def send_custom_notification(
         self,
@@ -252,9 +251,6 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#send-custom-notification <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#send-custom-notification>`__
         """
-
-        url = f"{self.base_url_path}/send-custom-notification"
-
         payload: Payload = {
             "type": object_type,
             "filter": filters,
@@ -265,7 +261,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        return self._request("POST", url, payload)
+        return self._request("POST", "send-custom-notification", payload)
 
     def delay_notification(
         self,
@@ -294,9 +290,6 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#delay-notification <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#delay-notification>`__
         """
-
-        url = f"{self.base_url_path}/delay-notification"
-
         payload: Payload = {
             "type": object_type,
             "filter": filters,
@@ -305,7 +298,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        return self._request("POST", url, payload)
+        return self._request("POST", "delay-notification", payload)
 
     def acknowledge_problem(
         self,
@@ -336,9 +329,6 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#acknowledge-problem <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#acknowledge-problem>`__
         """
-
-        url = f"{self.base_url_path}/acknowledge-problem"
-
         payload: Payload = {
             "type": object_type,
             "filter": filters,
@@ -356,7 +346,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if persistent:
             payload["persistent"] = persistent
 
-        return self._request("POST", url, payload)
+        return self._request("POST", "acknowledge-problem", payload)
 
     def remove_acknowledgement(
         self, object_type: HostOrService, filters: str, filter_vars: FilterVars = None
@@ -380,14 +370,11 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#remove-acknowledgement <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-acknowledgement>`__
         """
-
-        url = f"{self.base_url_path}/remove-acknowledgement"
-
         payload: Payload = {"type": object_type, "filter": filters}
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        return self._request("POST", url, payload)
+        return self._request("POST", "remove-acknowledgement", payload)
 
     def add_comment(
         self,
@@ -421,9 +408,6 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#add-comment <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#add-comment>`__
         """
-
-        url = f"{self.base_url_path}/add-comment"
-
         payload: Payload = {
             "type": object_type,
             "filter": filters,
@@ -433,7 +417,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        return self._request("POST", url, payload)
+        return self._request("POST", "add-comment", payload)
 
     def remove_comment(
         self,
@@ -467,11 +451,8 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#remove-comment <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-comment>`__
         """
-
         if not name and not filters:
             raise PretiacException("name and filters is empty or none")
-
-        url = f"{self.base_url_path}/remove-comment"
 
         payload: Payload = {"type": object_type}
         if name:
@@ -481,7 +462,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        return self._request("POST", url, payload)
+        return self._request("POST", "remove-comment", payload)
 
     def schedule_downtime(
         self,
@@ -546,9 +527,6 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#schedule-downtime <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#schedule-downtime>`__
         """
-
-        url = f"{self.base_url_path}/schedule-downtime"
-
         payload: Payload = {
             "type": object_type,
             "filter": filters,
@@ -569,7 +547,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if child_options:
             payload["child_options"] = child_options
 
-        return self._request("POST", url, payload)
+        return self._request("POST", "schedule-downtime", payload)
 
     def remove_downtime(
         self,
@@ -606,8 +584,6 @@ class ActionsUrlEndpoint(RequestHandler):
         if not name and not filters:
             raise PretiacException("name and filters is empty or none")
 
-        url = f"{self.base_url_path}/remove-downtime"
-
         payload: Payload = {"type": object_type}
         if name:
             payload[object_type.lower()] = name
@@ -616,7 +592,7 @@ class ActionsUrlEndpoint(RequestHandler):
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        return self._request("POST", url, payload)
+        return self._request("POST", "remove-downtime", payload)
 
     def shutdown_process(self) -> Any:
         """
@@ -630,10 +606,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#shutdown-process <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#shutdown-process>`__
         """
-
-        url = f"{self.base_url_path}/shutdown-process"
-
-        return self._request("POST", url)
+        return self._request("POST", "shutdown-process")
 
     def restart_process(self) -> Any:
         """
@@ -647,10 +620,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#restart-process <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#restart-process>`__
         """
-
-        url = f"{self.base_url_path}/restart-process"
-
-        return self._request("POST", url)
+        return self._request("POST", "restart-process")
 
     def generate_ticket(self, host_common_name: str) -> Any:
         """
@@ -668,23 +638,20 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#generate-ticket <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#generate-ticket>`__
         """
-
         if not host_common_name:
             raise PretiacException("host_common_name is empty or none")
 
-        url = f"{self.base_url_path}/generate-ticket"
-
         payload = {"cn": host_common_name}
 
-        return self._request("POST", url, payload)
+        return self._request("POST", "generate-ticket", payload)
 
 
 class ConfigurationUrlEndpoint(RequestHandler):
     """
-    Connects to the URL endpoint ``v1/config`` of the Icinga2 API.
+    Connects to the URL endpoint ``config`` of the Icinga2 API.
     """
 
-    base_url_path = "v1/config"
+    path_prefix = "config"
 
     def create_package(
         self,
@@ -703,7 +670,7 @@ class ConfigurationUrlEndpoint(RequestHandler):
         """
         return self._request(
             "POST",
-            f"{self.base_url}/packages/{_normalize_name(package_name)}",
+            f"packages/{_normalize_name(package_name)}",
             suppress_exception=suppress_exception,
         )
 
@@ -729,7 +696,7 @@ class ConfigurationUrlEndpoint(RequestHandler):
         }
         return self._request(
             "POST",
-            f"{self.base_url}/stages/{_normalize_name(package_name)}",
+            f"stages/{_normalize_name(package_name)}",
             payload,
             suppress_exception=suppress_exception,
         )
@@ -751,7 +718,7 @@ class ConfigurationUrlEndpoint(RequestHandler):
         """
         return self._request(
             "DELETE",
-            f"{self.base_url}/packages/{_normalize_name(name)}",
+            f"packages/{_normalize_name(name)}",
             suppress_exception=suppress_exception,
         )
 
@@ -776,10 +743,10 @@ EventStreamType = Literal[
 
 class EventsUrlEndpoint(RequestHandler):
     """
-    Connects to the URL endpoint ``v1/events`` of the Icinga2 API.
+    Connects to the URL endpoint ``events`` of the Icinga2 API.
     """
 
-    base_url_path = "v1/events"
+    path_prefix = "events"
 
     def subscribe(
         self,
@@ -819,7 +786,7 @@ class EventsUrlEndpoint(RequestHandler):
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
-        stream = self._request("POST", self.base_url, payload, stream=True)
+        stream = self._request("POST", None, payload, stream=True)
         for event in self._get_message_from_stream(stream):
             yield event
 
@@ -915,7 +882,7 @@ class Host:
 
 class ObjectsUrlEndpoint(RequestHandler):
     """
-    Connects to the URL endpoint ``v1/objects`` of the Icinga2 API.
+    Connects to the URL endpoint ``objects`` of the Icinga2 API.
 
     Provides methods to manage configuration objects:
 
@@ -925,7 +892,7 @@ class ObjectsUrlEndpoint(RequestHandler):
     - deleting objects
     """
 
-    base_url_path = "v1/objects"
+    path_prefix = "objects"
 
     @staticmethod
     def _convert_object_type(object_type: Optional[ObjectTypeName] = None) -> str:
@@ -1052,7 +1019,7 @@ class ObjectsUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
         """
 
-        url_path = f"{self.base_url_path}/{self._convert_object_type(object_type)}"
+        url_path = self._convert_object_type(object_type)
         if name:
             url_path += f"/{_normalize_name(name)}"
 
@@ -1178,7 +1145,7 @@ class ObjectsUrlEndpoint(RequestHandler):
 
         return self._request(
             "PUT",
-            f"{self.base_url}/{self._convert_object_type(object_type)}/{_normalize_name(name)}",
+            f"{self._convert_object_type(object_type)}/{_normalize_name(name)}",
             payload,
             suppress_exception=suppress_exception,
         )
@@ -1217,7 +1184,7 @@ class ObjectsUrlEndpoint(RequestHandler):
         """
         return self._request(
             "POST",
-            f"{self.base_url}/{self._convert_object_type(object_type)}/{name}",
+            f"{self._convert_object_type(object_type)}/{name}",
             attrs,
             suppress_exception=suppress_exception,
         )
@@ -1267,7 +1234,7 @@ class ObjectsUrlEndpoint(RequestHandler):
         if cascade:
             payload["cascade"] = 1
 
-        url = f"{self.base_url_path}/{object_type_url_path}"
+        url = object_type_url_path
         if name:
             url += f"/{_normalize_name(name)}"
 
@@ -1299,12 +1266,12 @@ StatusType = Literal[
 
 class StatusUrlEndpoint(RequestHandler):
     """
-    Connects to the URL endpoint ``v1/status`` of the Icinga2 API.
+    Connects to the URL endpoint ``status`` of the Icinga2 API.
 
     :see: `lib/remote/statushandler.cpp <https://github.com/Icinga/icinga2/blob/master/lib/remote/statushandler.cpp>`__:
     """
 
-    base_url_path = "v1/status"
+    path_prefix = "status"
 
     def list(self, status_type: Optional[StatusType | str] = None) -> Any:
         """
@@ -1327,9 +1294,9 @@ class StatusUrlEndpoint(RequestHandler):
         :returns: status information
         """
 
-        url: str = self.base_url
+        url: str = ""
         if status_type:
-            url += f"/{status_type}"
+            url = status_type
 
         return self._request("GET", url)
 
@@ -1366,10 +1333,10 @@ class StatusMessage:
 
 class TemplatesUrlEndpoint(RequestHandler):
     """
-    Connects to the URL endpoint ``v1/templates`` of the Icinga2 API.
+    Connects to the URL endpoint ``templates`` of the Icinga2 API.
     """
 
-    base_url_path = "v1/templates"
+    path_prefix = "templates"
 
     def list(self, object_type: ObjectTypeName, filter: Optional[str] = None) -> Any:
         """Request information about configuration templates.
@@ -1387,7 +1354,9 @@ class TemplatesUrlEndpoint(RequestHandler):
         if filter:
             payload["filter"] = filter
         return self._request(
-            "GET", f"{self.base_url}/{self._pluralize(object_type)}", payload
+            "GET",
+            self._pluralize(object_type),
+            payload,
         )
 
 
@@ -1442,22 +1411,22 @@ class RawClient:
     version: str
 
     actions: ActionsUrlEndpoint
-    """Connects to the URL endpoint ``v1/actions`` of the Icinga2 API."""
+    """Connects to the URL endpoint ``actions`` of the Icinga2 API."""
 
     configuration: ConfigurationUrlEndpoint
-    """Connects to the URL endpoint ``v1/config`` of the Icinga2 API."""
+    """Connects to the URL endpoint ``config`` of the Icinga2 API."""
 
     events: EventsUrlEndpoint
-    """Connects to the URL endpoint ``v1/events`` of the Icinga2 API."""
+    """Connects to the URL endpoint ``events`` of the Icinga2 API."""
 
     objects: ObjectsUrlEndpoint
-    """Connects to the URL endpoint ``v1/objects`` of the Icinga2 API."""
+    """Connects to the URL endpoint ``objects`` of the Icinga2 API."""
 
     status: StatusUrlEndpoint
-    """Connects to the URL endpoint ``v1/status`` of the Icinga2 API."""
+    """Connects to the URL endpoint ``status`` of the Icinga2 API."""
 
     templates: TemplatesUrlEndpoint
-    """Connects to the URL endpoint ``v1/templates`` of the Icinga2 API."""
+    """Connects to the URL endpoint ``templates`` of the Icinga2 API."""
 
     def __init__(self, config: Config) -> None:
         """

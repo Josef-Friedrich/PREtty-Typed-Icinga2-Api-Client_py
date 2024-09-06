@@ -113,6 +113,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
 
 - Remove py.typed ([9645cda](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/9645cda9eb3daa59b4e062825643f870aa4328e9) by Josef Friedrich).
-- Remove preceding / from base_url_path ([ba08fc6](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/ba08fc6d2be320bb85b5f1d33eb59c0af1dec6a2) by David Gillies).
+- Remove preceding / from path_prefix ([ba08fc6](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/ba08fc6d2be320bb85b5f1d33eb59c0af1dec6a2) by David Gillies).
 - Remove debugging print function calls ([56b70b8](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/56b70b89eef94e177e2bc8fa7a4fb546fc3bfdf8) by Tobias von der Krone).
 - Remove default values for parameters in _request function ([070a778](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/070a7785978a855b231df7c2776bfe4678efa7f3) by Tobias von der Krone).

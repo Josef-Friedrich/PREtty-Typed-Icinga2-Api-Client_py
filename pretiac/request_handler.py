@@ -75,7 +75,12 @@ class RequestHandler:
 
     raw_client: "RawClient"
 
-    base_url_path: Optional[str] = None
+    api_version: str = "v1"
+
+    path_prefix: Optional[str] = None
+    """
+    for example ``objects`` for ``localhost:5665/v1/objects``
+    """
 
     def __init__(self, client: "RawClient") -> None:
         """
@@ -86,10 +91,10 @@ class RequestHandler:
         self.stream_cache = ""
 
     @property
-    def base_url(self) -> str:
-        if not self.base_url_path:
-            raise PretiacException("Specify self.base_url_path")
-        return self.base_url_path
+    def versioned_path_prefix(self) -> str:
+        if not self.path_prefix:
+            raise PretiacException("Specify self.path_prefix")
+        return f"{self.api_version}/{self.path_prefix}"
 
     @property
     def config(self) -> Config:
@@ -97,7 +102,7 @@ class RequestHandler:
 
     def _create_session(self, method: RequestMethod = "POST") -> requests.Session:
         """
-        create a session object
+        Create a session object.
         """
 
         session = requests.Session()
@@ -139,7 +144,7 @@ class RequestHandler:
     def _request(
         self,
         method: RequestMethod,
-        url_path: str,
+        url_relpath: Optional[str],
         payload: Optional[dict[str, Any]] = None,
         stream: bool = False,
         suppress_exception: Optional[bool] = None,
@@ -147,15 +152,22 @@ class RequestHandler:
         """
         make the request and return the body
 
-        :param method: the HTTP method
-        :param url_path: the requested url path
-        :param payload: the payload to send
+        :param method: The HTTP method, for example ``GET``, ``POST``
+        :param url_relpath: The requested url path without the path prefix. If
+            you want to query the URL
+            ``https://localhost:5665/v1/objects/hosts`` specify only ``hosts``.
+        :param payload: The payload to send
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
-        :returns: the response as json
+        :returns: The response as json
         """
 
-        request_url = urljoin(self.raw_client.url, url_path)
+        request_url = urljoin(
+            self.raw_client.url,
+            self.versioned_path_prefix
+            if url_relpath is None
+            else f"{self.versioned_path_prefix}/{url_relpath}",
+        )
 
         # create session
         session = self._create_session(method)
