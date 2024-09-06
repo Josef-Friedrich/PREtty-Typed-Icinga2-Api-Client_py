@@ -4,6 +4,7 @@ All available config object types.
 Listed in the same order as in this `Markdown document <https://github.com/Icinga/icinga2/blob/master/doc/09-object-types.md>`__.
 """
 
+import re
 from collections.abc import Sequence
 from enum import Enum
 from typing import (
@@ -13,6 +14,7 @@ from typing import (
     Optional,
     TypeAlias,
     Union,
+    get_args,
 )
 
 from pydantic import BeforeValidator
@@ -92,6 +94,38 @@ see `doc/09-object-types.md features- <https://github.com/Icinga/icinga2/blob/2c
 
 
 ObjectTypeName = Union[MonitoringObjectName, RuntimeObjectName, FeatureObjectName]
+
+
+def _convert_pascal_to_snake_case(name: str) -> str:
+    """
+    Insert underscores before capital letters and convert to lowercase
+    """
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
+
+
+def get_object_types_names() -> list[str]:
+    return (
+        list(get_args(MonitoringObjectName))
+        + list(get_args(RuntimeObjectName))
+        + list(get_args(FeatureObjectName))
+    )
+
+
+object_type_names: list[str] = get_object_types_names()
+
+object_type_names_snake = list(
+    map(lambda name: _convert_pascal_to_snake_case(name), object_type_names)
+)
+
+
+def normalize_to_plural_snake_object_type_name(name: str) -> str:
+    """
+    :returns: A pluralized object type name in the snake case.
+    """
+    snake = _convert_pascal_to_snake_case(name)
+    if snake in object_type_names_snake:
+        return f"{snake}s"
+    return snake
 
 
 HostOrService = Literal["Host", "Service"]
@@ -472,7 +506,37 @@ class ApiUser(ConfigObject):
 
 
 @dataclass(config={"extra": "forbid"})
-class CheckCommand:
+class Function:
+    """
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/base/function.ti#L10-L16
+    """
+
+    type: str
+    name: str
+    side_effect_free: bool
+    deprecated: bool
+    arguments: Sequence[str]
+
+
+@dataclass(config={"extra": "forbid"})
+class ArgumentDictionary:
+    """
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/command.ti#L33-L45
+    """
+
+    key: Optional[str] = None
+    value: Optional[str | Function | Any] = None
+    description: Optional[str] = None
+    required: Optional[bool] = None
+    skip_key: Optional[bool] = None
+    repeat_key: Optional[bool] = None
+    set_if: Optional[str | Function] = None
+    order: Optional[float] = None
+    separator: Optional[str] = None
+
+
+@dataclass(config={"extra": "forbid"})
+class CheckCommand(CustomVarObject):
     """
     A check command definition. Additional default command custom variables can be
     defined here.
@@ -518,6 +582,48 @@ class CheckCommand:
 
     .. tags:: Object type, Monitoring object type
     """
+
+    timeout: Optional[int] = None
+    """
+    **Optional.** The command timeout in seconds.  Defaults to `1m`.
+
+    https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L15-L17
+    """
+
+    execute: Optional[Union[str, Function]] = None
+    """
+    https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L19
+    """
+
+    command: Optional[Union[Sequence[str], Payload]] = None
+    """
+    **Required.** The command. This can either be an array of individual
+    command arguments. Alternatively a string can be specified in which case
+    the shell interpreter (usually /bin/sh) takes care of parsing the command.
+    When using the "arguments" attribute this must be an array. Can be specified
+    as function for advanced implementations.
+
+    https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L25-L28
+    """
+
+    arguments: Optional[
+        Union[dict[str, Union[ArgumentDictionary, str, Sequence[str], Payload]], str]
+    ] = None
+    """
+    **Optional.** A dictionary of command arguments.
+
+    https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L30-L46
+    """
+
+    env: Optional[Any] = None
+    """
+    **Optional.** A dictionary of macros which should be exported as environment variables prior to executing the command.
+
+    https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L48-L51
+    """
+
+    vars: dict[str, Any] | None = None
+    """**Optional.** A dictionary containing custom variables that are specific to this command."""
 
 
 @dataclass(config={"extra": "forbid"})

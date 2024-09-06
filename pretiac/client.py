@@ -12,7 +12,15 @@ from pydantic import BaseModel, TypeAdapter
 from pretiac.config import Config, ObjectConfig, load_config
 from pretiac.exceptions import PretiacException
 from pretiac.log import logger
-from pretiac.object_types import ApiUser, Host, Service, ServiceState, TimePeriod, User
+from pretiac.object_types import (
+    ApiUser,
+    CheckCommand,
+    Host,
+    Service,
+    ServiceState,
+    TimePeriod,
+    User,
+)
 from pretiac.raw_client import RawClient, StatusMessage
 from pretiac.request_handler import Payload, State
 
@@ -165,6 +173,11 @@ class Client:
 
     def get_api_users(self) -> Sequence[ApiUser]:
         return self._get_objects(ApiUser)
+
+    # check_command #########################################################################
+
+    def get_check_commands(self) -> Sequence[CheckCommand]:
+        return self._get_objects(CheckCommand)
 
     # host #############################################################################
 

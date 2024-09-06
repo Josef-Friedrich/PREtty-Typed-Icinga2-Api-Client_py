@@ -1,11 +1,15 @@
 from argparse import ArgumentParser
-from pprint import pprint
+
+from rich import print
 
 from pretiac import set_default_client
 from pretiac.check_executor import check
 from pretiac.config import load_config_file
 from pretiac.log import logger
-from rich import print
+from pretiac.object_types import (
+    normalize_to_plural_snake_object_type_name,
+)
+
 
 def main() -> None:
     client = set_default_client()
@@ -34,6 +38,13 @@ def main() -> None:
 
     # config
     sub_parsers.add_parser("config", help="Dump the configuration")
+
+    # objects
+    objects_parser = sub_parsers.add_parser(
+        "objects", help="List the different configuration object types."
+    )
+
+    objects_parser.add_argument("object_type")
 
     # send-service-check-result
     send_parser = sub_parsers.add_parser(
@@ -69,8 +80,16 @@ def main() -> None:
         config = load_config_file()
         print(config)
 
+    elif args.sub_command == "objects":
+        print(
+            getattr(
+                client,
+                f"get_{normalize_to_plural_snake_object_type_name(args.object_type)}",
+            )()
+        )
+
     elif args.sub_command == "send-service-check-result":
-        pprint(
+        print(
             client.send_service_check_result(
                 service=args.service,
                 host=args.host,
