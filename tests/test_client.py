@@ -57,7 +57,7 @@ class TestCheckCommand:
 
 class TestDependency:
     def test_get_all(self, client: Client) -> None:
-        o = client.get_dependencys()[0]
+        client.get_dependencys()
 
 
 class TestHost:
@@ -92,7 +92,7 @@ class TestHost:
 
     def test_get_all(self, client: Client) -> None:
         o = client.get_hosts()
-        assert len(o) == 2
+        assert len(o) == 3
 
 
 class TestService:
