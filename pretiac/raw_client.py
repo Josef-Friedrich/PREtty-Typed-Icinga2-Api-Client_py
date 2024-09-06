@@ -659,7 +659,7 @@ class ConfigurationUrlEndpoint(RequestHandler):
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
-        :param name: Package names with the ``_`` prefix are reserved for
+        :param package_name: Package names with the ``_`` prefix are reserved for
             internal packages and must not be used. You can recognize
             ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
             and packages.
@@ -681,7 +681,7 @@ class ConfigurationUrlEndpoint(RequestHandler):
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
-        :param name: Package names with the ``_`` prefix are reserved for
+        :param package_name: Package names with the ``_`` prefix are reserved for
             internal packages and must not be used. You can recognize
             ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
             and packages.
@@ -698,6 +698,49 @@ class ConfigurationUrlEndpoint(RequestHandler):
             "POST",
             f"stages/{_normalize_name(package_name)}",
             payload,
+            suppress_exception=suppress_exception,
+        )
+
+    def list_packages(
+        self,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        List packages and their stages.
+
+        :param suppress_exception: If this parameter is set to ``True``, no
+            exceptions are thrown.
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#list-configuration-packages-and-their-stages <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#list-configuration-packages-and-their-stages>`__
+        """
+        return self._request(
+            "GET",
+            "packages",
+            suppress_exception=suppress_exception,
+        )
+
+    def list_stage_files(
+        self,
+        package_name: str,
+        stage_name: str,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        List packages and their stages.
+
+        :param package_name: Package names with the ``_`` prefix are reserved for
+            internal packages and must not be used. You can recognize
+            ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
+            and packages.
+        :param stage_name: The stage name, for example ``7e7861c8-8008-4e8d-9910-2a0bb26921bd``.
+        :param suppress_exception: If this parameter is set to ``True``, no
+            exceptions are thrown.
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#list-configuration-package-stage-files <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#list-configuration-package-stage-files>`__
+        """
+        return self._request(
+            "GET",
+            f"stages/{package_name}/{stage_name}",
             suppress_exception=suppress_exception,
         )
 

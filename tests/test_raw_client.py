@@ -106,6 +106,23 @@ class TestConfiguration:
         assert result["status"] == "Created stage. Reload triggered."
         time.sleep(3)  # Reload is triggered
 
+    def test_list_packages(self, raw_client: RawClient) -> None:
+        results = raw_client.configuration.list_packages()
+        result = results["results"][0]
+        assert len(result["active-stage"]) == 36
+        assert isinstance(result["name"], str)
+        assert len(result["stages"][0]) == 36
+
+    def test_list_stage_files(self, raw_client: RawClient) -> None:
+        packages = raw_client.configuration.list_packages()
+        result = packages["results"][0]
+        package_name = result["name"]
+        stage_name = result["active-stage"]
+        results = raw_client.configuration.list_stage_files(package_name, stage_name)
+        result = results["results"][0]
+        assert isinstance(result["name"], str)
+        assert result["type"] in ("directory", "file")
+
 
 class TestObjects:
     class TestList:
