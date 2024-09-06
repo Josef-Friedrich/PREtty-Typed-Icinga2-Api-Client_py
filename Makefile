@@ -57,6 +57,7 @@ docker_start:
 		--rm \
 		icinga/icinga2
 	sudo docker logs icinga-master
+	sudo docker exec icinga-master /usr/sbin/icinga2 daemon -C
 
 docker_stop:
 	-sudo docker stop icinga-master

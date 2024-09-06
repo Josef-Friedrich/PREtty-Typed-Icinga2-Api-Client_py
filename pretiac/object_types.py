@@ -483,6 +483,7 @@ class ApiUser(ConfigObject):
 
     .. tags:: Object type, Monitoring object type
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser
     :see: `lib/remote/apiuser.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti>`__
     :see: `doc/09-object-types.md L41-L63 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L41-L63>`__
     """
@@ -605,6 +606,7 @@ class CheckCommand(CustomVarObject):
             vars.http_sni = false
         }
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#checkcommand
     :see: `doc/09-object-types.md L65-L114 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L65-L114>`__
     :see: `lib/icinga/command.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti>`__
 
@@ -661,7 +663,7 @@ class Dependency:
     can be defined as Host-to-Host, Service-to-Service, Service-to-Host, or Host-to-Service
     relations.
 
-    Example Service-to-Service
+    Service-to-Service Example:
 
     .. code-block::
 
@@ -677,7 +679,7 @@ class Dependency:
             disable_checks = true
         }
 
-    Example Host-to-Host
+    Host-to-Host Example:
 
     .. code-block::
 
@@ -691,17 +693,56 @@ class Dependency:
             disable_checks = true
         }
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#dependency
     :see: `doc/09-object-types.md L153-L258 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L153-L258>`__
 
     .. tags:: Object type, Monitoring object type
     """
+
+    parent_host_name: Optional[str] = None
+    """Required. The parent host."""
+
+    parent_service_name: Optional[str] = None
+    """Optional. The parent service. If omitted, this dependency object is
+    treated as host dependency."""
+
+    child_host_name: Optional[str] = None
+    """Required. The child host."""
+
+    child_service_name: Optional[str] = None
+    """Optional. The child service. If omitted, this dependency object is
+    treated as host dependency."""
+
+    redundancy_group: Optional[str] = None
+    """Optional. Puts the dependency into a group of mutually redundant
+    ones."""
+
+    disable_checks: Optional[bool] = None
+
+    """Optional. Whether to disable checks (i.e., don’t schedule active checks
+    and drop passive results) when this dependency fails. Defaults to false."""
+
+    disable_notifications: Optional[bool] = None
+    """Optional. Whether to disable notifications when this dependency fails.
+    Defaults to true."""
+
+    ignore_soft_states: Optional[bool] = None
+    """Optional. Whether to ignore soft states for the reachability calculation.
+    Defaults to true."""
+
+    period: Optional[str] = None
+    """Optional. Time period object during which this dependency is enabled."""
+
+    states: Optional[Sequence[str]] = None
+    """Optional. A list of state filters when this dependency should be OK.
+    Defaults to [ OK, Warning ] for services and [ Up ] for hosts."""
 
 
 @dataclass(config={"extra": "forbid"})
 class Endpoint:
     """
     Endpoint objects are used to specify connection information for remote
-    Icinga 2 instances. More details can be found in the `distributed monitoring chapter <06-distributed-monitoring.md#distributed-monitoring>`__.
+    Icinga 2 instances.
 
     Example
 
@@ -723,6 +764,7 @@ class Endpoint:
             log_duration = 0
         }
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#endpoint
     :see: `doc/09-object-types.md L260-L293 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L260-L293>`__
 
     .. tags:: Object type, Monitoring object type
@@ -741,6 +783,7 @@ class EventCommand:
         }
 
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#eventcommand
     :see: `doc/09-object-types.md L295-L320 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L295-L320>`__
 
     .. tags:: Object type, Monitoring object type
@@ -850,6 +893,7 @@ class HostGroup:
             assign where host.vars.os == "Linux"
         }
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#hostgroup
     :see: `doc/09-object-types.md L417-L440 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L417-L440>`__
 
     .. tags:: Object type, Monitoring object type
@@ -878,6 +922,7 @@ class Notification:
             states = [ Critical, Warning, OK ]
         }
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#notification
     :see: `doc/09-object-types.md L444-L527 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L444-L527>`__
 
     .. tags:: Object type, Monitoring object type
@@ -963,6 +1008,7 @@ class NotificationCommand:
             }
         }
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#notificationcommand
     :see: `doc/09-object-types.md L530-L622 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L530-L622>`__
 
     .. tags:: Object type, Monitoring object type
@@ -994,6 +1040,7 @@ class ScheduledDowntime:
             }
         }
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#scheduleddowntime
     :see: `doc/09-object-types.md L624-L674 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L624-L674>`__
 
     .. tags:: Object type, Monitoring object type
@@ -1036,6 +1083,7 @@ class Service(Checkable):
 
     .. tags:: Object type, Monitoring object type
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#service
     :see: `lib/icinga/service.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/service.ti>`__
     :see: `doc/09-object-types.md L677-L781 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L677-L781>`__
     """
@@ -1109,6 +1157,7 @@ class ServiceGroup:
             display_name = "SNMP services"
         }
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#servicegroup
     :see: `doc/09-object-types.md L784-L805 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L784-L805>`__
 
     .. tags:: Object type, Monitoring object type
@@ -1174,6 +1223,7 @@ class TimePeriod(CustomVarObject):
 
     .. tags:: Object type, Monitoring object type
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#timeperiod
     :see: `doc/09-object-types.md L809-L869 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/doc/09-object-types.md?plain=1#L807-L867>`__
     :see: `lib/icinga/timeperiod.ti L11-L39 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L11-L39>`__
     """
@@ -1290,6 +1340,7 @@ class User(CustomVarObject):
 
     .. tags:: Object type, Monitoring object type
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#user
     :see: `lib/icinga/user.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/user.ti>`__
     :see: `doc/09-object-types.md L872-L937 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L872-L937>`__
     """
@@ -1391,6 +1442,7 @@ class UserGroup:
 
     .. tags:: Object type, Monitoring object type
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#usergroup
     :see: `doc/09-object-types.md L939-L960 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L939-L960>`__
     """
 
@@ -1415,6 +1467,7 @@ class Zone:
 
     .. tags:: Object type, Monitoring object type
 
+    https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#zone
     :see: `doc/09-object-types.md L963-L989 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L963-L989>`__
     """
 

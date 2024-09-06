@@ -1013,6 +1013,8 @@ class ObjectsUrlEndpoint(RequestHandler):
         """
 
         url_path = pluralize_to_lower_object_type_name(object_type)
+        if url_path == "dependencys":
+            url_path = "dependencies"
         if name:
             url_path += f"/{_normalize_name(name)}"
 
