@@ -1,4 +1,5 @@
 import re
+import time
 
 import pytest
 
@@ -72,6 +73,38 @@ class TestActions:
             )
             assert result["error"] == 404
             assert result["status"] == "No objects found."
+
+
+class TestConfiguration:
+    def test_create_package(self, raw_client: RawClient) -> None:
+        raw_client.configuration.delete_package("test-example", suppress_exception=True)
+        result = raw_client.configuration.create_package("test-example")
+        results = result["results"]
+        assert results[0]["code"] == 200
+        assert results[0]["status"] == "Created package."
+
+    def test_delete_package(self, raw_client: RawClient) -> None:
+        raw_client.configuration.delete_package("test-example", suppress_exception=True)
+        with pytest.raises(
+            PretiacRequestException, match="Failed to delete package 'test-example'."
+        ):
+            raw_client.configuration.delete_package("test-example")
+
+    def test_create_stage(self, raw_client: RawClient):
+        raw_client.configuration.delete_package("test-example", suppress_exception=True)
+        raw_client.configuration.create_package("test-example")
+        results = raw_client.configuration.create_stage(
+            "test-example",
+            files={
+                "conf.d/test-host.conf": 'object Host "test-host" { address = "127.0.0.1", check_command = "hostalive" }'
+            },
+        )
+        result = results["results"][0]
+        assert result["code"] == 200
+        assert result["package"] == "test-example"
+        assert len(result["stage"]) == 36
+        assert result["status"] == "Created stage. Reload triggered."
+        time.sleep(3)  # Reload is triggered
 
 
 class TestObjects:

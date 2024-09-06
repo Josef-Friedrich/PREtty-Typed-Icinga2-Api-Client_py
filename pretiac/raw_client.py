@@ -67,9 +67,9 @@ class ResultContainer:
     results: list[Result]
 
 
-class Actions(RequestHandler):
+class ActionsUrlEndpoint(RequestHandler):
     """
-    Icinga 2 API actions class
+    Connects to the URL endpoint ``v1/actions`` of the Icinga2 API.
     """
 
     base_url_path = "v1/actions"
@@ -230,7 +230,7 @@ class Actions(RequestHandler):
         comment: str,
         filter_vars: FilterVars = None,
         force: Optional[int] = False,
-    ):
+    ) -> Any:
         """
         Send a custom notification for hosts and services.
 
@@ -274,7 +274,7 @@ class Actions(RequestHandler):
         filters: str,
         timestamp: int,
         filter_vars: FilterVars = None,
-    ):
+    ) -> Any:
         """
         Delay notifications for a host or a service.
 
@@ -319,7 +319,7 @@ class Actions(RequestHandler):
         sticky: Optional[bool] = None,
         notify: Optional[bool] = None,
         persistent: Optional[bool] = None,
-    ):
+    ) -> Any:
         """
         Acknowledge a Service or Host problem.
 
@@ -680,6 +680,77 @@ class Actions(RequestHandler):
         return self._request("POST", url, payload)
 
 
+class ConfigurationUrlEndpoint(RequestHandler):
+    """
+    Connects to the URL endpoint ``v1/config`` of the Icinga2 API.
+    """
+
+    base_url_path = "v1/config"
+
+    def create_package(
+        self,
+        package_name: str,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        :param name: Package names with the ``_`` prefix are reserved for
+            internal packages and must not be used. You can recognize
+            ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
+            and packages.
+        :param suppress_exception: If this parameter is set to ``True``, no
+            exceptions are thrown.
+        """
+        return self._request(
+            "POST",
+            f"{self.base_url}/packages/{_normalize_name(package_name)}",
+            suppress_exception=suppress_exception,
+        )
+
+    def create_stage(
+        self,
+        package_name: str,
+        files: dict[str, str],
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        :param name: Package names with the ``_`` prefix are reserved for
+            internal packages and must not be used. You can recognize
+            ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
+            and packages.
+        :param suppress_exception: If this parameter is set to ``True``, no
+            exceptions are thrown.
+        """
+
+        payload: Payload = {
+            "files": files,
+        }
+        return self._request(
+            "POST",
+            f"{self.base_url}/stages/{_normalize_name(package_name)}",
+            payload,
+            suppress_exception=suppress_exception,
+        )
+
+    def delete_package(
+        self,
+        name: str,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        :param name: Package names with the ``_`` prefix are reserved for
+            internal packages and must not be used. You can recognize
+            ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
+            and packages.
+        :param suppress_exception: If this parameter is set to ``True``, no
+            exceptions are thrown.
+        """
+        return self._request(
+            "DELETE",
+            f"{self.base_url}/packages/{_normalize_name(name)}",
+            suppress_exception=suppress_exception,
+        )
+
+
 EventStreamType = Literal[
     "CheckResult",  # Check results for hosts and services.
     "StateChange",  # Host/service state changes.
@@ -698,9 +769,9 @@ EventStreamType = Literal[
 ]
 
 
-class Events(RequestHandler):
+class EventsUrlEndpoint(RequestHandler):
     """
-    Icinga 2 API events class
+    Connects to the URL endpoint ``v1/events`` of the Icinga2 API.
     """
 
     base_url_path = "v1/events"
@@ -835,9 +906,16 @@ class Host:
     last_check_result: CheckResult
 
 
-class Objects(RequestHandler):
+class ObjectsUrlEndpoint(RequestHandler):
     """
-    Icinga 2 API objects class
+    Connects to the URL endpoint ``v1/objects`` of the Icinga2 API.
+
+    Provides methods to manage configuration objects:
+
+    - creating objects
+    - querying objects
+    - modifying objects
+    - deleting objects
     """
 
     base_url_path = "v1/objects"
@@ -1220,9 +1298,9 @@ StatusType = Literal[
 ]
 
 
-class Status(RequestHandler):
+class StatusUrlEndpoint(RequestHandler):
     """
-    Icinga 2 API status class
+    Connects to the URL endpoint ``v1/status`` of the Icinga2 API.
 
     :see: `lib/remote/statushandler.cpp <https://github.com/Icinga/icinga2/blob/master/lib/remote/statushandler.cpp>`_:
     """
@@ -1287,7 +1365,11 @@ class StatusMessage:
     perfdata: Optional[Sequence[PerfdataValue]]
 
 
-class Templates(RequestHandler):
+class TemplatesUrlEndpoint(RequestHandler):
+    """
+    Connects to the URL endpoint ``v1/templates`` of the Icinga2 API.
+    """
+
     base_url_path = "v1/templates"
 
     def list(self, object_type: ObjectTypeName, filter: Optional[str] = None) -> Any:
@@ -1358,15 +1440,23 @@ class RawClient:
 
     version: str
 
-    actions: Actions
+    actions: ActionsUrlEndpoint
+    """Connects to the URL endpoint ``v1/actions`` of the Icinga2 API."""
 
-    events: Events
+    configuration: ConfigurationUrlEndpoint
+    """Connects to the URL endpoint ``v1/config`` of the Icinga2 API."""
 
-    objects: Objects
+    events: EventsUrlEndpoint
+    """Connects to the URL endpoint ``v1/events`` of the Icinga2 API."""
 
-    status: Status
+    objects: ObjectsUrlEndpoint
+    """Connects to the URL endpoint ``v1/objects`` of the Icinga2 API."""
 
-    templates: Templates
+    status: StatusUrlEndpoint
+    """Connects to the URL endpoint ``v1/status`` of the Icinga2 API."""
+
+    templates: TemplatesUrlEndpoint
+    """Connects to the URL endpoint ``v1/templates`` of the Icinga2 API."""
 
     def __init__(self, config: Config) -> None:
         """
@@ -1382,8 +1472,9 @@ class RawClient:
 
         self.version = get_version("pretiac")
 
-        self.actions = Actions(self)
-        self.events = Events(self)
-        self.objects = Objects(self)
-        self.status = Status(self)
-        self.templates = Templates(self)
+        self.actions = ActionsUrlEndpoint(self)
+        self.configuration = ConfigurationUrlEndpoint(self)
+        self.events = EventsUrlEndpoint(self)
+        self.objects = ObjectsUrlEndpoint(self)
+        self.status = StatusUrlEndpoint(self)
+        self.templates = TemplatesUrlEndpoint(self)
