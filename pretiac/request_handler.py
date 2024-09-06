@@ -100,7 +100,7 @@ class RequestHandler:
     def config(self) -> Config:
         return self.raw_client.config
 
-    def _create_session(self, method: RequestMethod = "POST") -> requests.Session:
+    def __create_session(self, method: RequestMethod = "POST") -> requests.Session:
         """
         Create a session object.
         """
@@ -134,7 +134,7 @@ class RequestHandler:
     def _pluralize(object_type: ObjectTypeName) -> str:
         return f"{object_type.lower()}s"
 
-    def _throw_exception(self, suppress_exception: Optional[bool] = None) -> bool:
+    def __throw_exception(self, suppress_exception: Optional[bool] = None) -> bool:
         if isinstance(suppress_exception, bool):
             return not suppress_exception
         if isinstance(self.config.suppress_exception, bool):
@@ -170,7 +170,7 @@ class RequestHandler:
         )
 
         # create session
-        session = self._create_session(method)
+        session = self.__create_session(method)
 
         # create arguments for the request
         request_args: Payload = {"url": request_url}
@@ -190,7 +190,7 @@ class RequestHandler:
             session.close()
 
         if (
-            self._throw_exception(suppress_exception)
+            self.__throw_exception(suppress_exception)
             and not 200 <= response.status_code <= 299
         ):
             raise PretiacRequestException(
