@@ -131,8 +131,7 @@ class ActionsUrlEndpoint(RequestHandler):
                 check_source="python client",
             )
 
-
-        :see: `Icinga2 API-Documentation: doc/12-icinga2-api/#process-check-result <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#process-check-result>`__
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#process-check-result <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#process-check-result>`__
         """
         if not name and not filter:
             raise PretiacException("name and filters is empty or none")
@@ -205,7 +204,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :returns: the response as json
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#reschedule-check
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#reschedule-check <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#reschedule-check>`__
         """
 
         url = "{}/{}".format(self.base_url_path, "reschedule-check")
@@ -251,7 +250,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :returns: the response as json
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#send-custom-notification
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#send-custom-notification <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#send-custom-notification>`__
         """
 
         url = "{}/{}".format(self.base_url_path, "send-custom-notification")
@@ -293,7 +292,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :returns: the response as json
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#delay-notification
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#delay-notification <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#delay-notification>`__
         """
 
         url = "{}/{}".format(self.base_url_path, "delay-notification")
@@ -335,7 +334,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :returns: the response as json
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#acknowledge-problem
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#acknowledge-problem <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#acknowledge-problem>`__
         """
 
         url = "{}/{}".format(self.base_url_path, "acknowledge-problem")
@@ -379,7 +378,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :returns: the response as json
 
-        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-acknowledgement>`__
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#remove-acknowledgement <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-acknowledgement>`__
         """
 
         url = "{}/{}".format(self.base_url_path, "remove-acknowledgement")
@@ -420,7 +419,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :returns: the response as json
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#add-comment
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#add-comment <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#add-comment>`__
         """
 
         url = "{}/{}".format(self.base_url_path, "add-comment")
@@ -466,7 +465,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :returns: the response as json
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-comment
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#remove-comment <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-comment>`__
         """
 
         if not name and not filters:
@@ -545,7 +544,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :returns: the response as json
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#schedule-downtime
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#schedule-downtime <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#schedule-downtime>`__
         """
 
         url = "{}/{}".format(self.base_url_path, "schedule-downtime")
@@ -601,7 +600,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :returns: the response as json
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-downtime
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#remove-downtime <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#remove-downtime>`__
         """
 
         if not name and not filters:
@@ -629,7 +628,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
             shutdown_process()
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#shutdown-process
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#shutdown-process <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#shutdown-process>`__
         """
 
         url = "{}/{}".format(self.base_url_path, "shutdown-process")
@@ -646,7 +645,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
             restart_process()
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#restart-process
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#restart-process <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#restart-process>`__
         """
 
         url = "{}/{}".format(self.base_url_path, "restart-process")
@@ -667,7 +666,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :param host_common_name: the host's common name for which the ticket should be generated.
 
-        https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#generate-ticket
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#generate-ticket <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#generate-ticket>`__
         """
 
         if not host_common_name:
@@ -699,6 +698,8 @@ class ConfigurationUrlEndpoint(RequestHandler):
             and packages.
         :param suppress_exception: If this parameter is set to ``True``, no
             exceptions are thrown.
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#create-a-config-package <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#create-a-config-package>`__
         """
         return self._request(
             "POST",
@@ -719,6 +720,8 @@ class ConfigurationUrlEndpoint(RequestHandler):
             and packages.
         :param suppress_exception: If this parameter is set to ``True``, no
             exceptions are thrown.
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#create-a-stage-upload-configuration <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#create-a-stage-upload-configuration>`__
         """
 
         payload: Payload = {
@@ -743,6 +746,8 @@ class ConfigurationUrlEndpoint(RequestHandler):
             and packages.
         :param suppress_exception: If this parameter is set to ``True``, no
             exceptions are thrown.
+
+        :see: `Icinga2 API documentation: 12-icinga2-api/#deleting-configuration-package <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-configuration-package>`__
         """
         return self._request(
             "DELETE",
@@ -802,6 +807,8 @@ class EventsUrlEndpoint(RequestHandler):
         :param filter_vars: variables used in the filters expression
 
         :returns: the events
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#event-streams <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-streams>`__
         """
         payload: Payload = {
             "types": types,
@@ -1042,8 +1049,7 @@ class ObjectsUrlEndpoint(RequestHandler):
                 filter_vars={"hpattern": hostname_pattern, "spattern": service_pattern},
             )
 
-
-        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
         """
 
         url_path = "{}/{}".format(
@@ -1114,8 +1120,9 @@ class ObjectsUrlEndpoint(RequestHandler):
         .. code-block:: python
 
             raw_client.objects.get("Service", "webserver01.domain!ping4", joins=True)
-        """
 
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
+        """
         result = self.list(
             object_type, name, attrs, joins=joins, suppress_exception=suppress_exception
         )
@@ -1162,7 +1169,7 @@ class ObjectsUrlEndpoint(RequestHandler):
                 ["generic-service"],
             )
 
-        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#creating-config-objects>`__
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#creating-config-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#creating-config-objects>`__
         """
 
         payload: Payload = {}
@@ -1212,7 +1219,7 @@ class ObjectsUrlEndpoint(RequestHandler):
                 "Service", "testhost3!dummy", {"check_interval": "10m"}
             )
 
-        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#modifying-objects>`__
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#modifying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#modifying-objects>`__
         """
         return self._request(
             "POST",
@@ -1255,7 +1262,7 @@ class ObjectsUrlEndpoint(RequestHandler):
 
             raw_client.objects.delete("Service", filters='match("vhost*", service.name)')
 
-        :see: `Icinga2 API-Documentation <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-objects>`_
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#deleting-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-objects>`__
         """
 
         object_type_url_path = self._convert_object_type(object_type)
@@ -1302,7 +1309,7 @@ class StatusUrlEndpoint(RequestHandler):
     """
     Connects to the URL endpoint ``v1/status`` of the Icinga2 API.
 
-    :see: `lib/remote/statushandler.cpp <https://github.com/Icinga/icinga2/blob/master/lib/remote/statushandler.cpp>`_:
+    :see: `lib/remote/statushandler.cpp <https://github.com/Icinga/icinga2/blob/master/lib/remote/statushandler.cpp>`__:
     """
 
     base_url_path = "v1/status"
@@ -1381,6 +1388,8 @@ class TemplatesUrlEndpoint(RequestHandler):
             ``tmpl`` variable. In the example ``"match(\"g*\", tmpl.name)"``
             the match function is used to check a wildcard string pattern against
             ``tmpl.name``.
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-templates <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-templates>`__
         """
         payload: Payload = {}
         if filter:
