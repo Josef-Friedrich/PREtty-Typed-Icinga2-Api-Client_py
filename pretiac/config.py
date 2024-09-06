@@ -3,14 +3,15 @@ from pathlib import Path
 from typing import Optional, Sequence
 
 import yaml
-from pydantic import BaseModel
+from pydantic import TypeAdapter
+from pydantic.dataclasses import dataclass
 
 from pretiac.exceptions import PretiacException
 from pretiac.object_types import Payload
 
 
-class ObjectConfig(BaseModel):
-    model_config = {"extra": "forbid"}
+@dataclass(config={"extra": "forbid"})
+class ObjectConfig:
     """
     Bundles all configuration required to create an object.
     """
@@ -26,9 +27,8 @@ class ObjectConfig(BaseModel):
     """Set specific object attributes for this object type."""
 
 
-class Config(BaseModel):
-    model_config = {"extra": "forbid"}
-
+@dataclass(config={"extra": "forbid"})
+class Config:
     """
     :see: `pretiac (JS) <https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/722c6308d79f603a9ad7678609cd907b932c64ab/src/client.ts#L7-L15>`__
     """
@@ -153,13 +153,15 @@ def load_config_file(config_file: str | Path | None = None) -> Config:
             config_file = path
             break
 
+    adapter = TypeAdapter(Config)
+
     if not config_file:
-        return Config()
+        return adapter.validate_python({})
 
     with open(config_file, "r") as file:
         config_raw = yaml.safe_load(file)
         config_raw["config_file"] = str(config_file)
-    return Config(**config_raw)
+    return adapter.validate_python(config_raw)
 
 
 def load_config(
