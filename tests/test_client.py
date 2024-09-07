@@ -57,7 +57,31 @@ class TestCheckCommand:
 
 class TestDependency:
     def test_get_all(self, client: Client) -> None:
-        client.get_dependencys()
+        o = client.get_dependencys()[0]
+        assert o.type == "Dependency"
+        assert o.name == "Host2!Service2!Service1-Service2"
+        assert o.type == "Dependency"
+        assert o.templates == ["Service1-Service2"]
+        assert o.parent_host_name == "Host1"
+        assert o.parent_service_name == "Service1"
+        assert o.child_host_name == "Host2"
+        assert o.child_service_name == "Service2"
+        assert o.redundancy_group is None
+        assert o.disable_checks is True
+        assert o.disable_notifications is True
+        assert o.ignore_soft_states is True
+        assert o.period is None
+        assert o.states == ["OK", "Warning"]
+
+
+class TestEndpoint:
+    def test_get_all(self, client: Client) -> None:
+        o = client.get_endpoints()[0]
+        assert o.type == "Endpoint"
+        assert o.name == "icinga-master"
+        assert o.source_location
+        assert o.source_location.path == "/etc/icinga2/zones.conf"
+        assert o.log_duration == 86400
 
 
 class TestHost:

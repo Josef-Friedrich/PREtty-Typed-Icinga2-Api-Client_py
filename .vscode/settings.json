@@ -36,5 +36,6 @@
     "${workspaceFolder}/tests",
     "-m",
     "not (slow or gui)"
-  ]
+  ],
+  "python.analysis.autoImportCompletions": true
 }

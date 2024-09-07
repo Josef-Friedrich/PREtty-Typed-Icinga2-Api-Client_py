@@ -657,7 +657,7 @@ class CheckCommand(CustomVarObject):
 
 
 @dataclass(config={"extra": "forbid"})
-class Dependency:
+class Dependency(CustomVarObject):
     """
     Dependency objects are used to specify dependencies between hosts and services. Dependencies
     can be defined as Host-to-Host, Service-to-Service, Service-to-Host, or Host-to-Service
@@ -695,6 +695,7 @@ class Dependency:
 
     https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#dependency
     :see: `doc/09-object-types.md L153-L258 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L153-L258>`__
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/dependency.ti#L21-L99
 
     .. tags:: Object type, Monitoring object type
     """
@@ -702,23 +703,22 @@ class Dependency:
     parent_host_name: Optional[str] = None
     """Required. The parent host."""
 
-    parent_service_name: Optional[str] = None
+    parent_service_name: OptionalStr = None
     """Optional. The parent service. If omitted, this dependency object is
     treated as host dependency."""
 
     child_host_name: Optional[str] = None
     """Required. The child host."""
 
-    child_service_name: Optional[str] = None
+    child_service_name: OptionalStr = None
     """Optional. The child service. If omitted, this dependency object is
     treated as host dependency."""
 
-    redundancy_group: Optional[str] = None
+    redundancy_group: OptionalStr = None
     """Optional. Puts the dependency into a group of mutually redundant
     ones."""
 
     disable_checks: Optional[bool] = None
-
     """Optional. Whether to disable checks (i.e., don’t schedule active checks
     and drop passive results) when this dependency fails. Defaults to false."""
 
@@ -730,7 +730,7 @@ class Dependency:
     """Optional. Whether to ignore soft states for the reachability calculation.
     Defaults to true."""
 
-    period: Optional[str] = None
+    period: OptionalStr = None
     """Optional. Time period object during which this dependency is enabled."""
 
     states: Optional[Sequence[str]] = None
@@ -739,7 +739,7 @@ class Dependency:
 
 
 @dataclass(config={"extra": "forbid"})
-class Endpoint:
+class Endpoint(ConfigObject):
     """
     Endpoint objects are used to specify connection information for remote
     Icinga 2 instances.
@@ -766,9 +766,48 @@ class Endpoint:
 
     https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#endpoint
     :see: `doc/09-object-types.md L260-L293 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L260-L293>`__
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/endpoint.ti#L11-L57
 
     .. tags:: Object type, Monitoring object type
     """
+
+    host: OptionalStr = None
+    """The hostname/IP address of the remote Icinga 2 instance."""
+
+    port: Optional[int] = None
+    """The service name/port of the remote Icinga 2 instance. Defaults to 5665."""
+
+    log_duration: Optional[Union[str, int]] = None
+    """Optional. Duration for keeping replay logs on connection loss. Defaults to
+    1d (86400 seconds). Attribute is specified in seconds. If log_duration is
+    set to 0, replaying logs is disabled. You could also specify the value in
+    human readable format like 10m for 10 minutes or 1h for one hour."""
+
+    local_log_position: Optional[Timestamp] = None
+
+    remote_log_position: Optional[Timestamp] = None
+
+    icinga_version: Optional[int] = None
+
+    capabilities: Optional[int] = None
+
+    connecting: Optional[bool] = None
+
+    syncing: Optional[bool] = None
+
+    connected: Optional[bool] = None
+
+    last_message_sent: Optional[Timestamp] = None
+
+    last_message_received: Optional[Timestamp] = None
+
+    messages_sent_per_second: Optional[float] = None
+
+    messages_received_per_second: Optional[float] = None
+
+    bytes_sent_per_second: Optional[float] = None
+
+    bytes_received_per_second: Optional[float] = None
 
 
 @dataclass(config={"extra": "forbid"})

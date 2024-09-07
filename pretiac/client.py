@@ -16,6 +16,7 @@ from pretiac.object_types import (
     ApiUser,
     CheckCommand,
     Dependency,
+    Endpoint,
     Host,
     Service,
     ServiceState,
@@ -187,10 +188,15 @@ class Client:
     def get_check_commands(self) -> Sequence[CheckCommand]:
         return self._get_objects(CheckCommand)
 
-    # Dependency ##########################################################
+    # dependency #######################################################################
 
     def get_dependencys(self) -> Sequence[Dependency]:
         return self._get_objects(Dependency)
+
+    # endpoint #########################################################################
+
+    def get_endpoints(self) -> Sequence[Endpoint]:
+        return self._get_objects(Endpoint)
 
     # host #############################################################################
 
