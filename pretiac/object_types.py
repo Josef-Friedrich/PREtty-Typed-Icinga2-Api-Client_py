@@ -1428,7 +1428,7 @@ class User(CustomVarObject):
 
 
 @dataclass(config={"extra": "forbid"})
-class UserGroup:
+class UserGroup(CustomVarObject):
     """
     A user group.
 
@@ -1444,14 +1444,21 @@ class UserGroup:
 
     https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#usergroup
     :see: `doc/09-object-types.md L939-L960 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L939-L960>`__
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/usergroup.ti#L10-L23
     """
+
+    display_name: OptionalStr = None
+    """Optional. A short description of the user group."""
+
+    groups: Optional[Sequence[str]] = None
+    """Optional. An array of nested group names."""
 
 
 @dataclass(config={"extra": "forbid"})
-class Zone:
+class Zone(ConfigObject):
     """
     Zone objects are used to specify which Icinga 2 instances are located in a zone.
-    Please read the `distributed monitoring chapter <06-distributed-monitoring.md#distributed-monitoring>`__ for additional details.
+
     Example:
 
     .. code-block::
@@ -1469,7 +1476,19 @@ class Zone:
 
     https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#zone
     :see: `doc/09-object-types.md L963-L989 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L963-L989>`__
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/zone.ti#L10-L23
     """
+
+    endpoints: Optional[Sequence[str]] = None
+    """Optional. Array of endpoint names located in this zone."""
+
+    parent: OptionalStr = None
+    """Optional. The name of the parent zone. (Do not specify a global zone)"""
+
+    all_parents: Optional[Sequence[str]] = None
+
+    is_global: Optional[bool] = None
+    """Optional. Whether configuration files for this zone should be synced to all endpoints. Defaults to false."""
 
 
 ########################################################################################

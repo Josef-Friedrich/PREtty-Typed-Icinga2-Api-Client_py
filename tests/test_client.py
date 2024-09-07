@@ -205,3 +205,17 @@ class TestUser:
         o = client.get_users()[0]
         assert isinstance(o.name, str)
         assert o.type == "User"
+
+
+class TestUserGroup:
+    def test_get_all(self, client: Client) -> None:
+        o = client.get_user_groups()[0]
+        assert isinstance(o.name, str)
+        assert o.type == "UserGroup"
+
+
+class TestZone:
+    def test_get_all(self, client: Client) -> None:
+        o = client.get_zones()[0]
+        assert isinstance(o.name, str)
+        assert o.type == "Zone"

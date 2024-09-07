@@ -21,6 +21,8 @@ from pretiac.object_types import (
     ServiceState,
     TimePeriod,
     User,
+    UserGroup,
+    Zone,
 )
 from pretiac.raw_client import RawClient, StatusMessage
 from pretiac.request_handler import Payload, State
@@ -62,6 +64,11 @@ def _convert_object(result: Any, type: Any) -> Any:
     if "__name" in attrs:
         attrs["name"] = attrs["__name"]
         del attrs["__name"]
+    # global is a reserved Python keyword
+    # Zone has a global attribute.
+    if "global" in attrs:
+        attrs["is_global"] = attrs["global"]
+        del attrs["global"]
     return adapter.validate_python(attrs)
 
 
@@ -478,6 +485,16 @@ class Client:
 
     def get_users(self) -> Sequence[User]:
         return self._get_objects(User)
+
+    # user_group #######################################################################
+
+    def get_user_groups(self) -> Sequence[UserGroup]:
+        return self._get_objects(UserGroup)
+
+    # zone #############################################################################
+
+    def get_zones(self) -> Sequence[Zone]:
+        return self._get_objects(Zone)
 
     # status ###########################################################################
 
