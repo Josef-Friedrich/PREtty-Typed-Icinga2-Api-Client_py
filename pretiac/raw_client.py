@@ -660,6 +660,8 @@ class ConfigurationUrlEndpoint(RequestHandler):
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
+        Create a new empty configuration package.
+
         :param package_name: Package names with the ``_`` prefix are reserved for
             internal packages and must not be used. You can recognize
             ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
@@ -679,15 +681,55 @@ class ConfigurationUrlEndpoint(RequestHandler):
         self,
         package_name: str,
         files: dict[str, str],
+        reload: Optional[bool] = None,
+        activate: Optional[bool] = None,
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
+        Configuration files in packages are managed in stages. Stages provide
+        a way to maintain multiple configuration versions for a package.
+        Once a new stage is deployed, the content is validated and set as
+        active stage on success.
+
+        On failure, the older stage remains active, and the caller can fetch
+        the startup.log from this stage deployment attempt to see what exactly
+        failed. You can see that in the Director’s deployment log.
+
         :param package_name: Package names with the ``_`` prefix are reserved for
             internal packages and must not be used. You can recognize
             ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
             and packages.
+        :param files: Dictionary of file targets and their content.
+        :param reload: Tell icinga2 to reload after stage config validation
+            (defaults to ``true``).
+        :param activate: Tell icinga2 to activate the stage if it validates
+            (defaults to ``true``).
+            If activate is set to false, reload must
+            also be false.
         :param suppress_exception: If this parameter is set to ``True``, no
             exceptions are thrown.
+
+        Example for a local configuration in the ``conf.d`` directory:
+
+        .. code-block::
+
+            raw_client.configuration.create_stage(
+                package_name="example-cmdb",
+                files={
+                    "conf.d/test-host.conf": 'object Host "test-host" { address = "127.0.0.1", check_command = "hostalive" }'
+                },
+            )
+
+        Example for a host configuration inside the ``satellite`` zone in the ``zones.d`` directory:
+
+        .. code-block::
+
+            raw_client.configuration.create_stage(
+                package_name="example-cmdb",
+                files={
+                    "zones.d/satellite/host2.conf": 'object Host "satellite-host" { address = "192.168.1.100", check_command = "hostalive"',
+                },
+            )
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#create-a-stage-upload-configuration <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#create-a-stage-upload-configuration>`__
         """
@@ -695,6 +737,10 @@ class ConfigurationUrlEndpoint(RequestHandler):
         payload: Payload = {
             "files": files,
         }
+        if reload is not None:
+            payload["reload"] = reload
+        if activate:
+            payload["activate"] = activate
         return self._request(
             "POST",
             f"stages/{_normalize_name(package_name)}",

@@ -1,5 +1,6 @@
 import re
 import time
+from typing import Optional
 
 import pytest
 
@@ -75,6 +76,20 @@ class TestActions:
             assert result["status"] == "No objects found."
 
 
+@pytest.fixture
+def config_client(request: pytest.FixtureRequest, raw_client: RawClient) -> RawClient:
+    package_name = "example-cmdb"
+    raw_client.configuration.delete_package(package_name, suppress_exception=True)
+
+    def teardown() -> None:
+        raw_client.configuration.delete_package(package_name, suppress_exception=True)
+        time.sleep(2)  # Reload is triggered
+
+    request.addfinalizer(teardown)
+
+    return raw_client
+
+
 class TestConfiguration:
     def test_create_package(self, raw_client: RawClient) -> None:
         raw_client.configuration.delete_package("test-example", suppress_exception=True)
@@ -90,21 +105,54 @@ class TestConfiguration:
         ):
             raw_client.configuration.delete_package("test-example")
 
-    def test_create_stage(self, raw_client: RawClient):
-        raw_client.configuration.delete_package("test-example", suppress_exception=True)
-        raw_client.configuration.create_package("test-example")
-        results = raw_client.configuration.create_stage(
-            "test-example",
-            files={
-                "conf.d/test-host.conf": 'object Host "test-host" { address = "127.0.0.1", check_command = "hostalive" }'
-            },
-        )
-        result = results["results"][0]
-        assert result["code"] == 200
-        assert result["package"] == "test-example"
-        assert len(result["stage"]) == 36
-        assert result["status"] == "Created stage. Reload triggered."
-        time.sleep(3)  # Reload is triggered
+    class TestCreateStage:
+        package_name: str = "example-cmdb"
+
+        def _create_state(
+            self,
+            client: RawClient,
+            files: Optional[dict[str, str]] = None,
+            reload: Optional[bool] = None,
+            activate: Optional[bool] = None,
+        ):
+            client.configuration.create_package(self.package_name)
+            if files is None:
+                files = {
+                    "conf.d/test-host.conf": 'object Host "test-host" { address = "127.0.0.1", check_command = "hostalive" }'
+                }
+            return client.configuration.create_stage(
+                package_name=self.package_name,
+                files=files,
+                reload=reload,
+                activate=activate,
+            )["results"][0]
+
+        def test_example_1(self, config_client: RawClient) -> None:
+            """Example 1 from https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#list-configuration-packages-and-their-stages"""
+            result = self._create_state(config_client)
+            assert result["code"] == 200
+            assert result["package"] == self.package_name
+            assert len(result["stage"]) == 36
+            assert result["status"] == "Created stage. Reload triggered."
+
+        def test_example_2(self, config_client: RawClient):
+            config_client.configuration.create_package("example-cmdb")
+            results = config_client.configuration.create_stage(
+                package_name="example-cmdb",
+                files={
+                    "zones.d/satellite/host2.conf": 'object Host "satellite-host" { address = "192.168.1.100", check_command = "hostalive"',
+                },
+            )
+            result = results["results"][0]
+            assert result["status"] == "Created stage. Reload triggered."
+
+        def test_reload(self, config_client: RawClient) -> None:
+            result = self._create_state(config_client, reload=False)
+            assert result["status"] == "Created stage. Reload skipped."
+
+        def test_activate(self, config_client: RawClient):
+            result = self._create_state(config_client, reload=False, activate=False)
+            assert result["status"] == "Created stage. Reload skipped."
 
     def test_list_packages(self, raw_client: RawClient) -> None:
         results = raw_client.configuration.list_packages()
