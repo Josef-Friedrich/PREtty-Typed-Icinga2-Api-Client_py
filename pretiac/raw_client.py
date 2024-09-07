@@ -56,6 +56,11 @@ from pretiac.request_handler import (
 )
 
 
+def assemble_payload(**kwargs: Any) -> Payload:
+    # https://stackoverflow.com/a/2544761
+    return {k: v for k, v in kwargs.items() if v is not None}
+
+
 @dataclass
 class Result:
     code: int
@@ -380,27 +385,27 @@ class ActionsUrlEndpoint(RequestHandler):
     def add_comment(
         self,
         object_type: HostOrService,
-        filters: str,
+        filter: str,
         author: str,
         comment: str,
         filter_vars: FilterVars = None,
     ) -> Any:
         """
-        Add a comment from an author to services or hosts.
+        Add a ``comment`` from an ``author`` to services or hosts.
 
         example 1:
 
         .. code-block:: python
 
-            add_comment(
+            raw_client.actions.add_comment(
                 "Service",
                 'service.name=="ping4"',
                 "icingaadmin",
-                "Incident ticket #12345 opened.",
+                "Troubleticket #123456789 opened.",
             )
 
-        :param object_type: Host or Service
-        :param filters: filters matched object(s)
+        :param object_type: The valid types for this action are Host and Service.
+        :param filter: filters matched object(s)
         :param author: name of the author
         :param comment: comment text
         :param filter_vars: variables used in the filters expression
@@ -409,16 +414,17 @@ class ActionsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#add-comment <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#add-comment>`__
         """
-        payload: Payload = {
-            "type": object_type,
-            "filter": filters,
-            "author": author,
-            "comment": comment,
-        }
-        if filter_vars:
-            payload["filter_vars"] = filter_vars
-
-        return self._request("POST", "add-comment", payload)
+        return self._request(
+            "POST",
+            "add-comment",
+            assemble_payload(
+                type=object_type,
+                filter=filter,
+                author=author,
+                comment=comment,
+                filter_vars=filter_vars,
+            ),
+        )
 
     def remove_comment(
         self,
@@ -623,28 +629,23 @@ class ActionsUrlEndpoint(RequestHandler):
         """
         return self._request("POST", "restart-process")
 
-    def generate_ticket(self, host_common_name: str) -> Any:
+    def generate_ticket(self, cn: str) -> Any:
         """
-        Generates a PKI ticket for CSR auto-signing.
+        Generates a PKI ticket for `CSR auto-signing <https://icinga.com/docs/icinga-2/latest/doc/06-distributed-monitoring/#distributed-monitoring-setup-csr-auto-signing>`__.
         This can be used in combination with satellite/client
         setups requesting this ticket number.
 
-        example 1:
+        Example:
 
         .. code-block:: python
 
-            generate_ticket("my-server-name")
+            raw_client.actions.generate_ticket("my-server-name")
 
-        :param host_common_name: the host's common name for which the ticket should be generated.
+        :param cn: Required. The host’s common name for which the ticket should be generated.
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#generate-ticket <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#generate-ticket>`__
         """
-        if not host_common_name:
-            raise PretiacException("host_common_name is empty or none")
-
-        payload = {"cn": host_common_name}
-
-        return self._request("POST", "generate-ticket", payload)
+        return self._request("POST", "generate-ticket", assemble_payload(cn=cn))
 
 
 class ConfigurationUrlEndpoint(RequestHandler):
@@ -733,18 +734,10 @@ class ConfigurationUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#create-a-stage-upload-configuration <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#create-a-stage-upload-configuration>`__
         """
-
-        payload: Payload = {
-            "files": files,
-        }
-        if reload is not None:
-            payload["reload"] = reload
-        if activate:
-            payload["activate"] = activate
         return self._request(
             "POST",
             f"stages/{_normalize_name(package_name)}",
-            payload,
+            assemble_payload(files=files, reload=reload, activate=activate),
             suppress_exception=suppress_exception,
         )
 

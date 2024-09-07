@@ -75,6 +75,29 @@ class TestActions:
             assert result["error"] == 404
             assert result["status"] == "No objects found."
 
+    def test_add_comment(self, raw_client: RawClient) -> None:
+        results = raw_client.actions.add_comment(
+            "Service",
+            'service.name=="ping4"',
+            "icingaadmin",
+            "Troubleticket #123456789 opened.",
+        )["results"]
+        assert len(results) == 3
+        result = results[0]
+        assert result["code"] == 200
+        assert isinstance(result["legacy_id"], int)
+        assert "ping4!" in result["name"]
+        assert "Successfully added comment" in result["status"]
+
+    def test_generate_ticket(self, raw_client: RawClient) -> None:
+        result = raw_client.actions.generate_ticket("icinga2-agent1.localdomain")[
+            "results"
+        ][0]
+        assert result["code"] == 200
+        assert "Generated PKI ticket '" in result["status"]
+        assert "for common name 'icinga2-agent1.localdomain'." in result["status"]
+        assert len(result["ticket"]) == 40
+
 
 @pytest.fixture
 def config_client(request: pytest.FixtureRequest, raw_client: RawClient) -> RawClient:
