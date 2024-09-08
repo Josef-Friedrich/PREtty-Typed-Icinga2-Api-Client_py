@@ -822,6 +822,10 @@ EventStreamType = Literal[
     "ObjectDeleted",  # Object deleted for all Icinga 2 objects.
     "ObjectModified",  # Object modified for all Icinga 2 objects.
 ]
+"""
+:see: `doc/12-icinga2-api/#event-stream-types <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-types>`__
+:see: `lib/icinga/apievents.hpp L16-L47 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/apievents.hpp#L16-L47>`__
+:see: `lib/remote/eventshandler.cpp L22-L38 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/eventshandler.cpp#L22-L38>`__"""
 
 
 class EventsUrlEndpoint(RequestHandler):
@@ -835,11 +839,24 @@ class EventsUrlEndpoint(RequestHandler):
         self,
         types: Sequence[EventStreamType],
         queue: str,
-        filters: Optional[str] = None,
+        filter: Optional[str] = None,
         filter_vars: FilterVars = None,
     ) -> Generator[str | Any, Any, None]:
         """
-        subscribe to an event stream
+        Subscribe to an event stream.
+
+        Event streams can be used to receive check results, downtimes,
+        comments, acknowledgements, etc. as a “live stream” from Icinga.
+
+        You can for example forward these types into your own backend. Process
+        the metrics and correlate them with notifications and state changes
+        e.g. in Elasticsearch with the help of Icingabeat. Another use case
+        are aligned events and creating/resolving tickets automatically in
+        your ticket system.
+
+        You can subscribe to event streams by sending a POST request to the
+        URL endpoint /v1/events. The following parameters need to be
+        specified (either as URL parameters or in a JSON-encoded message body):
 
         example 1:
 
@@ -851,9 +868,13 @@ class EventsUrlEndpoint(RequestHandler):
             for event in subscribe(types, queue, filters):
                 print event
 
-        :param types: Event type(s). Multiple types as URL parameters are supported.
-        :param queue: Unique queue name. Multiple HTTP clients can use the same queue as long as they use the same event types and filter.
-        :param filters: Filter for specific event attributes using filter expressions.
+        :param types: **Required.** Event type(s). Multiple types as
+            URL parameters are supported.
+        :param queue: **Required.** Unique queue name. Multiple HTTP clients
+            can use the same queue as long as they use the same event types
+            and filter.
+        :param filter: Filter for specific event attributes using
+            filter expressions.
         :param filter_vars: variables used in the filters expression
 
         :returns: the events
@@ -864,8 +885,8 @@ class EventsUrlEndpoint(RequestHandler):
             "types": types,
             "queue": queue,
         }
-        if filters:
-            payload["filter"] = filters
+        if filter:
+            payload["filter"] = filter
         if filter_vars:
             payload["filter_vars"] = filter_vars
 
@@ -1311,13 +1332,13 @@ class StatusUrlEndpoint(RequestHandler):
         """
         Retrieve status information and statistics for Icinga 2.
 
-        Example 1:
+        List complete status::
 
         .. code-block:: python
 
             client.status.list()
 
-        Example 2:
+        List the status of the core application:
 
         .. code-block:: python
 
@@ -1326,6 +1347,8 @@ class StatusUrlEndpoint(RequestHandler):
         :param status_type: Limit the output by specifying a status type, e.g. ``IcingaApplication``.
 
         :returns: status information
+
+        :see: `doc/12-icinga2-api/#status-and-statistics <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#status-and-statistics>`__
         """
 
         url: str = ""

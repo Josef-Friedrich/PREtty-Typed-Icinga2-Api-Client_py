@@ -106,7 +106,7 @@ def config_client(request: pytest.FixtureRequest, raw_client: RawClient) -> RawC
 
     def teardown() -> None:
         raw_client.configuration.delete_package(package_name, suppress_exception=True)
-        time.sleep(2)  # Reload is triggered
+        time.sleep(3)  # Reload is triggered
 
     request.addfinalizer(teardown)
 
