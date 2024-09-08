@@ -163,19 +163,27 @@ https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 
 @dataclass
 class SourceLocation:
-    first_column: int
-    first_line: int
-    last_column: int
-    last_line: int
+    """https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/templatequeryhandler.cpp#L29-L35"""
 
     path: str
     """
     ``/etc/icinga2-custom/conf.d/api-users.conf``
     """
 
+    first_line: int
+
+    first_column: int
+
+    last_line: int
+
+    last_column: int
+
 
 class HAMode(Enum):
-    """:see: `lib/base/configobject.ti L12-L16 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L12-L16>`__"""
+    """
+    ``HA`` = High-Availability
+
+    :see: `lib/base/configobject.ti L12-L16 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L12-L16>`__"""
 
     HARunOnce = 0
     HARunEverywhere = 1
@@ -255,7 +263,124 @@ def get_service_state(state: Union[State, Any]) -> ServiceState:
 
 @dataclass
 class CheckResult:
-    pass
+    """
+
+    The attributes are as listed in the offical Icinga2 documentation.
+
+    :see: `doc/08-advanced-topics/#checkresult <https://icinga.com/docs/icinga-2/latest/doc/08-advanced-topics/#checkresult>`__
+    :see: `lib/icinga/checkresult.ti <https://github.com/Icinga/icinga2/blob/master/lib/icinga/checkresult.ti>`__
+    """
+
+    type = "CheckResult"
+
+    exit_status: int
+    """
+    The exit status returned by the check execution.
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L55
+    """
+
+    output: str
+    """
+    The check output.
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L59
+    """
+
+    performance_data: Optional[list[str]]
+    """
+    Array of performance data values.
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L60
+    """
+
+    check_source: str
+    """
+    Name of the node executing the check.
+    """
+
+    scheduling_source: str
+    """
+    Name of the node scheduling the check.
+    """
+
+    state: ServiceState
+    """
+    The current state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L57
+    """
+
+    previous_hard_state: Union[ServiceState, int]
+    """
+    Sometimes ``99``?
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L58C1-L58C49
+    """
+
+    command: Optional[Union[list[str], str]]
+    """
+    Array of command with shell-escaped arguments or command line string.
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L54
+    """
+
+    execution_start: Timestamp
+    """
+    Check execution start time (as a UNIX timestamp).
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L51
+    """
+
+    execution_end: Timestamp
+    """
+    Check execution end time (as a UNIX timestamp).
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L52
+    """
+
+    schedule_start: Timestamp
+    """
+    Scheduled check execution start time (as a UNIX timestamp).
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L49
+    """
+
+    schedule_end: Timestamp
+    """
+    Scheduled check execution end time (as a UNIX timestamp).
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L50
+    """
+
+    active: bool
+    """
+    Whether the result is from an active or passive check.
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L62-L64
+    """
+
+    vars_before: Optional[dict[str, Any]]
+    """
+    Internal attribute used for calculations.
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L70
+    """
+
+    vars_after: dict[str, Any]
+    """
+ 	Internal attribute used for calculations.
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L71
+    """
+
+    ttl: int
+    """
+    Time-to-live duration in seconds for this check result. The next expected
+    check result is ``now + ttl`` where freshness checks are executed.
+
+    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L68
+    """
 
 
 ########################################################################################
@@ -1545,8 +1670,59 @@ class Comment:
 @dataclass(config={"extra": "forbid"})
 class Downtime:
     """
+    Downtimes created at runtime are represented as objects. You can create
+    downtimes with the schedule-downtime API action.
+
+    Example:
+
+    .. code-block::
+
+        object Downtime "my-downtime" {
+            host_name = "localhost"
+            author = "icingaadmin"
+            comment = "This is a downtime."
+            start_time = 1505312869
+            end_time = 1505312924
+        }
+
+
     .. tags:: Object type, Runtime object type
+
+    :see: `doc/09-object-types/#downtime <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#downtime>`__
     """
+
+    host_name: Optional[str] = None
+    """Required. The name of the host this downtime belongs to."""
+
+    service_name: Optional[str] = None
+    """Optional. The short name of the service this downtime belongs to. If
+    omitted, this downtime object is treated as host downtime."""
+
+    author: Optional[str] = None
+    """Required. The author’s name."""
+
+    comment: Optional[str] = None
+    """Required. The comment text."""
+
+    start_time: Optional[Timestamp] = None
+    """ 	Required. The start time as UNIX timestamp."""
+
+    end_time: Optional[Timestamp] = None
+    """Timestamp 	Required. The end time as UNIX timestamp."""
+
+    duration: Optional[int] = None
+    """Number 	Optional. The duration as number."""
+
+    entry_time: Optional[Timestamp] = None
+    """Timestamp 	Optional. The UNIX timestamp when this downtime was
+    added."""
+
+    fixed: Optional[bool] = None
+    """Boolean 	Optional. Whether the downtime is fixed (true) or flexible
+    (false). Defaults to flexible. Details in the advanced topics chapter."""
+
+    triggers: Optional[Sequence[str]] = None
+    """Array of object names"""
 
 
 ########################################################################################
@@ -1699,3 +1875,132 @@ class WindowsEventLogLogger:
     """
     .. tags:: Object type, Feature object type
     """
+
+
+@dataclass
+class EventStreamTypeCheckResult:
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-checkresult"""
+
+    type: Literal["CheckResult"]
+
+    timestamp: Timestamp
+    """Unix timestamp when the event happened."""
+
+    host: str
+    """Host name."""
+
+    check_result: CheckResult
+    """Serialized CheckResult value type."""
+
+    downtime_depth: float
+    """Amount of active downtimes on the checkable."""
+
+    acknowledgement: bool
+    """Whether the object is acknowledged."""
+
+    service: Optional[str] = None
+    """Service name. Optional if this is a host check result."""
+
+
+@dataclass
+class EventStreamTypeStateChange:
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-statechange"""
+
+    type: Literal["StateChange"]
+
+
+@dataclass
+class EventStreamTypeNotification:
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-notification"""
+
+    type: Literal["Notification"]
+
+
+@dataclass
+class EventStreamTypeFlapping:
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-flapping"""
+
+    type: Literal["Flapping"]
+
+
+@dataclass
+class EventStreamTypeAcknowledgementSet:
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-acknowledgementset"""
+
+    type: Literal["AcknowledgementSet"]
+
+
+@dataclass
+class EventStreamTypeAcknowledgementCleared:
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-acknowledgementcleared"""
+
+    type: Literal["AcknowledgementCleared"]
+
+
+@dataclass
+class _EventStreamTypeComment:
+    timestamp: Timestamp
+    """Unix timestamp when the event happened."""
+
+    comment: Comment
+    """Serialized Comment object."""
+
+
+@dataclass
+class EventStreamTypeCommentAdded(_EventStreamTypeComment):
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-commentadded"""
+
+    type: Literal["CommentAdded"]
+
+
+@dataclass
+class EventStreamTypeCommentRemoved(_EventStreamTypeComment):
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-commentremoved"""
+
+    type: Literal["CommentRemoved"]
+
+
+@dataclass
+class _EventStreamTypeDowntime:
+    timestamp: Timestamp
+    """Unix timestamp when the event happened."""
+
+    downtime: Downtime
+    """Serialized Downtime object."""
+
+
+@dataclass
+class EventStreamTypeDowntimeAdded(_EventStreamTypeDowntime):
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-downtimeadded"""
+
+    type: Literal["DowntimeAdded"]
+
+
+@dataclass
+class EventStreamTypeDowntimeRemoved(_EventStreamTypeDowntime):
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-downtimeremoved"""
+
+    type: Literal["DowntimeRemoved"]
+
+
+@dataclass
+class EventStreamTypeDowntimeStarted(_EventStreamTypeDowntime):
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-downtimestarted"""
+
+    type: Literal["DowntimeStarted"]
+
+
+@dataclass
+class EventStreamTypeDowntimeTriggered(_EventStreamTypeDowntime):
+    """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-downtimetriggered"""
+
+    type: Literal["DowntimeTriggered"]
+
+
+EventStream = Union[
+    EventStreamTypeCheckResult,
+    EventStreamTypeDowntimeAdded,
+    EventStreamTypeDowntimeStarted,
+    EventStreamTypeDowntimeRemoved,
+    EventStreamTypeDowntimeTriggered,
+]

@@ -5,10 +5,9 @@ A high level client with typed return values.
 import socket
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Literal, Optional, Union
+from typing import Any, Optional
 
 from pydantic import BaseModel, TypeAdapter
-from pydantic.dataclasses import dataclass
 
 from pretiac.config import Config, ObjectConfig, load_config
 from pretiac.exceptions import PretiacException
@@ -18,17 +17,17 @@ from pretiac.object_types import (
     CheckCommand,
     Dependency,
     Endpoint,
+    EventStream,
     FilterVars,
     Host,
     Service,
     ServiceState,
     TimePeriod,
-    Timestamp,
     User,
     UserGroup,
     Zone,
 )
-from pretiac.raw_client import CheckResult, EventStreamType, RawClient, StatusMessage
+from pretiac.raw_client import EventStreamType, RawClient, StatusMessage
 from pretiac.request_handler import Payload, State
 
 
@@ -104,43 +103,6 @@ def _get_service_name(
         return f"{host}!{service}"
 
     raise PretiacException("The service name could not be assembled!")
-
-
-@dataclass
-class EventStreamTypeCheckResult:
-    type: Literal["CheckResult"]
-
-    timestamp: Timestamp
-    """Unix timestamp when the event happened."""
-
-    host: str
-    """Host name."""
-
-    check_result: CheckResult
-    """Serialized CheckResult value type."""
-
-    downtime_depth: float
-    """Amount of active downtimes on the checkable."""
-
-    acknowledgement: bool
-    """Whether the object is acknowledged."""
-
-    service: Optional[str] = None
-    """Service name. Optional if this is a host check result."""
-
-
-@dataclass
-class EventStreamTypeDowntimeTriggered:
-    type: Literal["DowntimeTriggered"]
-
-    timestamp: Timestamp
-    """Unix timestamp when the event happened."""
-
-    downtime: Any
-    """Serialized Downtime object."""
-
-
-EventStream = Union[EventStreamTypeCheckResult, EventStreamTypeDowntimeTriggered]
 
 
 class Client:

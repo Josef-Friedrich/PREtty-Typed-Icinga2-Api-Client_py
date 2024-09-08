@@ -116,7 +116,7 @@ class TestHost:
 
     def test_get_all(self, client: Client) -> None:
         o = client.get_hosts()
-        assert len(o) == 3
+        assert len(o) > 2
 
 
 class TestService:

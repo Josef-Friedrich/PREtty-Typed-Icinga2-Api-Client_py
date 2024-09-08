@@ -43,6 +43,7 @@ from pydantic.dataclasses import dataclass
 from pretiac.config import Config
 from pretiac.exceptions import PretiacException
 from pretiac.object_types import (
+    CheckResult,
     FilterVars,
     HostOrService,
     ObjectTypeName,
@@ -953,29 +954,6 @@ class Service(Object):
     type = "Service"
     name: str
     meta: dict[str, Any]
-
-
-@dataclass
-class CheckResult:
-    """https://github.com/Icinga/icinga2/blob/master/lib/icinga/checkresult.ti"""
-
-    type = "CheckResult"
-    active: bool
-    check_source: str
-    command: Union[list[str], str]
-    execution_end: float
-    execution_start: float
-    exit_status: int
-    output: str
-    previous_hard_state: int
-    schedule_end: float
-    schedule_start: float
-    scheduling_source: str
-    state: int
-    ttl: int
-    vars_after: dict[str, Any]
-    vars_before: dict[str, Any]
-    performance_data: Optional[list[str]] = None
 
 
 class Host:
