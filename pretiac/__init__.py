@@ -87,6 +87,32 @@ def set_default_client(
 def get_default_client() -> Client:
     """
     Get the default client.
+
+    This function intentionally has no input parameters. Use the
+    function :func:`set_default_client` to set a new configured client.
+
+    However, this function loads a client configured by configuration files in
+    the following order (if the function :func:`set_default_client` was not called before):
+
+    1. The file path in the environment variable ``PRETIAC_CONFIG_FILE``.
+    2. The configuration file in the home folder ``~/.pretiac.yml``.
+    3. The configuration file at ``/etc/pretiac/config.yml``.
+
+    .. code-block:: yaml
+
+        ---
+        api_endpoint_host: localhost
+        api_endpoint_port: 5665
+        client_private_key: /etc/pretiac/api-client.key.pem
+        client_certificate: /etc/pretiac/api-client.cert.pem
+        ca_certificate: /etc/pretiac/ca.crt
+        new_host_defaults:
+            templates: [passive-host]
+        new_service_defaults:
+            templates: [passive-service]
+            attrs:
+                check_interval: monthly
+
     """
     global __client
     if not __client:

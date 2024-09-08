@@ -128,12 +128,14 @@ class Config:
 
 def load_config_file(config_file: str | Path | None = None) -> Config:
     """
-    Load the configuration file in JSON format.
+    Load the configuration file in YAML format.
 
-    1. Parameter ``config_file`` of the function.
-    2. Enviroment variable ``PRETIAC_CONFIG_FILE``.
-    3. Configuration file in the home folder ``~/.pretiac.yml``.
-    4. Configuration file in ``/etc/pretiac/config.yml``.
+    The file path of the loaded configuration file is determined in this order:
+
+    1. The parameter ``config_file`` of this function.
+    2. The file path in the environment variable ``PRETIAC_CONFIG_FILE``.
+    3. The configuration file in the home folder ``~/.pretiac.yml``.
+    4. The configuration file at ``/etc/pretiac/config.yml``.
 
     :param config_file: The path of the configuration file to load.
     """

@@ -1,49 +1,23 @@
-.. Python project boilerplate documentation master file, created by
-   sphinx-quickstart on Mon Jul 25 07:37:59 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to pretiac's documentation!
 ===================================
 
-pretiac
--------
+``pretiac`` stands for **PRE** tty **T** yped **I** cinga2 **A** pi **C** lient.
+This project is a fork / extension of the
+`TeraIT-at/icinga2apic <https://github.com/TeraIT-at/icinga2apic>`__ api client.
+The client class of ``icinga2apic`` was renamed to :class:`pretiac.raw_client.RawClient`.
+``pretaic`` provides an additional client (:class:`pretiac.client.Client`), which is typed.
+`Pydantic <https://github.com/pydantic/pydantic>`__ is used to validate the
+Icinga2 REST API and to convert the JSON
+output into Python data types.
 
-.. automodule:: pretiac
-
-pretiac.client
---------------
-
-.. automodule:: pretiac.client
-
-pretiac.config
---------------
-
-.. automodule:: pretiac.config
-
-pretiac.exceptions
-------------------
-
-.. automodule:: pretiac.exceptions
-
-pretiac.object_types
---------------------
-
-.. automodule:: pretiac.object_types
-
-pretiac.raw_client
-------------------
-
-.. automodule:: pretiac.raw_client
-
-pretiac.request_handler
------------------------
-
-.. automodule:: pretiac.request_handler
+.. autofunction:: pretiac.get_default_client
+   :no-index:
 
 .. toctree::
    :maxdepth: 3
    :caption: Contents:
+
+   modules
 
 Indices and tables
 ==================
