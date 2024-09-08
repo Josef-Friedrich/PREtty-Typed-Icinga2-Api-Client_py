@@ -35,9 +35,10 @@ programmatic way using HTTP requests.
 import urllib
 import urllib.parse
 from collections.abc import Sequence
-from dataclasses import dataclass
 from importlib.metadata import version as get_version
 from typing import Any, Generator, Literal, Optional, Union
+
+from pydantic.dataclasses import dataclass
 
 from pretiac.config import Config
 from pretiac.exceptions import PretiacException
@@ -881,16 +882,14 @@ class EventsUrlEndpoint(RequestHandler):
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#event-streams <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-streams>`__
         """
-        payload: Payload = {
-            "types": types,
-            "queue": queue,
-        }
-        if filter:
-            payload["filter"] = filter
-        if filter_vars:
-            payload["filter_vars"] = filter_vars
-
-        stream = self._request("POST", None, payload, stream=True)
+        stream = self._request(
+            "POST",
+            None,
+            assemble_payload(
+                types=types, queue=queue, filter=filter, filter_vars=filter_vars
+            ),
+            stream=True,
+        )
         for event in self._get_message_from_stream(stream):
             yield event
 
@@ -956,18 +955,18 @@ class Service(Object):
     meta: dict[str, Any]
 
 
+@dataclass
 class CheckResult:
     """https://github.com/Icinga/icinga2/blob/master/lib/icinga/checkresult.ti"""
 
     type = "CheckResult"
     active: bool
     check_source: str
-    command: list[str]
+    command: Union[list[str], str]
     execution_end: float
     execution_start: float
     exit_status: int
     output: str
-    performance_data: list[str]
     previous_hard_state: int
     schedule_end: float
     schedule_start: float
@@ -976,6 +975,7 @@ class CheckResult:
     ttl: int
     vars_after: dict[str, Any]
     vars_before: dict[str, Any]
+    performance_data: Optional[list[str]] = None
 
 
 class Host:

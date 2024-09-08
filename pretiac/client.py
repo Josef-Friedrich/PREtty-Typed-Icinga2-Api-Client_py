@@ -5,9 +5,10 @@ A high level client with typed return values.
 import socket
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Literal, Optional, Union
 
 from pydantic import BaseModel, TypeAdapter
+from pydantic.dataclasses import dataclass
 
 from pretiac.config import Config, ObjectConfig, load_config
 from pretiac.exceptions import PretiacException
@@ -17,15 +18,17 @@ from pretiac.object_types import (
     CheckCommand,
     Dependency,
     Endpoint,
+    FilterVars,
     Host,
     Service,
     ServiceState,
     TimePeriod,
+    Timestamp,
     User,
     UserGroup,
     Zone,
 )
-from pretiac.raw_client import RawClient, StatusMessage
+from pretiac.raw_client import CheckResult, EventStreamType, RawClient, StatusMessage
 from pretiac.request_handler import Payload, State
 
 
@@ -73,7 +76,7 @@ def _convert_object(result: Any, type: Any) -> Any:
     return adapter.validate_python(attrs)
 
 
-class CheckResult(BaseModel):
+class CheckResponse(BaseModel):
     code: int
     status: str
 
@@ -101,6 +104,43 @@ def _get_service_name(
         return f"{host}!{service}"
 
     raise PretiacException("The service name could not be assembled!")
+
+
+@dataclass
+class EventStreamTypeCheckResult:
+    type: Literal["CheckResult"]
+
+    timestamp: Timestamp
+    """Unix timestamp when the event happened."""
+
+    host: str
+    """Host name."""
+
+    check_result: CheckResult
+    """Serialized CheckResult value type."""
+
+    downtime_depth: float
+    """Amount of active downtimes on the checkable."""
+
+    acknowledgement: bool
+    """Whether the object is acknowledged."""
+
+    service: Optional[str] = None
+    """Service name. Optional if this is a host check result."""
+
+
+@dataclass
+class EventStreamTypeDowntimeTriggered:
+    type: Literal["DowntimeTriggered"]
+
+    timestamp: Timestamp
+    """Unix timestamp when the event happened."""
+
+    downtime: Any
+    """Serialized Downtime object."""
+
+
+EventStream = Union[EventStreamTypeCheckResult, EventStreamTypeDowntimeTriggered]
 
 
 class Client:
@@ -156,6 +196,27 @@ class Client:
         )
         self.raw_client = RawClient(self.config)
 
+    # v1/events
+
+    def subscribe_events(
+        self,
+        types: Sequence[EventStreamType],
+        queue: str,
+        filter: Optional[str] = None,
+        filter_vars: FilterVars = None,
+    ):
+        adapter: Any = TypeAdapter(EventStream)
+        for event in self.raw_client.events.subscribe(
+            types=types, queue=queue, filter=filter, filter_vars=filter_vars
+        ):
+            yield adapter.validate_python(event)
+
+    # v1/objects
+
+    # Listed in the same order as in this `Markdown document <https://github.com/Icinga/icinga2/blob/master/doc/09-object-types.md>`__.
+
+    # CRUD: create_object get_object get_objects delete_object
+
     def _get_objects(self, type: Any) -> Sequence[Any]:
         results = self.raw_client.objects.list(type.__name__)
         objects: list[type] = []
@@ -170,10 +231,6 @@ class Client:
             ),
             type,
         )
-
-    # Listed in the same order as in this `Markdown document <https://github.com/Icinga/icinga2/blob/master/doc/09-object-types.md>`__.
-
-    # CRUD: create_object get_object get_objects delete_object
 
     # api_user #########################################################################
 
@@ -402,7 +459,7 @@ class Client:
         ttl: Optional[int] = None,
         create: bool = True,
         display_name: Optional[str] = None,
-    ) -> CheckResult | CheckError:
+    ) -> CheckResponse | CheckError:
         """
         Send a check result for a service and create the host or the service if necessary.
 
@@ -434,7 +491,7 @@ class Client:
         if plugin_output is None:
             plugin_output = f"{service}: {exit_status}"
 
-        def _send_service_check_result() -> CheckResult | CheckError:
+        def _send_service_check_result() -> CheckResponse | CheckError:
             name = f"{host}!{service}"
             logger.info(
                 "Send service check result: %s exit_status: %s plugin_output: %s",
@@ -456,12 +513,12 @@ class Client:
                 suppress_exception=True,
             )
             if "results" in result and len(result["results"]) > 0:
-                return CheckResult(**result["results"][0])
+                return CheckResponse(**result["results"][0])
             return CheckError(**result)
 
-        result: CheckResult | CheckError = _send_service_check_result()
+        result: CheckResponse | CheckError = _send_service_check_result()
 
-        if isinstance(result, CheckResult):
+        if isinstance(result, CheckResponse):
             return result
 
         if not create:

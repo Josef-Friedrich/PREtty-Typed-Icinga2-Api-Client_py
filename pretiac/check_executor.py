@@ -14,7 +14,7 @@ import yaml
 from pydantic import TypeAdapter
 
 from pretiac import set_default_client
-from pretiac.client import CheckError, CheckResult
+from pretiac.client import CheckError, CheckResponse
 from pretiac.log import logger
 from pretiac.object_types import ServiceState, get_service_state
 
@@ -87,7 +87,7 @@ class ServiceCheck:
         if self.host is None:
             self.host = host
 
-    def check(self) -> CheckResult | CheckError:
+    def check(self) -> CheckResponse | CheckError:
         """Check and send the check result to the monitoring endpoint using the API."""
         check = CheckExecution(self.check_command)
         return set_default_client().send_service_check_result(

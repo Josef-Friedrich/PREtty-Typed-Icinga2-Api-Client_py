@@ -1,4 +1,4 @@
-from pretiac.client import CheckError, CheckResult, Client
+from pretiac.client import CheckError, CheckResponse, Client
 from pretiac.object_types import Function
 from pretiac.raw_client import RawClient
 
@@ -162,7 +162,7 @@ class TestService:
                 plugin_output="test",
                 create=False,
             )
-            assert isinstance(result, CheckResult)
+            assert isinstance(result, CheckResponse)
             assert (
                 result.status
                 == "Successfully processed check result for object 'Host1!ssh'."
@@ -199,7 +199,7 @@ class TestService:
                 exit_status=2,
                 plugin_output="test",
             )
-            assert isinstance(result, CheckResult)
+            assert isinstance(result, CheckResponse)
             assert (
                 result.status
                 == "Successfully processed check result for object 'NewHost!NewService'."

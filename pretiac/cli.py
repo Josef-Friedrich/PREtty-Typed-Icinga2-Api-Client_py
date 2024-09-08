@@ -39,6 +39,11 @@ def main() -> None:
     # config
     sub_parsers.add_parser("config", help="Dump the configuration")
 
+    # events
+    objects_parser = sub_parsers.add_parser(
+        "events", help="Subscribe to an event stream."
+    )
+
     # objects
     objects_parser = sub_parsers.add_parser(
         "objects", help="List the different configuration object types."
@@ -79,6 +84,10 @@ def main() -> None:
     elif args.sub_command == "config":
         config = load_config_file()
         print(config)
+
+    elif args.sub_command == "events":
+        for event in client.subscribe_events(["CheckResult"], "cli"):
+            print(event)
 
     elif args.sub_command == "objects":
         print(

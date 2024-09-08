@@ -31,6 +31,7 @@ endpoint classes, for example the class ``Events`` handles the ``v1/events`` end
 the class ``Objects`` handles the ``v1/objects`` entpoint and so on...
 """
 
+import json
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -201,7 +202,7 @@ class RequestHandler:
     @staticmethod
     def _get_message_from_stream(
         stream: requests.Response,
-    ) -> Generator[str | Any, Any, None]:
+    ) -> Generator[Any, Any, None]:
         """
         Make the request and return the body.
 
@@ -209,12 +210,5 @@ class RequestHandler:
 
         :returns: The message.
         """
-
-        # TODO: test iter_lines()
-        message = b""
-        for char in stream.iter_content():
-            if char == b"\n":
-                yield message.decode("unicode_escape")
-                message = b""
-            else:
-                message += char
+        for line in stream.iter_lines():
+            yield json.loads(line)
