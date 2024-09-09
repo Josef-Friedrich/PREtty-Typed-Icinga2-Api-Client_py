@@ -25,11 +25,23 @@ def test_class_object_config() -> None:
 
 
 class TestLoadConfig:
-    def test_without_arguments(self):
+    def test_without_arguments(self) -> None:
         config = load_config()
         assert config
 
-    def test_exception_both_auth_methods(self):
+    def test_some_arguments(self) -> None:
+        config = load_config(
+            api_endpoint_host="api_endpoint_host",
+            api_endpoint_port=1234,
+            http_basic_username="http_basic_username",
+            http_basic_password="http_basic_password",
+        )
+        assert config.api_endpoint_host == "api_endpoint_host"
+        assert config.api_endpoint_port == 1234
+        assert config.http_basic_username == "http_basic_username"
+        assert config.http_basic_password == "http_basic_password"
+
+    def test_exception_both_auth_methods(self) -> None:
         with pytest.raises(PretiacException):
             load_config(
                 http_basic_password="1234", client_private_key="/tmp/private.key"
