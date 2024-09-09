@@ -216,7 +216,7 @@ def load_config(
     :param new_service_defaults: If a new service needs to be created, use
         this defaults.
     """
-    if config is not None and config_file is not None:
+    if config is not None and (config_file is not None and config_file is not False):
         raise PretiacException("Specify config OR config_file. Not both!")
 
     c: Optional[Config] = None

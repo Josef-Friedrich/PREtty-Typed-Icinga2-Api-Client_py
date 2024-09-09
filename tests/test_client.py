@@ -1,4 +1,5 @@
 from pretiac.client import CheckError, CheckResponse, Client
+from pretiac.config import Config
 from pretiac.object_types import Function
 from pretiac.raw_client import RawClient
 
@@ -17,6 +18,23 @@ def test_api_enpoint_host_ip() -> None:
     host = client.get_host("Host1")
     assert host
     assert host.name == "Host1"
+
+
+def test_client_setup() -> None:
+    config = Config(
+        api_endpoint_host="127.0.0.1",
+        api_endpoint_port=1221,
+        http_basic_username="u",
+        http_basic_password="p",
+    )
+    client = Client(config_file=False, config=config)
+    assert client.config.api_endpoint_host == "127.0.0.1"
+    assert client.config.api_endpoint_port == 1221
+    assert client.config.http_basic_username == "u"
+    assert client.config.http_basic_password == "p"
+    assert client.config.client_certificate is None
+    assert client.config.client_private_key is None
+    assert client.config.ca_certificate is None
 
 
 class TestApiUser:
