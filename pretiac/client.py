@@ -32,7 +32,7 @@ from pretiac.request_handler import Payload, State
 
 
 def _normalize_object_config(
-    templates: Optional[Sequence[str] | str] = None,
+    templates: Optional[Union[Sequence[str], str]] = None,
     attrs: Optional[Payload] = None,
     object_config: Optional[ObjectConfig] = None,
 ) -> ObjectConfig:
@@ -424,15 +424,17 @@ class Client:
         host: Optional[str] = None,
         exit_status: Optional[State] = ServiceState.OK,
         plugin_output: Optional[str] = None,
-        performance_data: Optional[Sequence[str] | str] = None,
-        check_command: Optional[Sequence[str] | str] = None,
+        performance_data: Optional[Union[Sequence[str], str]] = None,
+        check_command: Optional[Union[Sequence[str], str]] = None,
         check_source: Optional[str] = None,
         execution_start: Optional[float] = None,
         execution_end: Optional[float] = None,
         ttl: Optional[int] = None,
         create: bool = True,
         display_name: Optional[str] = None,
-    ) -> CheckResponse | CheckError:
+        new_host_defaults: Optional[ObjectConfig] = None,
+        new_service_defaults: Optional[ObjectConfig] = None,
+    ) -> Union[CheckResponse, CheckError]:
         """
         Send a check result for a service and create the host or the service if necessary.
 
@@ -455,6 +457,10 @@ class Client:
             expected check result is ``now + ttl`` where freshness checks are executed.
         :param create: Whether non-existent services and hosts should be created.
         :param display_name: A short description of the service, if it needs to be created.
+        :param new_host_defaults: If a new host needs to be created, use this
+            defaults.
+        :param new_service_defaults: If a new service needs to be created, use
+            this defaults.
         """
         host = _get_host(host)
 
@@ -464,7 +470,7 @@ class Client:
         if plugin_output is None:
             plugin_output = f"{service}: {exit_status}"
 
-        def _send_service_check_result() -> CheckResponse | CheckError:
+        def _send_service_check_result() -> Union[CheckResponse, CheckError]:
             name = f"{host}!{service}"
             logger.info(
                 "Send service check result: %s exit_status: %s plugin_output: %s",
@@ -489,7 +495,7 @@ class Client:
                 return CheckResponse(**result["results"][0])
             return CheckError(**result)
 
-        result: CheckResponse | CheckError = _send_service_check_result()
+        result: Union[CheckResponse, CheckError] = _send_service_check_result()
 
         if isinstance(result, CheckResponse):
             return result
@@ -499,13 +505,18 @@ class Client:
 
         self.create_host(
             name=host,
-            object_config=self.config.new_host_defaults,
+            object_config=new_host_defaults
+            if new_host_defaults is not None
+            else self.config.new_host_defaults,
             suppress_exception=True,
         )
+
         self.create_service(
             name=service,
             host=host,
-            object_config=self.config.new_service_defaults,
+            object_config=new_service_defaults
+            if new_service_defaults is not None
+            else self.config.new_service_defaults,
             suppress_exception=True,
             display_name=display_name,
         )
