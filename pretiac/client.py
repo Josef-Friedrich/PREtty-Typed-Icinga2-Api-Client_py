@@ -15,6 +15,9 @@ from pretiac.log import logger
 from pretiac.object_types import (
     ApiUser,
     CheckCommand,
+    ConfigFile,
+    ConfigPackage,
+    ConfigPackageStageFiles,
     Dependency,
     Endpoint,
     EventStream,
@@ -168,6 +171,50 @@ class Client:
             new_service_defaults=new_service_defaults,
         )
         self.raw_client = RawClient(self.config)
+
+    # v1/config
+
+    def list_configuration_packages(self):
+        adapter = TypeAdapter(Sequence[ConfigPackage])
+        return adapter.validate_python(
+            self.raw_client.configuration.list_packages()["results"]
+        )
+
+    def list_configuration_stage_files(
+        self,
+        package_name: Optional[str] = None,
+        stage_name: Optional[str] = None,
+    ) -> Sequence[ConfigPackageStageFiles]:
+        config_files: TypeAdapter[Sequence[ConfigFile]] = TypeAdapter(
+            Sequence[ConfigFile]
+        )
+
+        if package_name and stage_name:
+            return [
+                ConfigPackageStageFiles(
+                    package=package_name,
+                    stage=stage_name,
+                    files=self.raw_client.configuration.list_stage_files(
+                        package_name, stage_name
+                    ),
+                )
+            ]
+        else:
+            output: list[ConfigPackageStageFiles] = []
+            for package in self.list_configuration_packages():
+                for stage in package.stages:
+                    output.append(
+                        ConfigPackageStageFiles(
+                            package=package.name,
+                            stage=stage,
+                            files=config_files.validate_python(
+                                self.raw_client.configuration.list_stage_files(
+                                    package.name, stage
+                                )["results"]
+                            ),
+                        )
+                    )
+            return output
 
     # v1/events
 

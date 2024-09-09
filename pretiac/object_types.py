@@ -17,7 +17,7 @@ from typing import (
     get_args,
 )
 
-from pydantic import BeforeValidator
+from pydantic import BeforeValidator, Field
 from pydantic.dataclasses import dataclass
 
 
@@ -2004,3 +2004,25 @@ EventStream = Union[
     EventStreamTypeDowntimeRemoved,
     EventStreamTypeDowntimeTriggered,
 ]
+
+
+@dataclass
+class ConfigPackage:
+    """https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/configpackageshandler.cpp#L75-L79"""
+
+    name: str
+    stages: Sequence[str]
+    active_stage: str = Field(alias="active-stage")
+
+
+@dataclass
+class ConfigFile:
+    name: str
+    type: Literal["directory", "file"]
+
+
+@dataclass
+class ConfigPackageStageFiles:
+    package: str
+    stage: str
+    files: Sequence[ConfigFile]

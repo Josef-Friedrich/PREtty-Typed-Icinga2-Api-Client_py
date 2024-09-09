@@ -37,7 +37,12 @@ def main() -> None:
     check_parser.add_argument("--file")
 
     # config
-    sub_parsers.add_parser("config", help="Dump the configuration")
+    sub_parsers.add_parser("config", help="Configuration Management")
+
+    # dump-config
+    sub_parsers.add_parser(
+        "dump-config", help="Dump the configuration of the pretiac client"
+    )
 
     # events
     objects_parser = sub_parsers.add_parser(
@@ -82,6 +87,10 @@ def main() -> None:
         check(args.file)
 
     elif args.sub_command == "config":
+        print(client.list_configuration_packages())
+        print(client.list_configuration_stage_files())
+
+    elif args.sub_command == "dump-config":
         config = load_config_file()
         print(config)
 
