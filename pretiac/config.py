@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Literal, Optional, Sequence, Union
 
 import yaml
 from pydantic import TypeAdapter
@@ -125,8 +125,20 @@ class Config:
     new_service_defaults: Optional[ObjectConfig] = None
     """If a new service needs to be created, use this defaults."""
 
+    def check(self) -> None:
+        """Check if all required values are set."""
+        if self.api_endpoint_host is None:
+            raise PretiacException("Specify an API endpoint host (api_endpoint_host)!")
 
-def load_config_file(config_file: str | Path | None = None) -> Config:
+        if (self.http_basic_username or self.http_basic_password) and (
+            self.client_private_key or self.client_certificate or self.ca_certificate
+        ):
+            raise PretiacException(
+                "Specify HTTP basic OR certificate authentification. Not both!"
+            )
+
+
+def load_config_file(config_file: Optional[Union[str, Path]] = None) -> Config:
     """
     Load the configuration file in YAML format.
 
@@ -168,7 +180,7 @@ def load_config_file(config_file: str | Path | None = None) -> Config:
 
 def load_config(
     config: Optional[Config] = None,
-    config_file: Optional[str | Path] = None,
+    config_file: Optional[Union[str, Path, Literal[False]]] = None,
     api_endpoint_host: Optional[str] = None,
     api_endpoint_port: Optional[int] = None,
     http_basic_username: Optional[str] = None,
@@ -183,6 +195,7 @@ def load_config(
     """
     :param config: A configuration object that has already been populated.
     :param config_file: The path of the configuration file to load.
+        If this value is set to false no configuration file will be loaded.
     :param api_endpoint_host: The domain or the IP address of the API
         endpoint, e. g. ``icinga.example.com``, ``localhost`` or ``127.0.0.1``.
     :param api_endpoint_port: The TCP port of the API endpoint, for example
@@ -209,14 +222,13 @@ def load_config(
     c: Optional[Config] = None
     if config:
         c = config
+    elif config_file is False:
+        c = Config()
     else:
         c = load_config_file(config_file)
 
     if api_endpoint_host is not None:
         c.api_endpoint_host = api_endpoint_host
-
-    if c.api_endpoint_host is None:
-        raise PretiacException("Specify an API endpoint host (api_endpoint_host)!")
 
     if api_endpoint_port is not None:
         c.api_endpoint_port = api_endpoint_port
@@ -229,13 +241,6 @@ def load_config(
 
     if http_basic_password is not None:
         c.http_basic_password = http_basic_password
-
-    if (http_basic_username or http_basic_password) and (
-        client_private_key or client_certificate or ca_certificate
-    ):
-        raise PretiacException(
-            "Specify HTTP basic OR certificate authentification. Not both!"
-        )
 
     if client_private_key is not None:
         c.client_private_key = client_private_key
@@ -254,5 +259,7 @@ def load_config(
 
     if new_service_defaults is not None:
         c.new_service_defaults = new_service_defaults
+
+    c.check()
 
     return c

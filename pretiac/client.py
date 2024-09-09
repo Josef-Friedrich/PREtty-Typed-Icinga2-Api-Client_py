@@ -5,7 +5,7 @@ A high level client with typed return values.
 import socket
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Literal, Optional, Union
 
 from pydantic import BaseModel, TypeAdapter
 
@@ -118,7 +118,7 @@ class Client:
     def __init__(
         self,
         config: Optional[Config] = None,
-        config_file: Optional[str | Path] = None,
+        config_file: Optional[Union[str, Path, Literal[False]]] = None,
         api_endpoint_host: Optional[str] = None,
         api_endpoint_port: Optional[int] = None,
         http_basic_username: Optional[str] = None,

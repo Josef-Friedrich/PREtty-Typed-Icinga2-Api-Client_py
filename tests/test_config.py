@@ -41,6 +41,13 @@ class TestLoadConfig:
         assert config.http_basic_username == "http_basic_username"
         assert config.http_basic_password == "http_basic_password"
 
+    def test_no_config_file(self) -> None:
+        with pytest.raises(
+            PretiacException,
+            match=r"Specify an API endpoint host \(api_endpoint_host\)!",
+        ):
+            load_config(config_file=False)
+
     def test_exception_both_auth_methods(self) -> None:
         with pytest.raises(PretiacException):
             load_config(
