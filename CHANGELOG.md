@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+<!-- insertion marker -->
+## [v0.4.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/releases/tag/v0.4.0) - 2024-09-09
+
+<small>[Compare with v0.3.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/compare/v0.3.0...v0.4.0)</small>
+
+### Added
+
+- Add test ([b633b1f](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/b633b1fe29d4cb026fc700c94b4f5055a9b42bb1) by Josef Friedrich).
+- Add some docs ([99e50a1](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/99e50a16e4545aa877bcdb11708b758405417d00) by Josef Friedrich).
+- Add some object types ([325c36e](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/325c36ed110c0137a40fc5f9808c06015eab4b31) by Josef Friedrich).
+- Add more tests ([6f4b326](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/6f4b3264d301cb24e04994f054198978a3ef53fd) by Josef Friedrich).
+- Add typing ([84c07cf](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/84c07cf0a80d08da066cfd32e0dd4f8cc48af2c5) by Josef Friedrich).
+- Add links ([88255f0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/88255f083ab7b66d1513ec95e2a980fc63ed87a5) by Josef Friedrich).
+
+### Fixed
+
+- Fix tests ([b142b2b](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/b142b2b768aa6df5c5f741076997a70cbe68689b) by Josef Friedrich).
+- Fix config ([33452b8](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/33452b8cda07a706f79f8c8d23d1c6a752a3ebba) by Josef Friedrich).
+- Fix Timeperiod ([6874ade](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/6874ade8037b916d12390fbd909d0c8e8fe460b2) by Josef Friedrich).
+- Fix templates ([e95bd64](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/e95bd64140ba32cca182e609f8a734fdaed0b585) by Josef Friedrich).
+- Fix checks executor ([e6df91f](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/e6df91f9776d880323005baf8d65d79942684eba) by Josef Friedrich).
+
+### Removed
+
+- Remove duplicate object type names ([ac782bb](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/ac782bb8c462ce7eddeb6b4e90f7f2f6a9905329) by Josef Friedrich).
+
 ## [v0.3.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/releases/tag/v0.3.0) - 2024-09-04
 
 <small>[Compare with v0.2.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/compare/v0.2.0...v0.3.0)</small>
