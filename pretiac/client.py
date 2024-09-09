@@ -117,6 +117,7 @@ class Client:
 
     def __init__(
         self,
+        config: Optional[Config] = None,
         config_file: Optional[str | Path] = None,
         api_endpoint_host: Optional[str] = None,
         api_endpoint_port: Optional[int] = None,
@@ -126,8 +127,11 @@ class Client:
         client_certificate: Optional[str] = None,
         ca_certificate: Optional[str] = None,
         suppress_exception: Optional[bool] = None,
+        new_host_defaults: Optional[ObjectConfig] = None,
+        new_service_defaults: Optional[ObjectConfig] = None,
     ) -> None:
         """
+        :param config: A configuration object that has already been populated.
         :param config_file: The path of the configuration file to load.
         :param api_endpoint_host: The domain or the IP address of the API
             endpoint, e. g. ``icinga.example.com``, ``localhost`` or ``127.0.0.1``.
@@ -144,8 +148,13 @@ class Client:
         :param ca_certificate: The file path of the Icinga **CA (Certification
             Authority)**, for example ``/var/lib/icinga2/certs/ca.crt``.
         :param suppress_exception: If set to ``True``, no exceptions are thrown.
+        :param new_host_defaults: If a new host needs to be created, use this
+            defaults.
+        :param new_service_defaults: If a new service needs to be created, use
+            this defaults.
         """
         self.config = load_config(
+            config=config,
             config_file=config_file,
             api_endpoint_host=api_endpoint_host,
             api_endpoint_port=api_endpoint_port,
@@ -155,6 +164,8 @@ class Client:
             client_certificate=client_certificate,
             ca_certificate=ca_certificate,
             suppress_exception=suppress_exception,
+            new_host_defaults=new_host_defaults,
+            new_service_defaults=new_service_defaults,
         )
         self.raw_client = RawClient(self.config)
 

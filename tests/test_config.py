@@ -1,6 +1,9 @@
 from pathlib import Path
 
-from pretiac.config import ObjectConfig, load_config_file
+import pytest
+
+from pretiac.config import ObjectConfig, load_config, load_config_file
+from pretiac.exceptions import PretiacException
 
 
 def test_load_config(config_file: Path) -> None:
@@ -19,3 +22,15 @@ def test_class_object_config() -> None:
 
     assert config.templates
     assert config.templates == ["Template"]
+
+
+class TestLoadConfig:
+    def test_without_arguments(self):
+        config = load_config()
+        assert config
+
+    def test_exception_both_auth_methods(self):
+        with pytest.raises(PretiacException):
+            load_config(
+                http_basic_password="1234", client_private_key="/tmp/private.key"
+            )

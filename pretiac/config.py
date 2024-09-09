@@ -167,6 +167,7 @@ def load_config_file(config_file: str | Path | None = None) -> Config:
 
 
 def load_config(
+    config: Optional[Config] = None,
     config_file: Optional[str | Path] = None,
     api_endpoint_host: Optional[str] = None,
     api_endpoint_port: Optional[int] = None,
@@ -176,8 +177,11 @@ def load_config(
     client_certificate: Optional[str] = None,
     ca_certificate: Optional[str] = None,
     suppress_exception: Optional[bool] = None,
+    new_host_defaults: Optional[ObjectConfig] = None,
+    new_service_defaults: Optional[ObjectConfig] = None,
 ) -> Config:
     """
+    :param config: A configuration object that has already been populated.
     :param config_file: The path of the configuration file to load.
     :param api_endpoint_host: The domain or the IP address of the API
         endpoint, e. g. ``icinga.example.com``, ``localhost`` or ``127.0.0.1``.
@@ -194,37 +198,61 @@ def load_config(
     :param ca_certificate: The file path of the Icinga **CA (Certification
         Authority)**, for example ``/var/lib/icinga2/certs/ca.crt``.
     :param suppress_exception: If set to ``True``, no exceptions are thrown.
+    :param new_host_defaults: If a new host needs to be created, use this
+        defaults.
+    :param new_service_defaults: If a new service needs to be created, use
+        this defaults.
     """
-    config: Config = load_config_file(config_file)
+    if config is not None and config_file is not None:
+        raise PretiacException("Specify config OR config_file. Not both!")
+
+    c: Optional[Config] = None
+    if config:
+        c = config
+    else:
+        c = load_config_file(config_file)
 
     if api_endpoint_host is not None:
-        config.api_endpoint_host = api_endpoint_host
+        c.api_endpoint_host = api_endpoint_host
 
-    if config.api_endpoint_host is None:
-        raise PretiacException("no domain")
+    if c.api_endpoint_host is None:
+        raise PretiacException("Specify an API endpoint host (api_endpoint_host)!")
 
     if api_endpoint_port is not None:
-        config.api_endpoint_port = api_endpoint_port
+        c.api_endpoint_port = api_endpoint_port
 
-    if config.api_endpoint_port is None:
-        config.api_endpoint_port = 5665
+    if c.api_endpoint_port is None:
+        c.api_endpoint_port = 5665
 
     if http_basic_username is not None:
-        config.http_basic_username = http_basic_username
+        c.http_basic_username = http_basic_username
 
     if http_basic_password is not None:
-        config.http_basic_password = http_basic_password
+        c.http_basic_password = http_basic_password
+
+    if (http_basic_username or http_basic_password) and (
+        client_private_key or client_certificate or ca_certificate
+    ):
+        raise PretiacException(
+            "Specify HTTP basic OR certificate authentification. Not both!"
+        )
 
     if client_private_key is not None:
-        config.client_private_key = client_private_key
+        c.client_private_key = client_private_key
 
     if client_certificate is not None:
-        config.client_certificate = client_certificate
+        c.client_certificate = client_certificate
 
     if ca_certificate is not None:
-        config.ca_certificate = ca_certificate
+        c.ca_certificate = ca_certificate
 
     if suppress_exception is not None:
-        config.suppress_exception = suppress_exception
+        c.suppress_exception = suppress_exception
 
-    return config
+    if new_host_defaults is not None:
+        c.new_host_defaults = new_host_defaults
+
+    if new_service_defaults is not None:
+        c.new_service_defaults = new_service_defaults
+
+    return c
