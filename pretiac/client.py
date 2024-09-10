@@ -116,7 +116,7 @@ class Client:
 
     raw_client: RawClient
 
-    config: Config
+    __config: Config
 
     def __init__(
         self,
@@ -156,7 +156,7 @@ class Client:
         :param new_service_defaults: If a new service needs to be created, use
             this defaults.
         """
-        self.config = load_config(
+        self.__config = load_config(
             config=config,
             config_file=config_file,
             api_endpoint_host=api_endpoint_host,
@@ -170,14 +170,42 @@ class Client:
             new_host_defaults=new_host_defaults,
             new_service_defaults=new_service_defaults,
         )
-        self.raw_client = RawClient(self.config)
+        self.raw_client = RawClient(self.__config)
+
+    @property
+    def api_endpoint_host(self) -> Optional[str]:
+        return self.__config.api_endpoint_host
+
+    @property
+    def api_endpoint_port(self) -> Optional[int]:
+        return self.__config.api_endpoint_port
+
+    @property
+    def http_basic_username(self) -> Optional[str]:
+        return self.__config.http_basic_username
+
+    @property
+    def http_basic_password(self) -> Optional[str]:
+        return self.__config.http_basic_password
+
+    @property
+    def client_certificate(self) -> Optional[str]:
+        return self.__config.client_certificate
+
+    @property
+    def client_private_key(self) -> Optional[str]:
+        return self.__config.client_private_key
+
+    @property
+    def ca_certificate(self) -> Optional[str]:
+        return self.__config.ca_certificate
 
     # v1/config
 
     def list_configuration_packages(self):
         adapter = TypeAdapter(Sequence[ConfigPackage])
         return adapter.validate_python(
-            self.raw_client.configuration.list_packages()["results"]
+            self.raw_client.config.list_packages()["results"]
         )
 
     def list_configuration_stage_files(
@@ -194,7 +222,7 @@ class Client:
                 ConfigPackageStageFiles(
                     package=package_name,
                     stage=stage_name,
-                    files=self.raw_client.configuration.list_stage_files(
+                    files=self.raw_client.config.list_stage_files(
                         package_name, stage_name
                     ),
                 )
@@ -208,7 +236,7 @@ class Client:
                             package=package.name,
                             stage=stage,
                             files=config_files.validate_python(
-                                self.raw_client.configuration.list_stage_files(
+                                self.raw_client.config.list_stage_files(
                                     package.name, stage
                                 )["results"]
                             ),
@@ -554,7 +582,7 @@ class Client:
             name=host,
             object_config=new_host_defaults
             if new_host_defaults is not None
-            else self.config.new_host_defaults,
+            else self.__config.new_host_defaults,
             suppress_exception=True,
         )
 
@@ -563,7 +591,7 @@ class Client:
             host=host,
             object_config=new_service_defaults
             if new_service_defaults is not None
-            else self.config.new_service_defaults,
+            else self.__config.new_service_defaults,
             suppress_exception=True,
             display_name=display_name,
         )

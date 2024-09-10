@@ -5,7 +5,7 @@ from pretiac.raw_client import RawClient
 
 
 def test_config(client: Client) -> None:
-    assert client.config.http_basic_username == "apiuser"
+    assert client.http_basic_username == "apiuser"
 
 
 def test_api_enpoint_host_ip() -> None:
@@ -28,13 +28,13 @@ def test_client_setup() -> None:
         http_basic_password="p",
     )
     client = Client(config_file=False, config=config)
-    assert client.config.api_endpoint_host == "127.0.0.1"
-    assert client.config.api_endpoint_port == 1221
-    assert client.config.http_basic_username == "u"
-    assert client.config.http_basic_password == "p"
-    assert client.config.client_certificate is None
-    assert client.config.client_private_key is None
-    assert client.config.ca_certificate is None
+    assert client.api_endpoint_host == "127.0.0.1"
+    assert client.api_endpoint_port == 1221
+    assert client.http_basic_username == "u"
+    assert client.http_basic_password == "p"
+    assert client.client_certificate is None
+    assert client.client_private_key is None
+    assert client.ca_certificate is None
 
 
 class TestApiUser:

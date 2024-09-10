@@ -650,7 +650,7 @@ class ActionsUrlEndpoint(RequestHandler):
         return self._request("POST", "generate-ticket", assemble_payload(cn=cn))
 
 
-class ConfigurationUrlEndpoint(RequestHandler):
+class ConfigUrlEndpoint(RequestHandler):
     """
     Connects to the URL endpoint ``config`` of the Icinga2 API.
     """
@@ -1439,7 +1439,7 @@ class RawClient:
 
     """
 
-    config: Config
+    __config: Config
 
     url: str
 
@@ -1448,7 +1448,7 @@ class RawClient:
     actions: ActionsUrlEndpoint
     """Connects to the URL endpoint ``actions`` of the Icinga2 API."""
 
-    configuration: ConfigurationUrlEndpoint
+    config: ConfigUrlEndpoint
     """Connects to the URL endpoint ``config`` of the Icinga2 API."""
 
     events: EventsUrlEndpoint
@@ -1469,17 +1469,18 @@ class RawClient:
 
         :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
         """
-        self.config = config
+        self.__config = config
 
-        self.url = (
-            f"https://{self.config.api_endpoint_host}:{self.config.api_endpoint_port}"
-        )
+        self.url = f"https://{self.__config.api_endpoint_host}:{self.__config.api_endpoint_port}"
 
         self.version = get_version("pretiac")
 
         self.actions = ActionsUrlEndpoint(self)
-        self.configuration = ConfigurationUrlEndpoint(self)
+        self.config = ConfigUrlEndpoint(self)
         self.events = EventsUrlEndpoint(self)
         self.objects = ObjectsUrlEndpoint(self)
         self.status = StatusUrlEndpoint(self)
         self.templates = TemplatesUrlEndpoint(self)
+
+    def get_client_config(self) -> Config:
+        return self.__config

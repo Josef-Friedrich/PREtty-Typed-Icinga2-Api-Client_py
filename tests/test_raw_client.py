@@ -10,19 +10,19 @@ from pretiac.raw_client import RawClient
 
 class TestClient:
     def test_domain(self, raw_client: RawClient) -> None:
-        assert raw_client.config.api_endpoint_host == "localhost"
+        assert raw_client.get_client_config().api_endpoint_host == "localhost"
 
     def test_port(self, raw_client: RawClient) -> None:
-        assert raw_client.config.api_endpoint_port == 5665
+        assert raw_client.get_client_config().api_endpoint_port == 5665
 
     def test_url(self, raw_client: RawClient) -> None:
         assert raw_client.url == "https://localhost:5665"
 
     def test_api_user(self, raw_client: RawClient) -> None:
-        assert raw_client.config.http_basic_username == "apiuser"
+        assert raw_client.get_client_config().http_basic_username == "apiuser"
 
     def test_password(self, raw_client: RawClient) -> None:
-        assert raw_client.config.http_basic_password == "password"
+        assert raw_client.get_client_config().http_basic_password == "password"
 
     def test_version(self, raw_client: RawClient) -> None:
         assert isinstance(raw_client.version, str)
@@ -102,10 +102,10 @@ class TestActions:
 @pytest.fixture
 def config_client(request: pytest.FixtureRequest, raw_client: RawClient) -> RawClient:
     package_name = "example-cmdb"
-    raw_client.configuration.delete_package(package_name, suppress_exception=True)
+    raw_client.config.delete_package(package_name, suppress_exception=True)
 
     def teardown() -> None:
-        raw_client.configuration.delete_package(package_name, suppress_exception=True)
+        raw_client.config.delete_package(package_name, suppress_exception=True)
         time.sleep(3)  # Reload is triggered
 
     request.addfinalizer(teardown)
@@ -115,18 +115,18 @@ def config_client(request: pytest.FixtureRequest, raw_client: RawClient) -> RawC
 
 class TestConfiguration:
     def test_create_package(self, raw_client: RawClient) -> None:
-        raw_client.configuration.delete_package("test-example", suppress_exception=True)
-        result = raw_client.configuration.create_package("test-example")
+        raw_client.config.delete_package("test-example", suppress_exception=True)
+        result = raw_client.config.create_package("test-example")
         results = result["results"]
         assert results[0]["code"] == 200
         assert results[0]["status"] == "Created package."
 
     def test_delete_package(self, raw_client: RawClient) -> None:
-        raw_client.configuration.delete_package("test-example", suppress_exception=True)
+        raw_client.config.delete_package("test-example", suppress_exception=True)
         with pytest.raises(
             PretiacRequestException, match="Failed to delete package 'test-example'."
         ):
-            raw_client.configuration.delete_package("test-example")
+            raw_client.config.delete_package("test-example")
 
     class TestCreateStage:
         package_name: str = "example-cmdb"
@@ -138,12 +138,12 @@ class TestConfiguration:
             reload: Optional[bool] = None,
             activate: Optional[bool] = None,
         ):
-            client.configuration.create_package(self.package_name)
+            client.config.create_package(self.package_name)
             if files is None:
                 files = {
                     "conf.d/test-host.conf": 'object Host "test-host" { address = "127.0.0.1", check_command = "hostalive" }'
                 }
-            return client.configuration.create_stage(
+            return client.config.create_stage(
                 package_name=self.package_name,
                 files=files,
                 reload=reload,
@@ -159,8 +159,8 @@ class TestConfiguration:
             assert result["status"] == "Created stage. Reload triggered."
 
         def test_example_2(self, config_client: RawClient):
-            config_client.configuration.create_package("example-cmdb")
-            results = config_client.configuration.create_stage(
+            config_client.config.create_package("example-cmdb")
+            results = config_client.config.create_stage(
                 package_name="example-cmdb",
                 files={
                     "zones.d/satellite/host2.conf": 'object Host "satellite-host" { address = "192.168.1.100", check_command = "hostalive"',
@@ -178,18 +178,18 @@ class TestConfiguration:
             assert result["status"] == "Created stage. Reload skipped."
 
     def test_list_packages(self, raw_client: RawClient) -> None:
-        results = raw_client.configuration.list_packages()
+        results = raw_client.config.list_packages()
         result = results["results"][0]
         assert len(result["active-stage"]) == 36
         assert isinstance(result["name"], str)
         assert len(result["stages"][0]) == 36
 
     def test_list_stage_files(self, raw_client: RawClient) -> None:
-        packages = raw_client.configuration.list_packages()
+        packages = raw_client.config.list_packages()
         result = packages["results"][0]
         package_name = result["name"]
         stage_name = result["active-stage"]
-        results = raw_client.configuration.list_stage_files(package_name, stage_name)
+        results = raw_client.config.list_stage_files(package_name, stage_name)
         result = results["results"][0]
         assert isinstance(result["name"], str)
         assert result["type"] in ("directory", "file")

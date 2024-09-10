@@ -98,7 +98,7 @@ class RequestHandler:
 
     @property
     def config(self) -> Config:
-        return self.raw_client.config
+        return self.raw_client.get_client_config()
 
     def __create_session(self, method: RequestMethod = "POST") -> requests.Session:
         """
