@@ -106,11 +106,39 @@ def config_client(request: pytest.FixtureRequest, raw_client: RawClient) -> RawC
 
     def teardown() -> None:
         raw_client.config.delete_package(package_name, suppress_exception=True)
-        time.sleep(3)  # Reload is triggered
+        time.sleep(5)  # Reload is triggered
 
     request.addfinalizer(teardown)
 
     return raw_client
+
+
+CONFIG_PACKAGE_NAME = "example-cmdb"
+
+
+def _create_config_package(
+    client: RawClient, package_name: str = CONFIG_PACKAGE_NAME
+) -> None:
+    client.config.delete_package(package_name, suppress_exception=True)
+    client.config.create_package(package_name)
+
+
+def _create_config_stage(
+    client: RawClient, package_name: str = CONFIG_PACKAGE_NAME
+) -> str:
+    return client.config.create_stage(
+        package_name=package_name,
+        files={
+            "conf.d/test-host.conf": 'object Host "test-host" { address = "127.0.0.1", check_command = "hostalive" }'
+        },
+    )["results"][0]["stage"]
+
+
+def _create_config_package_stage(
+    client: RawClient, package_name: str = CONFIG_PACKAGE_NAME
+) -> str:
+    _create_config_package(client, package_name)
+    return _create_config_stage(client, package_name)
 
 
 class TestConfig:
@@ -152,9 +180,9 @@ class TestConfig:
             assert result["status"] == "Created stage. Reload triggered."
 
         def test_example_2(self, config_client: RawClient):
-            config_client.config.create_package("example-cmdb")
+            config_client.config.create_package(CONFIG_PACKAGE_NAME)
             results = config_client.config.create_stage(
-                package_name="example-cmdb",
+                package_name=CONFIG_PACKAGE_NAME,
                 files={
                     "zones.d/satellite/host2.conf": 'object Host "satellite-host" { address = "192.168.1.100", check_command = "hostalive"',
                 },
@@ -187,21 +215,29 @@ class TestConfig:
         assert isinstance(result["name"], str)
         assert result["type"] in ("directory", "file")
 
-    def test_package_stage_errors(self, config_client: RawClient):
-        package_name = "example-cmdb"
-        config_client.config.create_package("example-cmdb")
-        result = config_client.config.create_stage(
-            package_name="example-cmdb",
-            files={
-                "conf.d/test-host.conf": 'object Host "test-host" { address = "127.0.0.1", check_command = "hostalive" }'
-            },
-        )["results"][0]
-        stage_name = result["stage"]
+    def test_fetch_stage_file(self, raw_client: RawClient) -> None:
+        stage_name = _create_config_package_stage(raw_client)
+        result = raw_client.config.fetch_stage_file(
+            CONFIG_PACKAGE_NAME, stage_name, "conf.d/test-host.conf"
+        )
+        assert (
+            result
+            == 'object Host "test-host" { address = "127.0.0.1", check_command = "hostalive" }'
+        )
+
+    def test_package_stage_errors(self, raw_client: RawClient):
+        stage_name = _create_config_package_stage(raw_client)
         time.sleep(3)
-        result = config_client.config.get_package_stage_errors(
-            package_name=package_name, stage_name=stage_name
+        result = raw_client.config.get_package_stage_errors(
+            package_name=CONFIG_PACKAGE_NAME, stage_name=stage_name
         )
         assert "Finished validating the configuration file(s)." in result
+        time.sleep(3)
+
+    def test_delete_stage(self, raw_client: RawClient) -> None:
+        stage_name = _create_config_package_stage(raw_client)
+        result = raw_client.config.delete_stage(CONFIG_PACKAGE_NAME, stage_name)
+        assert result == ""
 
     def test_delete_package(self, raw_client: RawClient) -> None:
         raw_client.config.delete_package("test-example", suppress_exception=True)

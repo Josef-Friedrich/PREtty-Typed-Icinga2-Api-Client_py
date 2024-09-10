@@ -783,8 +783,37 @@ class ConfigUrlEndpoint(RequestHandler):
         """
         return self._request(
             "GET",
-            f"stages/{package_name}/{stage_name}",
+            f"stages/{_normalize_name(package_name)}/{stage_name}",
             suppress_exception=suppress_exception,
+        )
+
+    def fetch_stage_file(
+        self,
+        package_name: str,
+        stage_name: str,
+        relpath: str,
+        suppress_exception: Optional[bool] = None,
+    ) -> str:
+        """
+        Fetch the content of a specific configuration file
+
+        :param package_name: Package names with the ``_`` prefix are reserved for
+            internal packages and must not be used. You can recognize
+            ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
+            and packages.
+        :param stage_name: The stage name, for example
+            ``7e7861c8-8008-4e8d-9910-2a0bb26921bd``.
+        :param relpath:  The relative path of the requested configuration file.
+        :param suppress_exception: If this parameter is set to ``True``, no
+            exceptions are thrown.
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#fetch-configuration-package-stage-files <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#fetch-configuration-package-stage-files>`__
+        """
+        return self._request(
+            "GET",
+            f"files/{_normalize_name(package_name)}/{stage_name}/{relpath}",
+            suppress_exception=suppress_exception,
+            plain=True,
         )
 
     def get_package_stage_errors(
@@ -792,7 +821,7 @@ class ConfigUrlEndpoint(RequestHandler):
         package_name: str,
         stage_name: str,
         suppress_exception: Optional[bool] = None,
-    ) -> Any:
+    ) -> str:
         """
         Check for validation errors.
 
@@ -805,12 +834,38 @@ class ConfigUrlEndpoint(RequestHandler):
         :param suppress_exception: If this parameter is set to ``True``, no
             exceptions are thrown.
 
-        `doc/12-icinga2-api/#configuration-package-stage-errors <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#configuration-package-stage-errors>`__
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#configuration-package-stage-errors <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#configuration-package-stage-errors>`__
         """
         return self._request(
             "GET",
-            f"files/{package_name}/{stage_name}/startup.log",
+            f"files/{_normalize_name(package_name)}/{stage_name}/startup.log",
             plain=True,
+            suppress_exception=suppress_exception,
+        )
+
+    def delete_stage(
+        self,
+        package_name: str,
+        stage_name: str,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        Send a delete request in order to purge a configuration stage.
+
+        :param name: Package names with the ``_`` prefix are reserved for
+            internal packages and must not be used. You can recognize
+            ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
+            and packages.
+        :param stage_name: The stage name, for example
+            ``7e7861c8-8008-4e8d-9910-2a0bb26921bd``.
+        :param suppress_exception: If this parameter is set to ``True``, no
+            exceptions are thrown.
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#deleting-configuration-package-stage <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-configuration-package-stage>`__
+        """
+        return self._request(
+            "DELETE",
+            f"stages/{_normalize_name(package_name)}/{stage_name}",
             suppress_exception=suppress_exception,
         )
 
@@ -820,6 +875,8 @@ class ConfigUrlEndpoint(RequestHandler):
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
+        Delete the configuration package entirely.
+
         :param name: Package names with the ``_`` prefix are reserved for
             internal packages and must not be used. You can recognize
             ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
@@ -827,7 +884,7 @@ class ConfigUrlEndpoint(RequestHandler):
         :param suppress_exception: If this parameter is set to ``True``, no
             exceptions are thrown.
 
-        :see: `Icinga2 API documentation: 12-icinga2-api/#deleting-configuration-package <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-configuration-package>`__
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#deleting-configuration-package <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-configuration-package>`__
         """
         return self._request(
             "DELETE",
