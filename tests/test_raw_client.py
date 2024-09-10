@@ -113,20 +113,13 @@ def config_client(request: pytest.FixtureRequest, raw_client: RawClient) -> RawC
     return raw_client
 
 
-class TestConfiguration:
+class TestConfig:
     def test_create_package(self, raw_client: RawClient) -> None:
         raw_client.config.delete_package("test-example", suppress_exception=True)
         result = raw_client.config.create_package("test-example")
         results = result["results"]
         assert results[0]["code"] == 200
         assert results[0]["status"] == "Created package."
-
-    def test_delete_package(self, raw_client: RawClient) -> None:
-        raw_client.config.delete_package("test-example", suppress_exception=True)
-        with pytest.raises(
-            PretiacRequestException, match="Failed to delete package 'test-example'."
-        ):
-            raw_client.config.delete_package("test-example")
 
     class TestCreateStage:
         package_name: str = "example-cmdb"
@@ -193,6 +186,29 @@ class TestConfiguration:
         result = results["results"][0]
         assert isinstance(result["name"], str)
         assert result["type"] in ("directory", "file")
+
+    def test_package_stage_errors(self, config_client: RawClient):
+        package_name = "example-cmdb"
+        config_client.config.create_package("example-cmdb")
+        result = config_client.config.create_stage(
+            package_name="example-cmdb",
+            files={
+                "conf.d/test-host.conf": 'object Host "test-host" { address = "127.0.0.1", check_command = "hostalive" }'
+            },
+        )["results"][0]
+        stage_name = result["stage"]
+        time.sleep(3)
+        result = config_client.config.get_package_stage_errors(
+            package_name=package_name, stage_name=stage_name
+        )
+        assert "Finished validating the configuration file(s)." in result
+
+    def test_delete_package(self, raw_client: RawClient) -> None:
+        raw_client.config.delete_package("test-example", suppress_exception=True)
+        with pytest.raises(
+            PretiacRequestException, match="Failed to delete package 'test-example'."
+        ):
+            raw_client.config.delete_package("test-example")
 
 
 class TestObjects:

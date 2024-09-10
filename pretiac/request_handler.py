@@ -143,6 +143,7 @@ class RequestHandler:
         url_relpath: Optional[str],
         payload: Optional[dict[str, Any]] = None,
         stream: bool = False,
+        plain: bool = False,
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
@@ -153,9 +154,15 @@ class RequestHandler:
             you want to query the URL
             ``https://localhost:5665/v1/objects/hosts`` specify only ``hosts``.
         :param payload: The payload to send
-        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+        :param stream: If this parameter is set to ``True``, a
+            :class:`requests.Response` object is returned.
+        :param plain: If set to ``True`` the reponse is returned as plain
+            UTF-8 string and is not parsed as JSON.
+        :param suppress_exception: If this parameter is set to ``True``, no
+            exceptions are thrown.
 
-        :returns: The response as json
+        :returns: The response decoded JSON object or a plain string or a
+            :class:`requests.Response` object
         """
 
         request_url = urljoin(
@@ -167,6 +174,9 @@ class RequestHandler:
 
         # create session
         session = self.__create_session(method)
+
+        if plain:
+            session.headers["Accept"] = "application/octet-stream"
 
         # create arguments for the request
         request_args: Payload = {"url": request_url}
@@ -196,6 +206,8 @@ class RequestHandler:
 
         if stream:
             return response
+        elif plain:
+            return response.text
         else:
             return response.json()
 

@@ -698,8 +698,8 @@ class ConfigUrlEndpoint(RequestHandler):
         the startup.log from this stage deployment attempt to see what exactly
         failed. You can see that in the Director’s deployment log.
 
-        :param package_name: Package names with the ``_`` prefix are reserved for
-            internal packages and must not be used. You can recognize
+        :param package_name: Package names with the ``_`` prefix are reserved
+            for internal packages and must not be used. You can recognize
             ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
             and packages.
         :param files: Dictionary of file targets and their content.
@@ -774,7 +774,8 @@ class ConfigUrlEndpoint(RequestHandler):
             internal packages and must not be used. You can recognize
             ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
             and packages.
-        :param stage_name: The stage name, for example ``7e7861c8-8008-4e8d-9910-2a0bb26921bd``.
+        :param stage_name: The stage name, for example
+            ``7e7861c8-8008-4e8d-9910-2a0bb26921bd``.
         :param suppress_exception: If this parameter is set to ``True``, no
             exceptions are thrown.
 
@@ -786,9 +787,36 @@ class ConfigUrlEndpoint(RequestHandler):
             suppress_exception=suppress_exception,
         )
 
+    def get_package_stage_errors(
+        self,
+        package_name: str,
+        stage_name: str,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        Check for validation errors.
+
+        :param package_name: Package names with the ``_`` prefix are reserved for
+            internal packages and must not be used. You can recognize
+            ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
+            and packages.
+        :param stage_name: The stage name, for example
+            ``7e7861c8-8008-4e8d-9910-2a0bb26921bd``.
+        :param suppress_exception: If this parameter is set to ``True``, no
+            exceptions are thrown.
+
+        `doc/12-icinga2-api/#configuration-package-stage-errors <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#configuration-package-stage-errors>`__
+        """
+        return self._request(
+            "GET",
+            f"files/{package_name}/{stage_name}/startup.log",
+            plain=True,
+            suppress_exception=suppress_exception,
+        )
+
     def delete_package(
         self,
-        name: str,
+        package_name: str,
         suppress_exception: Optional[bool] = None,
     ) -> Any:
         """
@@ -803,7 +831,7 @@ class ConfigUrlEndpoint(RequestHandler):
         """
         return self._request(
             "DELETE",
-            f"packages/{_normalize_name(name)}",
+            f"packages/{_normalize_name(package_name)}",
             suppress_exception=suppress_exception,
         )
 
