@@ -202,47 +202,43 @@ class Client:
 
     # v1/config
 
-    def list_configuration_packages(self):
-        adapter = TypeAdapter(Sequence[ConfigPackage])
+    def list_config_packages(self) -> Sequence[ConfigPackage]:
+        adapter: TypeAdapter[Sequence[ConfigPackage]] = TypeAdapter(
+            Sequence[ConfigPackage]
+        )
         return adapter.validate_python(
             self.raw_client.config.list_packages()["results"]
         )
 
-    def list_configuration_stage_files(
+    def list_config_stage_files(
         self,
-        package_name: Optional[str] = None,
-        stage_name: Optional[str] = None,
-    ) -> Sequence[ConfigPackageStageFiles]:
+        package_name: str,
+        stage_name: str,
+    ) -> ConfigPackageStageFiles:
         config_files: TypeAdapter[Sequence[ConfigFile]] = TypeAdapter(
             Sequence[ConfigFile]
         )
+        return ConfigPackageStageFiles(
+            package=package_name,
+            stage=stage_name,
+            files=config_files.validate_python(
+                self.raw_client.config.list_stage_files(package_name, stage_name)[
+                    "results"
+                ]
+            ),
+        )
 
-        if package_name and stage_name:
-            return [
-                ConfigPackageStageFiles(
-                    package=package_name,
-                    stage=stage_name,
-                    files=self.raw_client.config.list_stage_files(
-                        package_name, stage_name
-                    ),
-                )
-            ]
-        else:
-            output: list[ConfigPackageStageFiles] = []
-            for package in self.list_configuration_packages():
-                for stage in package.stages:
-                    output.append(
-                        ConfigPackageStageFiles(
-                            package=package.name,
-                            stage=stage,
-                            files=config_files.validate_python(
-                                self.raw_client.config.list_stage_files(
-                                    package.name, stage
-                                )["results"]
-                            ),
-                        )
+    def list_all_config_stage_files(self) -> list[ConfigPackageStageFiles]:
+        output: list[ConfigPackageStageFiles] = []
+        for package in self.list_config_packages():
+            for stage in package.stages:
+                output.append(
+                    self.list_config_stage_files(
+                        package.name,
+                        stage,
                     )
-            return output
+                )
+        return output
 
     # v1/events
 

@@ -87,8 +87,7 @@ def main() -> None:
         check(args.file)
 
     elif args.sub_command == "config":
-        print(client.list_configuration_packages())
-        print(client.list_configuration_stage_files())
+        print(client.list_all_config_stage_files())
 
     elif args.sub_command == "dump-config":
         config = load_config_file()
