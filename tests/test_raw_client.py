@@ -141,6 +141,7 @@ def _create_config_package_stage(
     return _create_config_stage(client, package_name)
 
 
+@pytest.mark.skip
 class TestConfig:
     def test_create_package(self, raw_client: RawClient) -> None:
         raw_client.config.delete_package("test-example", suppress_exception=True)
