@@ -1480,6 +1480,20 @@ class TemplatesUrlEndpoint(RequestHandler):
         )
 
 
+class TypesUrlEndpoint(RequestHandler):
+    path_prefix = "types"
+
+    def list(self, object_type: Optional[ObjectTypeName] = None) -> Any:
+        """Retrieve the configuration object types.
+
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#types <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#types>`__
+        """
+        return self._request("GET", object_type)
+
+
 class RawClient:
     """
     This raw client is a thin wrapper around the Icinga2 REST API.
@@ -1548,6 +1562,9 @@ class RawClient:
     templates: TemplatesUrlEndpoint
     """Connects to the URL endpoint ``templates`` of the Icinga2 API."""
 
+    types: TypesUrlEndpoint
+    """Connects to the URL endpoint ``types`` of the Icinga2 API."""
+
     def __init__(self, config: Config) -> None:
         """
         initialize object
@@ -1566,6 +1583,7 @@ class RawClient:
         self.objects = ObjectsUrlEndpoint(self)
         self.status = StatusUrlEndpoint(self)
         self.templates = TemplatesUrlEndpoint(self)
+        self.types = TypesUrlEndpoint(self)
 
     def get_client_config(self) -> Config:
         return self.__config

@@ -497,3 +497,10 @@ class TestTemplates:
                 "Service", 'match("unknown*", tmpl.name)'
             )
             assert len(result["results"]) == 0
+
+
+class TestTypes:
+    def test_all(self, raw_client: RawClient) -> None:
+        result = raw_client.types.list()
+        assert isinstance(result["results"][0]["name"], str)
+        assert isinstance(result["results"][0]["plural_name"], str)
