@@ -78,6 +78,9 @@ def main() -> None:
         help="Retrieve status information and statistics for Icinga 2.",
     )
 
+    # types
+    sub_parsers.add_parser("types")
+
     args = parser.parse_args()
 
     logger.set_level(args.debug)
@@ -118,3 +121,6 @@ def main() -> None:
 
     elif args.sub_command == "status":
         print(client.get_status())
+
+    elif args.sub_command == "types":
+        print(client.get_types())

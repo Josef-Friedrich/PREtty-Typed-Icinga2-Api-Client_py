@@ -26,6 +26,7 @@ from pretiac.object_types import (
     Service,
     ServiceState,
     TimePeriod,
+    TypeInfo,
     User,
     UserGroup,
     Zone,
@@ -621,4 +622,9 @@ class Client:
         adapter = TypeAdapter(
             list[StatusMessage], config={"arbitrary_types_allowed": True}
         )
+        return adapter.validate_python(result["results"])
+
+    def get_types(self) -> list[TypeInfo]:
+        result = self.raw_client.types.list()
+        adapter = TypeAdapter(list[TypeInfo], config={"arbitrary_types_allowed": True})
         return adapter.validate_python(result["results"])

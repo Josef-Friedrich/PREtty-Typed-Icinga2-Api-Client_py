@@ -2026,3 +2026,80 @@ class ConfigPackageStageFiles:
     package: str
     stage: str
     files: Sequence[ConfigFile]
+
+
+Datatype = Literal[
+    "Array",
+    "Boolean",
+    "CheckResult",
+    "Dictionary",
+    "Function",
+    "Host",
+    "Number",
+    "Object",
+    "Service",
+    "String",
+    "Timestamp",
+    "Type",
+    "uint_fast64_t",
+    "unsigned long",
+    "unsigned short",
+    "Value",
+]
+
+
+@dataclass(config={"extra": "forbid"})
+class TypeFieldAttributeInfo:
+    """
+    https://github.com/Icinga/icinga2/blob/8beb0b74ab9f8402abf4a05b9b768d312304e3f0/lib/remote/typequeryhandler.cpp#L136-L144
+    """
+
+    config: bool
+
+    state: bool
+
+    required: bool
+
+    navigation: bool
+
+    no_user_modify: bool
+
+    no_user_view: bool
+
+    deprecated: bool
+
+
+@dataclass(config={"extra": "forbid"})
+class TypeFieldInfo:
+    """https://github.com/Icinga/icinga2/blob/8beb0b74ab9f8402abf4a05b9b768d312304e3f0/lib/remote/typequeryhandler.cpp#L122-L145"""
+
+    id: int
+
+    type: Datatype
+
+    array_rank: int
+
+    attributes: TypeFieldAttributeInfo
+
+    ref_type: Optional[str] = None
+
+    navigation_name: Optional[str] = None
+
+
+@dataclass(config={"extra": "forbid"})
+class TypeInfo:
+    """
+    https://github.com/Icinga/icinga2/blob/8beb0b74ab9f8402abf4a05b9b768d312304e3f0/lib/remote/typequeryhandler.cpp#L49-L156
+    """
+
+    name: str
+
+    plural_name: str
+
+    abstract: bool
+
+    fields: dict[str, TypeFieldInfo]
+
+    prototype_keys: Sequence[str]
+
+    base: Optional[str] = None
