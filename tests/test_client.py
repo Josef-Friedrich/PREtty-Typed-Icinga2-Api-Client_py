@@ -261,3 +261,11 @@ class TestZone:
         o = client.get_zones()[0]
         assert isinstance(o.name, str)
         assert o.type == "Zone"
+
+
+class TestVariables:
+    def test_get_all(self, client: Client) -> None:
+        v = client.get_variables()[0]
+        assert isinstance(v.name, str)
+        assert isinstance(v.type, str)
+        assert v.value

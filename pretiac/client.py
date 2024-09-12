@@ -31,6 +31,7 @@ from pretiac.object_types import (
     TypeInfo,
     User,
     UserGroup,
+    Variable,
     Zone,
 )
 from pretiac.raw_client import RawClient
@@ -632,3 +633,10 @@ class Client:
         result = self.raw_client.types.list()
         adapter = TypeAdapter(list[TypeInfo], config={"arbitrary_types_allowed": True})
         return adapter.validate_python(result["results"])
+
+    # v1/variables #####################################################################
+
+    def get_variables(self) -> list[Variable]:
+        return TypeAdapter(list[Variable]).validate_python(
+            self.raw_client.variables.list()["results"]
+        )

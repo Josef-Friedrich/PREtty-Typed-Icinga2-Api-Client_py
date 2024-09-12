@@ -2127,6 +2127,7 @@ Datatype = Literal[
     "Dictionary",
     "Function",
     "Host",
+    "Namespace",
     "Number",
     "Object",
     "Service",
@@ -2195,3 +2196,19 @@ class TypeInfo:
     prototype_keys: Sequence[str]
 
     base: Optional[str] = None
+
+
+########################################################################################
+# v1/variables
+########################################################################################
+
+
+@dataclass(config={"extra": "forbid"})
+class Variable:
+    """
+    https://github.com/Icinga/icinga2/blob/b62326d30cb1329ff3c5f8cf47ec0d3213b83cae/lib/remote/variablequeryhandler.cpp#L24-L28
+    """
+
+    name: str
+    type: Datatype
+    value: Any

@@ -24,7 +24,7 @@ requests = "^2"
 rich = "^13"
 types-pyyaml = "^6"
 types-requests = "^2"
-
+click = "^8"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8"
@@ -44,3 +44,4 @@ docstring-code-format = true
 [tool.poetry.scripts]
 # must not be named pretiac.py -> import error
 "pretiac" = "pretiac.cli:main"
+"pretiac-ng" = "pretiac.cli_ng:main"
