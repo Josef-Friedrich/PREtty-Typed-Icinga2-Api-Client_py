@@ -1494,6 +1494,17 @@ class TypesUrlEndpoint(RequestHandler):
         return self._request("GET", object_type)
 
 
+class VariablesUrlEndpoint(RequestHandler):
+    path_prefix = "variables"
+
+    def list(self) -> Any:
+        """Request information about global variables
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-variables <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-variables>`__
+        """
+        return self._request("GET", None)
+
+
 class RawClient:
     """
     This raw client is a thin wrapper around the Icinga2 REST API.
@@ -1565,6 +1576,9 @@ class RawClient:
     types: TypesUrlEndpoint
     """Connects to the URL endpoint ``types`` of the Icinga2 API."""
 
+    variables: VariablesUrlEndpoint
+    """Connects to the URL endpoint ``types`` of the Icinga2 API."""
+
     def __init__(self, config: Config) -> None:
         """
         initialize object
@@ -1584,6 +1598,7 @@ class RawClient:
         self.status = StatusUrlEndpoint(self)
         self.templates = TemplatesUrlEndpoint(self)
         self.types = TypesUrlEndpoint(self)
+        self.variables = VariablesUrlEndpoint(self)
 
     def get_client_config(self) -> Config:
         return self.__config

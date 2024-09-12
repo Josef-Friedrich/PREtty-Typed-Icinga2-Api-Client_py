@@ -505,3 +505,11 @@ class TestTypes:
         result = raw_client.types.list()
         assert isinstance(result["results"][0]["name"], str)
         assert isinstance(result["results"][0]["plural_name"], str)
+
+
+class TestVariables:
+    def test_all(self, raw_client: RawClient) -> None:
+        result = raw_client.variables.list()["results"][0]
+        assert isinstance(result["name"], str)
+        assert isinstance(result["type"], str)
+        assert result["value"]
