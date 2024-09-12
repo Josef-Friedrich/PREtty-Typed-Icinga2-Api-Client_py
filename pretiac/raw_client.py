@@ -75,6 +75,433 @@ class ResultContainer:
     results: list[Result]
 
 
+EventStreamType = Literal[
+    "CheckResult",  # Check results for hosts and services.
+    "StateChange",  # Host/service state changes.
+    "Notification",  # Notification events including notified users for hosts and services.
+    "AcknowledgementSet",  # Acknowledgement set on hosts and services.
+    "AcknowledgementCleared",  # Acknowledgement cleared on hosts and services.
+    "CommentAdded",  # Comment added for hosts and services.
+    "CommentRemoved",  # Comment removed for hosts and services.
+    "DowntimeAdded",  # Downtime added for hosts and services.
+    "DowntimeRemoved",  # Downtime removed for hosts and services.
+    "DowntimeStarted",  # Downtime started for hosts and services.
+    "DowntimeTriggered",  # Downtime triggered for hosts and services.
+    "ObjectCreated",  # Object created for all Icinga 2 objects.
+    "ObjectDeleted",  # Object deleted for all Icinga 2 objects.
+    "ObjectModified",  # Object modified for all Icinga 2 objects.
+]
+"""
+:see: `doc/12-icinga2-api/#event-stream-types <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-types>`__
+:see: `lib/icinga/apievents.hpp L16-L47 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/apievents.hpp#L16-L47>`__
+:see: `lib/remote/eventshandler.cpp L22-L38 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/eventshandler.cpp#L22-L38>`__"""
+
+
+def _normalize_name(name: str) -> str:
+    """To be able to send names with spaces or special characters to the REST API."""
+    return urllib.parse.quote(name, safe="")
+
+
+class Attrs:
+    """https://github.com/Icinga/icinga2/blob/master/lib/icinga/checkable.ti"""
+
+    __name: str
+    acknowledgement: int
+    acknowledgement_expiry: int
+    acknowledgement_last_change: int
+    action_url: str
+    active: bool
+    check_attempt: int
+    check_command: str
+    check_interval: int
+    check_period: str
+    check_timeout: None
+    command_endpoint: str
+    display_name: str
+    downtime_depth: int
+    enable_active_checks: bool
+    enable_event_handler: bool
+    enable_flapping: bool
+    enable_notifications: bool
+    enable_passive_checks: bool
+    enable_perfdata: bool
+    event_command: str
+    executions: None
+    flapping: bool
+    flapping_current: int
+    flapping_ignore_states: None
+    flapping_last_change: int
+    flapping_threshold: int
+    flapping_threshold_high: int
+    flapping_threshold_low: int
+    force_next_check: bool
+    force_next_notification: bool
+    groups: list[str]
+    ha_mode: int
+    handled: bool
+    host_name: str
+    icon_image: str
+    icon_image_alt: str
+    last_check: float
+
+
+class Object:
+    attrs: dict[str, Any]
+    joins: dict[str, Any]
+
+
+class Service(Object):
+    """https://github.com/Icinga/icinga2/blob/master/lib/icinga/service.ti"""
+
+    type = "Service"
+    name: str
+    meta: dict[str, Any]
+
+
+class Host:
+    name: str
+    state: int
+    last_check_result: CheckResult
+
+
+# Order as in https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/
+
+
+class ObjectsUrlEndpoint(RequestHandler):
+    """
+    Connects to the URL endpoint ``objects`` of the Icinga2 API.
+
+    Provides methods to manage configuration objects:
+
+    - creating objects
+    - querying objects
+    - modifying objects
+    - deleting objects
+    """
+
+    path_prefix = "objects"
+
+    def list(
+        self,
+        object_type: ObjectTypeName,
+        name: Optional[str] = None,
+        attrs: Optional[Sequence[str]] = None,
+        filters: Optional[str] = None,
+        filter_vars: FilterVars = None,
+        joins: Optional[Union[bool, Sequence[str]]] = None,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        get object by type or name
+
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+        :param name: The full object name, for example ``example.localdomain``
+            or ``example.localdomain!http``.
+        :param attrs: only return these attributes
+        :param filters: filters matched object(s)
+        :param filter_vars: variables used in the filters expression
+        :param joins: show joined object
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+
+        Get all hosts:
+
+        .. code-block:: python
+
+            raw_client.objects.list("Host")
+
+        List the service ``ping4`` of host ``webserver01.domain!ping4``:
+
+        .. code-block:: python
+
+            raw_client.objects.list("Service", "webserver01.domain!ping4")
+
+        Get all hosts but limit attributes to `address` and `state`:
+
+        .. code-block:: python
+
+            raw_client.objects.list("Host", attrs=["address", "state"])
+
+        Get all hosts which have ``webserver`` in their host name:
+
+        .. code-block:: python
+
+            raw_client.objects.list("Host", filters='match("webserver*", host.name)')
+
+        Get all services and the joined host name:
+
+        .. code-block:: python
+
+            raw_client.objects.list("Service", joins=["host.name"])
+
+        Get all services and all supported joins:
+
+        .. code-block:: python
+
+            raw_client.objects.list("Service", joins=True)
+
+        Get all services which names start with ``vHost`` and are assigned to hosts named ``webserver*`` using ``filter_vars``:
+
+        .. code-block:: python
+
+            hostname_pattern = "webserver*"
+            service_pattern = "vHost*"
+            raw_client.objects.list(
+                "Service",
+                filters="match(hpattern, host.name) && match(spattern, service.name)",
+                filter_vars={"hpattern": hostname_pattern, "spattern": service_pattern},
+            )
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
+        """
+
+        url_path = pluralize_to_lower_object_type_name(object_type)
+        if url_path == "dependencys":
+            url_path = "dependencies"
+        if name:
+            url_path += f"/{_normalize_name(name)}"
+
+        payload: Payload = {}
+        if attrs:
+            payload["attrs"] = attrs
+        if filters:
+            payload["filter"] = filters
+        if filter_vars:
+            payload["filter_vars"] = filter_vars
+        if isinstance(joins, bool) and joins:
+            payload["all_joins"] = "1"
+        elif joins:
+            payload["joins"] = joins
+
+        result = self._request(
+            "GET", url_path, payload, suppress_exception=suppress_exception
+        )
+        if "results" in result:
+            return result["results"]
+        return result
+
+    def get(
+        self,
+        object_type: ObjectTypeName,
+        name: str,
+        attrs: Optional[Sequence[str]] = None,
+        joins: Optional[Union[bool, Sequence[str]]] = None,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        Get a single object (``Host``, ``Service``, ...).
+
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+        :param name: The full object name, for example ``example.localdomain``
+            or ``example.localdomain!http``.
+        :param attrs:  Get only the specified objects attributes.
+        :param joins: Also get the joined object, e.g. for a `Service` the `Host` object.
+
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+
+        Get host ``webserver01.domain``:
+
+        .. code-block:: python
+
+            raw_client.objects.get("Host", "webserver01.domain")
+
+        Get service ``ping4`` of host ``webserver01.domain``:
+
+        .. code-block:: python
+
+            raw_client.objects.get("Service", "webserver01.domain!ping4")
+
+        Get host ``webserver01.domain`` but the attributes ``address`` and ``state``:
+
+        .. code-block:: python
+
+            raw_client.objects.get("Host", "webserver01.domain", attrs=["address", "state"])
+
+        Get service ``ping4`` of host ``webserver01.domain`` and the host attributes:
+
+        .. code-block:: python
+
+            raw_client.objects.get("Service", "webserver01.domain!ping4", joins=True)
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
+        """
+        result = self.list(
+            object_type, name, attrs, joins=joins, suppress_exception=suppress_exception
+        )
+        if "error" not in result:
+            return result[0]
+
+    def create(
+        self,
+        object_type: ObjectTypeName,
+        name: str,
+        templates: Optional[Sequence[str]] = None,
+        attrs: Optional[Payload] = None,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        Create an object using ``templates`` and specify attributes (``attrs``).
+
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+        :param name: The full object name, for example ``example.localdomain``
+            or ``example.localdomain!http``.
+        :param templates: Import existing configuration templates for this
+            object type. Note: These templates must either be statically
+            configured or provided in config packages.
+        :param attrs: Set specific object attributes for this object type.
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+
+        Create a host:
+
+        .. code-block:: python
+
+            raw_client.objects.create(
+                "Host", "localhost", ["generic-host"], {"address": "127.0.0.1"}
+            )
+
+        Create a service for Host ``localhost``:
+
+        .. code-block:: python
+
+            raw_client.objects.create(
+                "Service",
+                "testhost3!dummy",
+                {"check_command": "dummy"},
+                ["generic-service"],
+            )
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#creating-config-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#creating-config-objects>`__
+        """
+
+        payload: Payload = {}
+        if attrs:
+            payload["attrs"] = attrs
+        if templates:
+            payload["templates"] = templates
+
+        return self._request(
+            "PUT",
+            f"{pluralize_to_lower_object_type_name(object_type)}/{_normalize_name(name)}",
+            payload,
+            suppress_exception=suppress_exception,
+        )
+
+    def update(
+        self,
+        object_type: ObjectTypeName,
+        name: str,
+        attrs: dict[str, Any],
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """
+        Update an object with the specified attributes.
+
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+        :param name: the name of the object
+        :param attrs: object's attributes to change
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+
+        Change the ip address of a host:
+
+        .. code-block:: python
+
+            raw_client.objects.update("Host", "localhost", {"address": "127.0.1.1"})
+
+        Update a service and change the check interval:
+
+        .. code-block:: python
+
+            raw_client.objects.update(
+                "Service", "testhost3!dummy", {"check_interval": "10m"}
+            )
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#modifying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#modifying-objects>`__
+        """
+        return self._request(
+            "POST",
+            f"{pluralize_to_lower_object_type_name(object_type)}/{name}",
+            attrs,
+            suppress_exception=suppress_exception,
+        )
+
+    def delete(
+        self,
+        object_type: ObjectTypeName,
+        name: Optional[str] = None,
+        filters: Optional[str] = None,
+        filter_vars: FilterVars = None,
+        cascade: bool = True,
+        suppress_exception: Optional[bool] = None,
+    ) -> Any:
+        """Delete an object.
+
+        :param object_type: The type of the object, for example ``Service``,
+            ``Host`` or ``User``.
+        :param name: The full object name, for example ``example.localdomain``
+            or ``example.localdomain!http``.
+        :param filters: filters matched object(s)
+        :param filter_vars: variables used in the filters expression
+        :param cascade: Delete objects depending on the deleted objects (e.g. services on a host).
+        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
+
+        Delete the ``localhost``:
+
+        .. code-block:: python
+
+            raw_client.objects.delete("Host", "localhost")
+
+        Delete all services matching ``vhost*``:
+
+        .. code-block:: python
+
+            raw_client.objects.delete("Service", filters='match("vhost*", service.name)')
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#deleting-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-objects>`__
+        """
+
+        object_type_url_path = pluralize_to_lower_object_type_name(object_type)
+
+        payload: Payload = {}
+        if filters:
+            payload["filter"] = filters
+        if filter_vars:
+            payload["filter_vars"] = filter_vars
+        if cascade:
+            payload["cascade"] = 1
+
+        url = object_type_url_path
+        if name:
+            url += f"/{_normalize_name(name)}"
+
+        return self._request(
+            "DELETE", url, payload, suppress_exception=suppress_exception
+        )
+
+
+StatusType = Literal[
+    "ApiListener",
+    "CIB",
+    "CheckerComponent",
+    "ElasticsearchWriter",
+    "FileLogger",
+    "GelfWriter",
+    "GraphiteWriter",
+    "IcingaApplication",
+    "IdoMysqlConnection",
+    "IdoPgsqlConnection",
+    "Influxdb2Writer",
+    "InfluxdbWriter",
+    "JournaldLogger",
+    "NotificationComponent",
+    "OpenTsdbWriter",
+    "PerfdataWriter",
+    "SyslogLogger",
+]
+
+
 class ActionsUrlEndpoint(RequestHandler):
     """
     Connects to the URL endpoint ``actions`` of the Icinga2 API.
@@ -650,6 +1077,140 @@ class ActionsUrlEndpoint(RequestHandler):
         return self._request("POST", "generate-ticket", assemble_payload(cn=cn))
 
 
+class EventsUrlEndpoint(RequestHandler):
+    """
+    Connects to the URL endpoint ``events`` of the Icinga2 API.
+    """
+
+    path_prefix = "events"
+
+    def subscribe(
+        self,
+        types: Sequence[EventStreamType],
+        queue: str,
+        filter: Optional[str] = None,
+        filter_vars: FilterVars = None,
+    ) -> Generator[str | Any, Any, None]:
+        """
+        Subscribe to an event stream.
+
+        Event streams can be used to receive check results, downtimes,
+        comments, acknowledgements, etc. as a “live stream” from Icinga.
+
+        You can for example forward these types into your own backend. Process
+        the metrics and correlate them with notifications and state changes
+        e.g. in Elasticsearch with the help of Icingabeat. Another use case
+        are aligned events and creating/resolving tickets automatically in
+        your ticket system.
+
+        You can subscribe to event streams by sending a POST request to the
+        URL endpoint /v1/events. The following parameters need to be
+        specified (either as URL parameters or in a JSON-encoded message body):
+
+        example 1:
+
+        .. code-block:: python
+
+            types = ["CheckResult"]
+            queue = "monitor"
+            filters = "event.check_result.exit_status==2"
+            for event in subscribe(types, queue, filters):
+                print event
+
+        :param types: **Required.** Event type(s). Multiple types as
+            URL parameters are supported.
+        :param queue: **Required.** Unique queue name. Multiple HTTP clients
+            can use the same queue as long as they use the same event types
+            and filter.
+        :param filter: Filter for specific event attributes using
+            filter expressions.
+        :param filter_vars: variables used in the filters expression
+
+        :returns: the events
+
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#event-streams <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-streams>`__
+        """
+        stream = self._request(
+            "POST",
+            None,
+            assemble_payload(
+                types=types, queue=queue, filter=filter, filter_vars=filter_vars
+            ),
+            stream=True,
+        )
+        for event in self._get_message_from_stream(stream):
+            yield event
+
+
+class StatusUrlEndpoint(RequestHandler):
+    """
+    Connects to the URL endpoint ``status`` of the Icinga2 API.
+
+    :see: `lib/remote/statushandler.cpp <https://github.com/Icinga/icinga2/blob/master/lib/remote/statushandler.cpp>`__:
+    """
+
+    path_prefix = "status"
+
+    def list(self, status_type: Optional[StatusType | str] = None) -> Any:
+        """
+        Retrieve status information and statistics for Icinga 2.
+
+        List complete status::
+
+        .. code-block:: python
+
+            client.status.list()
+
+        List the status of the core application:
+
+        .. code-block:: python
+
+            client.status.list("IcingaApplication")
+
+        :param status_type: Limit the output by specifying a status type, e.g. ``IcingaApplication``.
+
+        :returns: status information
+
+        :see: `doc/12-icinga2-api/#status-and-statistics <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#status-and-statistics>`__
+        """
+
+        url: str = ""
+        if status_type:
+            url = status_type
+
+        return self._request("GET", url)
+
+
+@dataclass
+class PerfdataValue:
+    """
+    `lib/base/perfdatavalue.ti L8-L18 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/base/perfdatavalue.ti#L8-L18>`_
+    `lib/base/perfdatavalue.hpp L17-L36 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/base/perfdatavalue.hpp#L17-L36>`__
+    """
+
+    label: str
+    value: float
+    counter: bool
+    unit: str
+    crit: Optional[Value] = None
+    warn: Optional[Value] = None
+    min: Optional[Value] = None
+    max: Optional[Value] = None
+
+
+@dataclass
+class StatusMessage:
+    """
+    :see: `lib/remote/statushandler.cpp L53-L57 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/remote/statushandler.cpp#L53-L57>`_
+    """
+
+    name: str
+
+    status: dict[str, Any]
+
+    perfdata: Optional[Sequence[PerfdataValue]]
+
+
 class ConfigUrlEndpoint(RequestHandler):
     """
     Connects to the URL endpoint ``config`` of the Icinga2 API.
@@ -893,562 +1454,18 @@ class ConfigUrlEndpoint(RequestHandler):
         )
 
 
-EventStreamType = Literal[
-    "CheckResult",  # Check results for hosts and services.
-    "StateChange",  # Host/service state changes.
-    "Notification",  # Notification events including notified users for hosts and services.
-    "AcknowledgementSet",  # Acknowledgement set on hosts and services.
-    "AcknowledgementCleared",  # Acknowledgement cleared on hosts and services.
-    "CommentAdded",  # Comment added for hosts and services.
-    "CommentRemoved",  # Comment removed for hosts and services.
-    "DowntimeAdded",  # Downtime added for hosts and services.
-    "DowntimeRemoved",  # Downtime removed for hosts and services.
-    "DowntimeStarted",  # Downtime started for hosts and services.
-    "DowntimeTriggered",  # Downtime triggered for hosts and services.
-    "ObjectCreated",  # Object created for all Icinga 2 objects.
-    "ObjectDeleted",  # Object deleted for all Icinga 2 objects.
-    "ObjectModified",  # Object modified for all Icinga 2 objects.
-]
-"""
-:see: `doc/12-icinga2-api/#event-stream-types <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-types>`__
-:see: `lib/icinga/apievents.hpp L16-L47 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/apievents.hpp#L16-L47>`__
-:see: `lib/remote/eventshandler.cpp L22-L38 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/eventshandler.cpp#L22-L38>`__"""
+class TypesUrlEndpoint(RequestHandler):
+    path_prefix = "types"
 
-
-class EventsUrlEndpoint(RequestHandler):
-    """
-    Connects to the URL endpoint ``events`` of the Icinga2 API.
-    """
-
-    path_prefix = "events"
-
-    def subscribe(
-        self,
-        types: Sequence[EventStreamType],
-        queue: str,
-        filter: Optional[str] = None,
-        filter_vars: FilterVars = None,
-    ) -> Generator[str | Any, Any, None]:
-        """
-        Subscribe to an event stream.
-
-        Event streams can be used to receive check results, downtimes,
-        comments, acknowledgements, etc. as a “live stream” from Icinga.
-
-        You can for example forward these types into your own backend. Process
-        the metrics and correlate them with notifications and state changes
-        e.g. in Elasticsearch with the help of Icingabeat. Another use case
-        are aligned events and creating/resolving tickets automatically in
-        your ticket system.
-
-        You can subscribe to event streams by sending a POST request to the
-        URL endpoint /v1/events. The following parameters need to be
-        specified (either as URL parameters or in a JSON-encoded message body):
-
-        example 1:
-
-        .. code-block:: python
-
-            types = ["CheckResult"]
-            queue = "monitor"
-            filters = "event.check_result.exit_status==2"
-            for event in subscribe(types, queue, filters):
-                print event
-
-        :param types: **Required.** Event type(s). Multiple types as
-            URL parameters are supported.
-        :param queue: **Required.** Unique queue name. Multiple HTTP clients
-            can use the same queue as long as they use the same event types
-            and filter.
-        :param filter: Filter for specific event attributes using
-            filter expressions.
-        :param filter_vars: variables used in the filters expression
-
-        :returns: the events
-
-        :see: `Icinga2 API documentation: doc/12-icinga2-api/#event-streams <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-streams>`__
-        """
-        stream = self._request(
-            "POST",
-            None,
-            assemble_payload(
-                types=types, queue=queue, filter=filter, filter_vars=filter_vars
-            ),
-            stream=True,
-        )
-        for event in self._get_message_from_stream(stream):
-            yield event
-
-
-def _normalize_name(name: str) -> str:
-    """To be able to send names with spaces or special characters to the REST API."""
-    return urllib.parse.quote(name, safe="")
-
-
-class Attrs:
-    """https://github.com/Icinga/icinga2/blob/master/lib/icinga/checkable.ti"""
-
-    __name: str
-    acknowledgement: int
-    acknowledgement_expiry: int
-    acknowledgement_last_change: int
-    action_url: str
-    active: bool
-    check_attempt: int
-    check_command: str
-    check_interval: int
-    check_period: str
-    check_timeout: None
-    command_endpoint: str
-    display_name: str
-    downtime_depth: int
-    enable_active_checks: bool
-    enable_event_handler: bool
-    enable_flapping: bool
-    enable_notifications: bool
-    enable_passive_checks: bool
-    enable_perfdata: bool
-    event_command: str
-    executions: None
-    flapping: bool
-    flapping_current: int
-    flapping_ignore_states: None
-    flapping_last_change: int
-    flapping_threshold: int
-    flapping_threshold_high: int
-    flapping_threshold_low: int
-    force_next_check: bool
-    force_next_notification: bool
-    groups: list[str]
-    ha_mode: int
-    handled: bool
-    host_name: str
-    icon_image: str
-    icon_image_alt: str
-    last_check: float
-
-
-class Object:
-    attrs: dict[str, Any]
-    joins: dict[str, Any]
-
-
-class Service(Object):
-    """https://github.com/Icinga/icinga2/blob/master/lib/icinga/service.ti"""
-
-    type = "Service"
-    name: str
-    meta: dict[str, Any]
-
-
-class Host:
-    name: str
-    state: int
-    last_check_result: CheckResult
-
-
-class ObjectsUrlEndpoint(RequestHandler):
-    """
-    Connects to the URL endpoint ``objects`` of the Icinga2 API.
-
-    Provides methods to manage configuration objects:
-
-    - creating objects
-    - querying objects
-    - modifying objects
-    - deleting objects
-    """
-
-    path_prefix = "objects"
-
-    def list(
-        self,
-        object_type: ObjectTypeName,
-        name: Optional[str] = None,
-        attrs: Optional[Sequence[str]] = None,
-        filters: Optional[str] = None,
-        filter_vars: FilterVars = None,
-        joins: Optional[Union[bool, Sequence[str]]] = None,
-        suppress_exception: Optional[bool] = None,
-    ) -> Any:
-        """
-        get object by type or name
+    def list(self, object_type: Optional[ObjectTypeName] = None) -> Any:
+        """Retrieve the configuration object types.
 
         :param object_type: The type of the object, for example ``Service``,
             ``Host`` or ``User``.
-        :param name: The full object name, for example ``example.localdomain``
-            or ``example.localdomain!http``.
-        :param attrs: only return these attributes
-        :param filters: filters matched object(s)
-        :param filter_vars: variables used in the filters expression
-        :param joins: show joined object
-        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
 
-        Get all hosts:
-
-        .. code-block:: python
-
-            raw_client.objects.list("Host")
-
-        List the service ``ping4`` of host ``webserver01.domain!ping4``:
-
-        .. code-block:: python
-
-            raw_client.objects.list("Service", "webserver01.domain!ping4")
-
-        Get all hosts but limit attributes to `address` and `state`:
-
-        .. code-block:: python
-
-            raw_client.objects.list("Host", attrs=["address", "state"])
-
-        Get all hosts which have ``webserver`` in their host name:
-
-        .. code-block:: python
-
-            raw_client.objects.list("Host", filters='match("webserver*", host.name)')
-
-        Get all services and the joined host name:
-
-        .. code-block:: python
-
-            raw_client.objects.list("Service", joins=["host.name"])
-
-        Get all services and all supported joins:
-
-        .. code-block:: python
-
-            raw_client.objects.list("Service", joins=True)
-
-        Get all services which names start with ``vHost`` and are assigned to hosts named ``webserver*`` using ``filter_vars``:
-
-        .. code-block:: python
-
-            hostname_pattern = "webserver*"
-            service_pattern = "vHost*"
-            raw_client.objects.list(
-                "Service",
-                filters="match(hpattern, host.name) && match(spattern, service.name)",
-                filter_vars={"hpattern": hostname_pattern, "spattern": service_pattern},
-            )
-
-        :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
+        :see: `Icinga2 API documentation: doc/12-icinga2-api/#types <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#types>`__
         """
-
-        url_path = pluralize_to_lower_object_type_name(object_type)
-        if url_path == "dependencys":
-            url_path = "dependencies"
-        if name:
-            url_path += f"/{_normalize_name(name)}"
-
-        payload: Payload = {}
-        if attrs:
-            payload["attrs"] = attrs
-        if filters:
-            payload["filter"] = filters
-        if filter_vars:
-            payload["filter_vars"] = filter_vars
-        if isinstance(joins, bool) and joins:
-            payload["all_joins"] = "1"
-        elif joins:
-            payload["joins"] = joins
-
-        result = self._request(
-            "GET", url_path, payload, suppress_exception=suppress_exception
-        )
-        if "results" in result:
-            return result["results"]
-        return result
-
-    def get(
-        self,
-        object_type: ObjectTypeName,
-        name: str,
-        attrs: Optional[Sequence[str]] = None,
-        joins: Optional[Union[bool, Sequence[str]]] = None,
-        suppress_exception: Optional[bool] = None,
-    ) -> Any:
-        """
-        Get a single object (``Host``, ``Service``, ...).
-
-        :param object_type: The type of the object, for example ``Service``,
-            ``Host`` or ``User``.
-        :param name: The full object name, for example ``example.localdomain``
-            or ``example.localdomain!http``.
-        :param attrs:  Get only the specified objects attributes.
-        :param joins: Also get the joined object, e.g. for a `Service` the `Host` object.
-
-        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
-
-        Get host ``webserver01.domain``:
-
-        .. code-block:: python
-
-            raw_client.objects.get("Host", "webserver01.domain")
-
-        Get service ``ping4`` of host ``webserver01.domain``:
-
-        .. code-block:: python
-
-            raw_client.objects.get("Service", "webserver01.domain!ping4")
-
-        Get host ``webserver01.domain`` but the attributes ``address`` and ``state``:
-
-        .. code-block:: python
-
-            raw_client.objects.get("Host", "webserver01.domain", attrs=["address", "state"])
-
-        Get service ``ping4`` of host ``webserver01.domain`` and the host attributes:
-
-        .. code-block:: python
-
-            raw_client.objects.get("Service", "webserver01.domain!ping4", joins=True)
-
-        :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-objects>`__
-        """
-        result = self.list(
-            object_type, name, attrs, joins=joins, suppress_exception=suppress_exception
-        )
-        if "error" not in result:
-            return result[0]
-
-    def create(
-        self,
-        object_type: ObjectTypeName,
-        name: str,
-        templates: Optional[Sequence[str]] = None,
-        attrs: Optional[Payload] = None,
-        suppress_exception: Optional[bool] = None,
-    ) -> Any:
-        """
-        Create an object using ``templates`` and specify attributes (``attrs``).
-
-        :param object_type: The type of the object, for example ``Service``,
-            ``Host`` or ``User``.
-        :param name: The full object name, for example ``example.localdomain``
-            or ``example.localdomain!http``.
-        :param templates: Import existing configuration templates for this
-            object type. Note: These templates must either be statically
-            configured or provided in config packages.
-        :param attrs: Set specific object attributes for this object type.
-        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
-
-        Create a host:
-
-        .. code-block:: python
-
-            raw_client.objects.create(
-                "Host", "localhost", ["generic-host"], {"address": "127.0.0.1"}
-            )
-
-        Create a service for Host ``localhost``:
-
-        .. code-block:: python
-
-            raw_client.objects.create(
-                "Service",
-                "testhost3!dummy",
-                {"check_command": "dummy"},
-                ["generic-service"],
-            )
-
-        :see: `Icinga2 API documentation: doc/12-icinga2-api/#creating-config-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#creating-config-objects>`__
-        """
-
-        payload: Payload = {}
-        if attrs:
-            payload["attrs"] = attrs
-        if templates:
-            payload["templates"] = templates
-
-        return self._request(
-            "PUT",
-            f"{pluralize_to_lower_object_type_name(object_type)}/{_normalize_name(name)}",
-            payload,
-            suppress_exception=suppress_exception,
-        )
-
-    def update(
-        self,
-        object_type: ObjectTypeName,
-        name: str,
-        attrs: dict[str, Any],
-        suppress_exception: Optional[bool] = None,
-    ) -> Any:
-        """
-        Update an object with the specified attributes.
-
-        :param object_type: The type of the object, for example ``Service``,
-            ``Host`` or ``User``.
-        :param name: the name of the object
-        :param attrs: object's attributes to change
-        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
-
-        Change the ip address of a host:
-
-        .. code-block:: python
-
-            raw_client.objects.update("Host", "localhost", {"address": "127.0.1.1"})
-
-        Update a service and change the check interval:
-
-        .. code-block:: python
-
-            raw_client.objects.update(
-                "Service", "testhost3!dummy", {"check_interval": "10m"}
-            )
-
-        :see: `Icinga2 API documentation: doc/12-icinga2-api/#modifying-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#modifying-objects>`__
-        """
-        return self._request(
-            "POST",
-            f"{pluralize_to_lower_object_type_name(object_type)}/{name}",
-            attrs,
-            suppress_exception=suppress_exception,
-        )
-
-    def delete(
-        self,
-        object_type: ObjectTypeName,
-        name: Optional[str] = None,
-        filters: Optional[str] = None,
-        filter_vars: FilterVars = None,
-        cascade: bool = True,
-        suppress_exception: Optional[bool] = None,
-    ) -> Any:
-        """Delete an object.
-
-        :param object_type: The type of the object, for example ``Service``,
-            ``Host`` or ``User``.
-        :param name: The full object name, for example ``example.localdomain``
-            or ``example.localdomain!http``.
-        :param filters: filters matched object(s)
-        :param filter_vars: variables used in the filters expression
-        :param cascade: Delete objects depending on the deleted objects (e.g. services on a host).
-        :param suppress_exception: If this parameter is set to ``True``, no exceptions are thrown.
-
-        Delete the ``localhost``:
-
-        .. code-block:: python
-
-            raw_client.objects.delete("Host", "localhost")
-
-        Delete all services matching ``vhost*``:
-
-        .. code-block:: python
-
-            raw_client.objects.delete("Service", filters='match("vhost*", service.name)')
-
-        :see: `Icinga2 API documentation: doc/12-icinga2-api/#deleting-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-objects>`__
-        """
-
-        object_type_url_path = pluralize_to_lower_object_type_name(object_type)
-
-        payload: Payload = {}
-        if filters:
-            payload["filter"] = filters
-        if filter_vars:
-            payload["filter_vars"] = filter_vars
-        if cascade:
-            payload["cascade"] = 1
-
-        url = object_type_url_path
-        if name:
-            url += f"/{_normalize_name(name)}"
-
-        return self._request(
-            "DELETE", url, payload, suppress_exception=suppress_exception
-        )
-
-
-StatusType = Literal[
-    "ApiListener",
-    "CIB",
-    "CheckerComponent",
-    "ElasticsearchWriter",
-    "FileLogger",
-    "GelfWriter",
-    "GraphiteWriter",
-    "IcingaApplication",
-    "IdoMysqlConnection",
-    "IdoPgsqlConnection",
-    "Influxdb2Writer",
-    "InfluxdbWriter",
-    "JournaldLogger",
-    "NotificationComponent",
-    "OpenTsdbWriter",
-    "PerfdataWriter",
-    "SyslogLogger",
-]
-
-
-class StatusUrlEndpoint(RequestHandler):
-    """
-    Connects to the URL endpoint ``status`` of the Icinga2 API.
-
-    :see: `lib/remote/statushandler.cpp <https://github.com/Icinga/icinga2/blob/master/lib/remote/statushandler.cpp>`__:
-    """
-
-    path_prefix = "status"
-
-    def list(self, status_type: Optional[StatusType | str] = None) -> Any:
-        """
-        Retrieve status information and statistics for Icinga 2.
-
-        List complete status::
-
-        .. code-block:: python
-
-            client.status.list()
-
-        List the status of the core application:
-
-        .. code-block:: python
-
-            client.status.list("IcingaApplication")
-
-        :param status_type: Limit the output by specifying a status type, e.g. ``IcingaApplication``.
-
-        :returns: status information
-
-        :see: `doc/12-icinga2-api/#status-and-statistics <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#status-and-statistics>`__
-        """
-
-        url: str = ""
-        if status_type:
-            url = status_type
-
-        return self._request("GET", url)
-
-
-@dataclass
-class PerfdataValue:
-    """
-    `lib/base/perfdatavalue.ti L8-L18 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/base/perfdatavalue.ti#L8-L18>`_
-    `lib/base/perfdatavalue.hpp L17-L36 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/base/perfdatavalue.hpp#L17-L36>`__
-    """
-
-    label: str
-    value: float
-    counter: bool
-    unit: str
-    crit: Optional[Value] = None
-    warn: Optional[Value] = None
-    min: Optional[Value] = None
-    max: Optional[Value] = None
-
-
-@dataclass
-class StatusMessage:
-    """
-    :see: `lib/remote/statushandler.cpp L53-L57 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/remote/statushandler.cpp#L53-L57>`_
-    """
-
-    name: str
-
-    status: dict[str, Any]
-
-    perfdata: Optional[Sequence[PerfdataValue]]
+        return self._request("GET", object_type)
 
 
 class TemplatesUrlEndpoint(RequestHandler):
@@ -1480,20 +1497,6 @@ class TemplatesUrlEndpoint(RequestHandler):
         )
 
 
-class TypesUrlEndpoint(RequestHandler):
-    path_prefix = "types"
-
-    def list(self, object_type: Optional[ObjectTypeName] = None) -> Any:
-        """Retrieve the configuration object types.
-
-        :param object_type: The type of the object, for example ``Service``,
-            ``Host`` or ``User``.
-
-        :see: `Icinga2 API documentation: doc/12-icinga2-api/#types <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#types>`__
-        """
-        return self._request("GET", object_type)
-
-
 class VariablesUrlEndpoint(RequestHandler):
     path_prefix = "variables"
 
@@ -1503,6 +1506,10 @@ class VariablesUrlEndpoint(RequestHandler):
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-variables <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-variables>`__
         """
         return self._request("GET", None)
+
+
+class ConsoleUrlEndpoint(RequestHandler):
+    path_prefix = "console"
 
 
 class RawClient:
@@ -1555,28 +1562,33 @@ class RawClient:
 
     version: str
 
-    actions: ActionsUrlEndpoint
-    """Connects to the URL endpoint ``actions`` of the Icinga2 API."""
-
-    config: ConfigUrlEndpoint
-    """Connects to the URL endpoint ``config`` of the Icinga2 API."""
-
-    events: EventsUrlEndpoint
-    """Connects to the URL endpoint ``events`` of the Icinga2 API."""
+    # Order as in https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/
 
     objects: ObjectsUrlEndpoint
     """Connects to the URL endpoint ``objects`` of the Icinga2 API."""
 
+    actions: ActionsUrlEndpoint
+    """Connects to the URL endpoint ``actions`` of the Icinga2 API."""
+
+    events: EventsUrlEndpoint
+    """Connects to the URL endpoint ``events`` of the Icinga2 API."""
+
     status: StatusUrlEndpoint
     """Connects to the URL endpoint ``status`` of the Icinga2 API."""
 
-    templates: TemplatesUrlEndpoint
-    """Connects to the URL endpoint ``templates`` of the Icinga2 API."""
+    config: ConfigUrlEndpoint
+    """Connects to the URL endpoint ``config`` of the Icinga2 API."""
 
     types: TypesUrlEndpoint
     """Connects to the URL endpoint ``types`` of the Icinga2 API."""
 
+    templates: TemplatesUrlEndpoint
+    """Connects to the URL endpoint ``templates`` of the Icinga2 API."""
+
     variables: VariablesUrlEndpoint
+    """Connects to the URL endpoint ``types`` of the Icinga2 API."""
+
+    console: ConsoleUrlEndpoint
     """Connects to the URL endpoint ``types`` of the Icinga2 API."""
 
     def __init__(self, config: Config) -> None:
