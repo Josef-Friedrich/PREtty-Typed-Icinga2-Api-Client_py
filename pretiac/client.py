@@ -21,17 +21,19 @@ from pretiac.object_types import (
     Dependency,
     Endpoint,
     EventStream,
+    EventStreamType,
     FilterVars,
     Host,
     Service,
     ServiceState,
+    StatusMessage,
     TimePeriod,
     TypeInfo,
     User,
     UserGroup,
     Zone,
 )
-from pretiac.raw_client import EventStreamType, RawClient, StatusMessage
+from pretiac.raw_client import RawClient
 from pretiac.request_handler import Payload, State
 
 

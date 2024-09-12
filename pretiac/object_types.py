@@ -585,7 +585,7 @@ class Checkable(CustomVarObject):
 
 
 ########################################################################################
-# The individual object types
+# v1/objects
 ########################################################################################
 
 ########################################################################################
@@ -1877,6 +1877,33 @@ class WindowsEventLogLogger:
     """
 
 
+########################################################################################
+# v1/events
+########################################################################################
+
+
+EventStreamType = Literal[
+    "CheckResult",  # Check results for hosts and services.
+    "StateChange",  # Host/service state changes.
+    "Notification",  # Notification events including notified users for hosts and services.
+    "AcknowledgementSet",  # Acknowledgement set on hosts and services.
+    "AcknowledgementCleared",  # Acknowledgement cleared on hosts and services.
+    "CommentAdded",  # Comment added for hosts and services.
+    "CommentRemoved",  # Comment removed for hosts and services.
+    "DowntimeAdded",  # Downtime added for hosts and services.
+    "DowntimeRemoved",  # Downtime removed for hosts and services.
+    "DowntimeStarted",  # Downtime started for hosts and services.
+    "DowntimeTriggered",  # Downtime triggered for hosts and services.
+    "ObjectCreated",  # Object created for all Icinga 2 objects.
+    "ObjectDeleted",  # Object deleted for all Icinga 2 objects.
+    "ObjectModified",  # Object modified for all Icinga 2 objects.
+]
+"""
+:see: `doc/12-icinga2-api/#event-stream-types <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-types>`__
+:see: `lib/icinga/apievents.hpp L16-L47 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/apievents.hpp#L16-L47>`__
+:see: `lib/remote/eventshandler.cpp L22-L38 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/eventshandler.cpp#L22-L38>`__"""
+
+
 @dataclass
 class EventStreamTypeCheckResult:
     """https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#event-stream-type-checkresult"""
@@ -2006,6 +2033,67 @@ EventStream = Union[
 ]
 
 
+########################################################################################
+# v1/status
+########################################################################################
+
+
+StatusType = Literal[
+    "ApiListener",
+    "CIB",
+    "CheckerComponent",
+    "ElasticsearchWriter",
+    "FileLogger",
+    "GelfWriter",
+    "GraphiteWriter",
+    "IcingaApplication",
+    "IdoMysqlConnection",
+    "IdoPgsqlConnection",
+    "Influxdb2Writer",
+    "InfluxdbWriter",
+    "JournaldLogger",
+    "NotificationComponent",
+    "OpenTsdbWriter",
+    "PerfdataWriter",
+    "SyslogLogger",
+]
+
+
+@dataclass
+class PerfdataValue:
+    """
+    `lib/base/perfdatavalue.ti L8-L18 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/base/perfdatavalue.ti#L8-L18>`_
+    `lib/base/perfdatavalue.hpp L17-L36 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/base/perfdatavalue.hpp#L17-L36>`__
+    """
+
+    label: str
+    value: float
+    counter: bool
+    unit: str
+    crit: Optional[Value] = None
+    warn: Optional[Value] = None
+    min: Optional[Value] = None
+    max: Optional[Value] = None
+
+
+@dataclass
+class StatusMessage:
+    """
+    :see: `lib/remote/statushandler.cpp L53-L57 <https://github.com/Icinga/icinga2/blob/4c6b93d61775ff98fc671b05ad4de2b62945ba6a/lib/remote/statushandler.cpp#L53-L57>`_
+    """
+
+    name: str
+
+    status: dict[str, Any]
+
+    perfdata: Optional[Sequence[PerfdataValue]]
+
+
+########################################################################################
+# v1/config
+########################################################################################
+
+
 @dataclass
 class ConfigPackage:
     """https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/configpackageshandler.cpp#L75-L79"""
@@ -2027,6 +2115,10 @@ class ConfigPackageStageFiles:
     stage: str
     files: Sequence[ConfigFile]
 
+
+########################################################################################
+# v1/types
+########################################################################################
 
 Datatype = Literal[
     "Array",
