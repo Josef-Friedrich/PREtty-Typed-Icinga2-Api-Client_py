@@ -203,62 +203,7 @@ class Client:
     def ca_certificate(self) -> Optional[str]:
         return self.__config.ca_certificate
 
-    # v1/config
-
-    def list_config_packages(self) -> Sequence[ConfigPackage]:
-        adapter: TypeAdapter[Sequence[ConfigPackage]] = TypeAdapter(
-            Sequence[ConfigPackage]
-        )
-        return adapter.validate_python(
-            self.raw_client.config.list_packages()["results"]
-        )
-
-    def list_config_stage_files(
-        self,
-        package_name: str,
-        stage_name: str,
-    ) -> ConfigPackageStageFiles:
-        config_files: TypeAdapter[Sequence[ConfigFile]] = TypeAdapter(
-            Sequence[ConfigFile]
-        )
-        return ConfigPackageStageFiles(
-            package=package_name,
-            stage=stage_name,
-            files=config_files.validate_python(
-                self.raw_client.config.list_stage_files(package_name, stage_name)[
-                    "results"
-                ]
-            ),
-        )
-
-    def list_all_config_stage_files(self) -> list[ConfigPackageStageFiles]:
-        output: list[ConfigPackageStageFiles] = []
-        for package in self.list_config_packages():
-            for stage in package.stages:
-                output.append(
-                    self.list_config_stage_files(
-                        package.name,
-                        stage,
-                    )
-                )
-        return output
-
-    # v1/events
-
-    def subscribe_events(
-        self,
-        types: Sequence[EventStreamType],
-        queue: str,
-        filter: Optional[str] = None,
-        filter_vars: FilterVars = None,
-    ):
-        adapter: Any = TypeAdapter(EventStream)
-        for event in self.raw_client.events.subscribe(
-            types=types, queue=queue, filter=filter, filter_vars=filter_vars
-        ):
-            yield adapter.validate_python(event)
-
-    # v1/objects
+    # v1/objects #######################################################################
 
     # Listed in the same order as in this `Markdown document <https://github.com/Icinga/icinga2/blob/master/doc/09-object-types.md>`__.
 
@@ -617,7 +562,22 @@ class Client:
     def get_zones(self) -> Sequence[Zone]:
         return self._get_objects(Zone)
 
-    # status ###########################################################################
+    # v1/events ########################################################################
+
+    def subscribe_events(
+        self,
+        types: Sequence[EventStreamType],
+        queue: str,
+        filter: Optional[str] = None,
+        filter_vars: FilterVars = None,
+    ):
+        adapter: Any = TypeAdapter(EventStream)
+        for event in self.raw_client.events.subscribe(
+            types=types, queue=queue, filter=filter, filter_vars=filter_vars
+        ):
+            yield adapter.validate_python(event)
+
+    # v1/status ########################################################################
 
     def get_status(self) -> Sequence[StatusMessage]:
         result = self.raw_client.status.list()
@@ -625,6 +585,48 @@ class Client:
             list[StatusMessage], config={"arbitrary_types_allowed": True}
         )
         return adapter.validate_python(result["results"])
+
+    # v1/config ########################################################################
+
+    def list_config_packages(self) -> Sequence[ConfigPackage]:
+        adapter: TypeAdapter[Sequence[ConfigPackage]] = TypeAdapter(
+            Sequence[ConfigPackage]
+        )
+        return adapter.validate_python(
+            self.raw_client.config.list_packages()["results"]
+        )
+
+    def list_config_stage_files(
+        self,
+        package_name: str,
+        stage_name: str,
+    ) -> ConfigPackageStageFiles:
+        config_files: TypeAdapter[Sequence[ConfigFile]] = TypeAdapter(
+            Sequence[ConfigFile]
+        )
+        return ConfigPackageStageFiles(
+            package=package_name,
+            stage=stage_name,
+            files=config_files.validate_python(
+                self.raw_client.config.list_stage_files(package_name, stage_name)[
+                    "results"
+                ]
+            ),
+        )
+
+    def list_all_config_stage_files(self) -> list[ConfigPackageStageFiles]:
+        output: list[ConfigPackageStageFiles] = []
+        for package in self.list_config_packages():
+            for stage in package.stages:
+                output.append(
+                    self.list_config_stage_files(
+                        package.name,
+                        stage,
+                    )
+                )
+        return output
+
+    # v1/types #########################################################################
 
     def get_types(self) -> list[TypeInfo]:
         result = self.raw_client.types.list()

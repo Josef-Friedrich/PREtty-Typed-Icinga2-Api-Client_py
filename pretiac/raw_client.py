@@ -1468,14 +1468,15 @@ class RawClient:
 
         self.version = get_version("pretiac")
 
-        self.actions = ActionsUrlEndpoint(self)
-        self.config = ConfigUrlEndpoint(self)
-        self.events = EventsUrlEndpoint(self)
         self.objects = ObjectsUrlEndpoint(self)
+        self.actions = ActionsUrlEndpoint(self)
+        self.events = EventsUrlEndpoint(self)
         self.status = StatusUrlEndpoint(self)
-        self.templates = TemplatesUrlEndpoint(self)
+        self.config = ConfigUrlEndpoint(self)
         self.types = TypesUrlEndpoint(self)
+        self.templates = TemplatesUrlEndpoint(self)
         self.variables = VariablesUrlEndpoint(self)
+        self.console = ConsoleUrlEndpoint(self)
 
     def get_client_config(self) -> Config:
         return self.__config
