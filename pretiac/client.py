@@ -627,6 +627,14 @@ class Client:
                 )
         return output
 
+    def delete_config(self, package_name: str, stage_name: Optional[str]):
+        if stage_name is not None:
+            return self.raw_client.config.delete_stage(
+                package_name=package_name, stage_name=stage_name
+            )
+        else:
+            return self.raw_client.config.delete_package(package_name=package_name)
+
     # v1/types #########################################################################
 
     def get_types(self) -> list[TypeInfo]:

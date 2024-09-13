@@ -36,9 +36,6 @@ def main() -> None:
 
     check_parser.add_argument("--file")
 
-    # config
-    sub_parsers.add_parser("config", help="Configuration Management")
-
     # dump-config
     sub_parsers.add_parser(
         "dump-config", help="Dump the configuration of the pretiac client"
@@ -78,9 +75,6 @@ def main() -> None:
         help="Retrieve status information and statistics for Icinga 2.",
     )
 
-    # types
-    sub_parsers.add_parser("types")
-
     args = parser.parse_args()
 
     logger.set_level(args.debug)
@@ -88,9 +82,6 @@ def main() -> None:
 
     if args.sub_command == "check":
         check(args.file)
-
-    elif args.sub_command == "config":
-        print(client.list_all_config_stage_files())
 
     elif args.sub_command == "dump-config":
         config = load_config_file()
@@ -121,6 +112,3 @@ def main() -> None:
 
     elif args.sub_command == "status":
         print(client.get_status())
-
-    elif args.sub_command == "types":
-        print(client.get_types())

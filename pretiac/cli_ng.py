@@ -1,3 +1,5 @@
+from typing import Optional
+
 import click
 from rich import print
 
@@ -22,9 +24,11 @@ def config_show() -> None:
     print(get_default_client().list_all_config_stage_files())
 
 
+@click.argument("stage", required=False)
+@click.argument("package")
 @click.command()
-def config_delete() -> None:
-    click.echo("delete")
+def config_delete(package: str, stage: Optional[str] = None) -> None:
+    print(get_default_client().delete_config(package, stage))
 
 
 config.add_command(config_delete, "delete")
@@ -41,6 +45,12 @@ def variables() -> None:
     print(get_default_client().get_variables())
 
 
+@click.command()
+def status() -> None:
+    print(get_default_client().get_status())
+
+
 main.add_command(config)
 main.add_command(types)
 main.add_command(variables)
+main.add_command(status)
