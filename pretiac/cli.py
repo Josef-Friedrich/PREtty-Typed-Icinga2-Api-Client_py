@@ -4,12 +4,21 @@ import click
 from rich import print
 
 from pretiac import get_default_client
+from pretiac.check_executor import check as execute_check
 from pretiac.config import load_config_file
+from pretiac.log import logger
 
 
 @click.group()
-def main() -> None:
-    pass
+@click.option(
+    "-d",
+    "--debug",
+    count=True,
+    help="Increase debug verbosity (use up to 3 times): -d: info -dd: debug -ddd: verbose.",
+)
+def main(debug: int) -> None:
+    logger.set_level(debug)
+    logger.show_levels()
 
 
 # v1/actions ###########################################################################
@@ -116,7 +125,14 @@ def variables() -> None:
 
 
 @click.command()
-def dump_config():
+@click.argument("file")
+def check(file: str) -> None:
+    """Execute checks and send it to the monitoring server."""
+    execute_check(file)
+
+
+@click.command()
+def dump_config() -> None:
     """Dump the configuration of the pretiac client"""
     print(load_config_file())
 
@@ -127,4 +143,5 @@ main.add_command(status)
 main.add_command(config)
 main.add_command(types)
 main.add_command(variables)
+main.add_command(check)
 main.add_command(dump_config)
