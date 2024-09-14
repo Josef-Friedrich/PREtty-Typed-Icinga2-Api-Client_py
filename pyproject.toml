@@ -33,6 +33,7 @@ ruff = "^0"
 sphinx = "^7"
 sphinx-rtd-theme = "^2"
 sphinx-tags = "^0"
+mypy = "^1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -44,4 +45,3 @@ docstring-code-format = true
 [tool.poetry.scripts]
 # must not be named pretiac.py -> import error
 "pretiac" = "pretiac.cli:main"
-"pretiac-ng" = "pretiac.cli_ng:main"

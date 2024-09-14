@@ -37,5 +37,6 @@
     "-m",
     "not (slow or gui)"
   ],
-  "python.analysis.autoImportCompletions": true
+  "python.analysis.autoImportCompletions": true,
+  "mypy.dmypyExecutable": "${workspaceFolder}/.venv/bin/dmypy"
 }

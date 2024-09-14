@@ -9,6 +9,10 @@ from pretiac.client import Client
 from pretiac.config import Config, load_config
 from pretiac.raw_client import RawClient
 
+pytest_plugins = [
+    "pytester",
+]
+
 
 def get_resources_path(relpath: str | Path) -> Path:
     """
