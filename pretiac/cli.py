@@ -7,6 +7,9 @@ from pretiac import get_default_client
 from pretiac.check_executor import check as execute_check
 from pretiac.config import load_config_file
 from pretiac.log import logger
+from pretiac.object_types import (
+    normalize_to_plural_snake_object_type_name,
+)
 
 
 @click.group()
@@ -17,8 +20,25 @@ from pretiac.log import logger
     help="Increase debug verbosity (use up to 3 times): -d: info -dd: debug -ddd: verbose.",
 )
 def main(debug: int) -> None:
+    """Command line interface for the Icinga2 API."""
     logger.set_level(debug)
     logger.show_levels()
+
+
+# v1/objects ###########################################################################
+
+
+@click.group(invoke_without_command=True)
+@click.argument("object_type")
+def objects(object_type: str) -> None:
+    """List the different configuration object types."""
+    client = get_default_client()
+    print(
+        getattr(
+            client,
+            f"get_{normalize_to_plural_snake_object_type_name(object_type)}",
+        )()
+    )
 
 
 # v1/actions ###########################################################################
@@ -137,6 +157,7 @@ def dump_config() -> None:
     print(load_config_file())
 
 
+main.add_command(objects)
 main.add_command(actions)
 main.add_command(events)
 main.add_command(status)
