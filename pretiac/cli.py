@@ -28,9 +28,14 @@ def main(debug: int) -> None:
 # v1/objects ###########################################################################
 
 
-@click.group(invoke_without_command=True)
+@click.group()
+def objects() -> None:
+    pass
+
+
+@click.command
 @click.argument("object_type")
-def objects(object_type: str) -> None:
+def list_objects(object_type: str) -> None:
     """List the different configuration object types."""
     client = get_default_client()
     print(
@@ -39,6 +44,18 @@ def objects(object_type: str) -> None:
             f"get_{normalize_to_plural_snake_object_type_name(object_type)}",
         )()
     )
+
+
+@click.command
+@click.argument("host")
+@click.argument("service")
+def delete_service(host: str, service: str) -> None:
+    """Delete a service."""
+    get_default_client().delete_service(host=host, service=service)
+
+
+objects.add_command(list_objects, "list")
+objects.add_command(delete_service, "delete-service")
 
 
 # v1/actions ###########################################################################
@@ -104,6 +121,8 @@ def status() -> None:
 @click.group(invoke_without_command=True)
 @click.pass_context
 def config(ctx: click.Context) -> None:
+    """Manage configuration packages and stages based on configuration files and
+    directory trees."""
     if ctx.invoked_subcommand is None:
         print(get_default_client().list_all_config_stage_files())
         click.echo("Use a subcommand")
@@ -130,6 +149,7 @@ config.add_command(config_show, "show")
 
 @click.command()
 def types() -> None:
+    """Retrieve the configuration object types."""
     print(get_default_client().get_types())
 
 
@@ -138,6 +158,7 @@ def types() -> None:
 
 @click.command()
 def variables() -> None:
+    """Request information about global variables."""
     print(get_default_client().get_variables())
 
 

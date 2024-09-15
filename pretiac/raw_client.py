@@ -1079,6 +1079,9 @@ class StatusUrlEndpoint(RequestHandler):
 class ConfigUrlEndpoint(RequestHandler):
     """
     Connects to the URL endpoint ``config`` of the Icinga2 API.
+
+    Manage configuration packages and stages based on configuration files and
+    directory trees.
     """
 
     path_prefix = "config"
@@ -1366,7 +1369,7 @@ class VariablesUrlEndpoint(RequestHandler):
     path_prefix = "variables"
 
     def list(self) -> Any:
-        """Request information about global variables
+        """Request information about global variables.
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#querying-variables <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#querying-variables>`__
         """
