@@ -30,6 +30,7 @@ def main(debug: int) -> None:
 
 @click.group()
 def objects() -> None:
+    """Manage configuration objects."""
     pass
 
 
@@ -121,8 +122,11 @@ def status() -> None:
 @click.group(invoke_without_command=True)
 @click.pass_context
 def config(ctx: click.Context) -> None:
-    """Manage configuration packages and stages based on configuration files and
-    directory trees."""
+    """Manage configuration packages and stages.
+
+    Manage configuration packages and stages based on configuration files and
+    directory trees.
+    """
     if ctx.invoked_subcommand is None:
         print(get_default_client().list_all_config_stage_files())
         click.echo("Use a subcommand")

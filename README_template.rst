@@ -12,11 +12,20 @@ pretiac: PREtty Typed Icinga2 Api Client
 For more information about the project, please read the
 `API documentation <https://pretty-typed-icinga2-api-client-py.readthedocs.io>`_.
 
+``pretiac`` stands for **PRE** tty **T** yped **I** cinga2 **A** pi **C** lient.
+This project is a fork / extension of the
+`TeraIT-at/icinga2apic <https://github.com/TeraIT-at/icinga2apic>`__ api client.
+The client class of ``icinga2apic`` was renamed to :class:`pretiac.raw_client.RawClient`.
+``pretaic`` provides an additional client (:class:`pretiac.client.Client`), which is typed.
+`Pydantic <https://github.com/pydantic/pydantic>`__ is used to validate the
+Icinga2 REST API and to convert the JSON
+output into Python data types.
+
 Authenticating Icinga 2 API Users with TLS Client Certificates
 --------------------------------------------------------------
 
-Source: `Blog post at icinga.com <https://icinga.com/blog/2022/11/16/authenticating-icinga-2-api-users-with-tls-client-certificates/
->`__
+Source: `Blog post at icinga.com
+<https://icinga.com/blog/2022/11/16/authenticating-icinga-2-api-users-with-tls-client-certificates/>`__
 
 Icinga 2 supports a second authentication mechanism: TLS client certificates.
 This is a feature of TLS that also allows the client to send a certificate, just
@@ -61,3 +70,8 @@ connects the certificate and its common name with some permissions.
 After reloading the Icinga 2 configuration, the certificate is now ready to use.
 The following example uses curl, but any HTTPS client that supports client
 certificates will do.
+
+Command line interface
+----------------------
+
+{{ cli('pretiac --help') | literal }}
