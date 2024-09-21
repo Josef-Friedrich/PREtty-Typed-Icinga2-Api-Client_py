@@ -602,6 +602,14 @@ class Client:
         package_name: str,
         stage_name: str,
     ) -> ConfigPackageStageFiles:
+        """
+        :param package_name: Package names with the ``_`` prefix are reserved
+            for internal packages and must not be used. You can recognize
+            ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
+            and packages.
+        :param stage_name: The stage name, for example
+            ``7e7861c8-8008-4e8d-9910-2a0bb26921bd``.
+        """
         config_files: TypeAdapter[Sequence[ConfigFile]] = TypeAdapter(
             Sequence[ConfigFile]
         )
@@ -628,6 +636,20 @@ class Client:
         return output
 
     def delete_config(self, package_name: str, stage_name: Optional[str]):
+        """
+        Delete a configuration package or a configuration stage entirely.
+
+        If the parameter ``stage_name`` is not specified, the entire
+        configuration package is deleted. If the parameter ``stage_name`` is
+        provided, only the specified configuration stage is deleted.
+
+        :param package_name: Package names with the ``_`` prefix are reserved
+            for internal packages and must not be used. You can recognize
+            ``_api``, ``_etc`` and ``_cluster`` when querying specific objects
+            and packages.
+        :param stage_name: The stage name, for example
+            ``7e7861c8-8008-4e8d-9910-2a0bb26921bd``.
+        """
         if stage_name is not None:
             return self.raw_client.config.delete_stage(
                 package_name=package_name, stage_name=stage_name
