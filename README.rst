@@ -167,3 +167,43 @@ Command line interface
     Options:
       --help  Show this message and exit.
 
+``pretiac objects``
+^^^^^^^^^^^^^^^^^^^
+
+:: 
+
+    Usage: pretiac objects [OPTIONS] COMMAND [ARGS]...
+
+      Manage configuration objects.
+
+    Options:
+      --help  Show this message and exit.
+
+    Commands:
+      delete-service  Delete a service.
+      list            List the different configuration object types.
+
+``pretiac objects delete-service``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:: 
+
+    Usage: pretiac objects delete-service [OPTIONS] HOST SERVICE
+
+      Delete a service.
+
+    Options:
+      --help  Show this message and exit.
+
+``pretiac objects list``
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+:: 
+
+    Usage: pretiac objects list [OPTIONS] OBJECT_TYPE
+
+      List the different configuration object types.
+
+    Options:
+      --help  Show this message and exit.
+

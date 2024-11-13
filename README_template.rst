@@ -95,3 +95,18 @@ Command line interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 {{ cli('pretiac config delete --help') | literal }}
+
+``pretiac objects``
+^^^^^^^^^^^^^^^^^^^
+
+{{ cli('pretiac objects --help') | literal }}
+
+``pretiac objects delete-service``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+{{ cli('pretiac objects delete-service --help') | literal }}
+
+``pretiac objects list``
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+{{ cli('pretiac objects list --help') | literal }}
