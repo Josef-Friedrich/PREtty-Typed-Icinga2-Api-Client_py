@@ -400,6 +400,18 @@ class ObjectsUrlEndpoint(RequestHandler):
 class ActionsUrlEndpoint(RequestHandler):
     """
     Connects to the URL endpoint ``actions`` of the Icinga2 API.
+
+    There are several actions available for Icinga 2 provided by the
+    ``/v1/actions`` URL endpoint.
+
+    The following actions are also used by Icinga Web 2:
+
+    - sending check results to Icinga from scripts, remote agents, etc.
+    - scheduling downtimes from external scripts or cronjobs
+    - acknowledging problems
+    - adding comments
+
+    https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#actions
     """
 
     path_prefix = "actions"

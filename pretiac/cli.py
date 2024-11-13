@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 import click
 from rich import print
@@ -64,30 +64,36 @@ objects.add_command(delete_service, "delete-service")
 
 @click.group(invoke_without_command=True)
 def actions() -> None:
-    """Subscribe to an event stream."""
-    for event in get_default_client().subscribe_events(["CheckResult"], "cli"):
-        print(event)
+    """There are several actions available for Icinga 2 provided by the
+    ``/v1/actions`` URL endpoint."""
 
 
 @click.command
-@click.option("--plugin-output")
-@click.option("--performance-data")
-@click.option("--exit-status")
-@click.option("--host")
+@click.option(
+    "--plugin-output",
+    help="The plugin main output. Does **not** contain the performance data.",
+)
+@click.option("--performance-data", help="The performance data.")
+@click.option(
+    "--exit-status",
+    help="For services: ``0=OK``, ``1=WARNING``, ``2=CRITICAL``, ``3=UNKNOWN``, "
+    "for hosts: ``0=UP``, ``1=DOWN``.",
+)
+@click.option("--host", help="The name of the host.")
 @click.argument("service")
 def send_service_check_result(
     service: str,
     host: Optional[str] = None,
-    exit_status: Optional[str] = None,
+    exit_status: Optional[Any] = None,
     performance_data: Optional[str] = None,
     plugin_output: Optional[str] = None,
 ) -> None:
-    """Send service check results to the specified API endpoint."""
+    """Send a check result for a service and create the host or the service if necessary."""
     print(
         get_default_client().send_service_check_result(
             service=service,
             host=host,
-            exit_status=1,
+            exit_status=exit_status,
             plugin_output=performance_data,
             performance_data=plugin_output,
         )
@@ -141,6 +147,7 @@ def config_show() -> None:
 @click.argument("package")
 @click.command()
 def config_delete(package: str, stage: Optional[str] = None) -> None:
+    """Delete a configuration package or a configuration stage entirely."""
     print(get_default_client().delete_config(package, stage))
 
 
@@ -178,7 +185,7 @@ def check(file: str) -> None:
 
 @click.command()
 def dump_config() -> None:
-    """Dump the configuration of the pretiac client"""
+    """Dump the configuration of the pretiac client."""
     print(load_config_file())
 
 

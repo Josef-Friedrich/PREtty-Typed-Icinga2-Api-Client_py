@@ -75,3 +75,23 @@ Command line interface
 ----------------------
 
 {{ cli('pretiac --help') | literal }}
+
+``pretiac actions``
+^^^^^^^^^^^^^^^^^^^
+
+{{ cli('pretiac actions --help') | literal }}
+
+``pretiac actions send-service-check-result``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+{{ cli('pretiac actions send-service-check-result --help') | literal }}
+
+``pretiac config``
+^^^^^^^^^^^^^^^^^^
+
+{{ cli('pretiac config --help') | literal }}
+
+``pretiac config delete``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+{{ cli('pretiac config delete --help') | literal }}

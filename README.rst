@@ -90,13 +90,80 @@ Command line interface
       --help       Show this message and exit.
 
     Commands:
-      actions      Subscribe to an event stream.
+      actions      There are several actions available for Icinga 2 provided...
       check        Execute checks and send it to the monitoring server.
       config       Manage configuration packages and stages.
-      dump-config  Dump the configuration of the pretiac client
+      dump-config  Dump the configuration of the pretiac client.
       events       Subscribe to an event stream.
       objects      Manage configuration objects.
       status       Retrieve status information and statistics for Icinga 2.
       types        Retrieve the configuration object types.
       variables    Request information about global variables.
+
+``pretiac actions``
+^^^^^^^^^^^^^^^^^^^
+
+:: 
+
+    Usage: pretiac actions [OPTIONS] COMMAND [ARGS]...
+
+      There are several actions available for Icinga 2 provided by the
+      ``/v1/actions`` URL endpoint.
+
+    Options:
+      --help  Show this message and exit.
+
+    Commands:
+      send-service-check-result  Send a check result for a service and create...
+
+``pretiac actions send-service-check-result``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:: 
+
+    Usage: pretiac actions send-service-check-result [OPTIONS] SERVICE
+
+      Send a check result for a service and create the host or the service if
+      necessary.
+
+    Options:
+      --plugin-output TEXT     The plugin main output. Does **not** contain the
+                               performance data.
+      --performance-data TEXT  The performance data.
+      --exit-status TEXT       For services: ``0=OK``, ``1=WARNING``,
+                               ``2=CRITICAL``, ``3=UNKNOWN``, for hosts: ``0=UP``,
+                               ``1=DOWN``.
+      --host TEXT              The name of the host.
+      --help                   Show this message and exit.
+
+``pretiac config``
+^^^^^^^^^^^^^^^^^^
+
+:: 
+
+    Usage: pretiac config [OPTIONS] COMMAND [ARGS]...
+
+      Manage configuration packages and stages.
+
+      Manage configuration packages and stages based on configuration files and
+      directory trees.
+
+    Options:
+      --help  Show this message and exit.
+
+    Commands:
+      delete  Delete a configuration package or a configuration stage entirely.
+      show
+
+``pretiac config delete``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:: 
+
+    Usage: pretiac config delete [OPTIONS] PACKAGE [STAGE]
+
+      Delete a configuration package or a configuration stage entirely.
+
+    Options:
+      --help  Show this message and exit.
 
