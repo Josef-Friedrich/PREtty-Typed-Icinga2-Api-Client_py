@@ -891,7 +891,7 @@ class Endpoint(ConfigObject):
 
     https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#endpoint
     :see: `doc/09-object-types.md L260-L293 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L260-L293>`__
-    https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/endpoint.ti#L11-L57
+    https://github.com/Icinga/icinga2/blob/333534096ebc251de08cecd2f688bc690253902c/lib/remote/endpoint.ti#L12-L66
 
     .. tags:: Object type, Monitoring object type
     """
@@ -933,6 +933,10 @@ class Endpoint(ConfigObject):
     bytes_sent_per_second: Optional[float] = None
 
     bytes_received_per_second: Optional[float] = None
+
+    messages_received_per_type: Optional[dict[Any, Any]] = None
+
+    seconds_processing_messages: Optional[float] = None
 
 
 @dataclass(config={"extra": "forbid"})

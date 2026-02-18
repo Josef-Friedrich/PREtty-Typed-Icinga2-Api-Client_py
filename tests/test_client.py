@@ -69,7 +69,13 @@ class TestCheckCommand:
             name="Internal#IdoCheck",
             side_effect_free=False,
             deprecated=False,
-            arguments=["checkable", "cr", "resolvedMacros", "useResolvedMacros"],
+            arguments=[
+                "checkable",
+                "cr",
+                "producer",
+                "resolvedMacros",
+                "useResolvedMacros",
+            ],
         )
 
 
