@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v0.5.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/releases/tag/v0.5.0) - 2026-02-18
+
+<small>[Compare with v0.4.1](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/compare/v0.4.1...v0.5.0)</small>
+
+### Added
+
+- Add support for Python 3.13
+
+### Changed
+
+- Drop support for Python 3.9
+- Use `uv` instead of `poetry`
+
+### Fixed
+
+- Add new fields `messages_received_per_type` and `seconds_processing_messages` to Endpoint
+
 ## [v0.4.1](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/releases/tag/v0.4.1) - 2024-09-09
 
 <small>[Compare with v0.4.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/compare/v0.4.0...v0.4.1)</small>

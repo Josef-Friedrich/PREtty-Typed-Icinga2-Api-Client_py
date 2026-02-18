@@ -1,20 +1,19 @@
 [project]
 name = "pretiac"
-version = "0.4.1"
+version = "0.5.0"
 description = "pretiac: A PREtty Typed Icinga2 Api Client."
 authors = [{ name = "Josef Friedrich", email = "josef@friedrich.rocks" }]
-requires-python = ">=3.9,<4"
+requires-python = ">=3.10,<4"
 readme = "README.rst"
 license = "GPL-3.0-only"
 classifiers = [
+    "Topic :: Utilities",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3",
-    "Topic :: Utilities",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
