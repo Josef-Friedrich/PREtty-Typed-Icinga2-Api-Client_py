@@ -1,10 +1,10 @@
-[tool.poetry]
+[project]
 name = "pretiac"
 version = "0.4.1"
 description = "pretiac: A PREtty Typed Icinga2 Api Client."
-authors = ["Josef Friedrich <josef@friedrich.rocks>"]
+authors = [{ name = "Josef Friedrich", email = "josef@friedrich.rocks" }]
+requires-python = ">=3.9,<4"
 readme = "README.rst"
-repository = "https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py"
 license = "GPL-3.0-only"
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
@@ -14,34 +14,35 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Utilities",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "click>=8.1.8",
+    "pydantic>=2.12.5",
+    "pyyaml>=6.0.3",
+    "requests>=2.32.5",
+    "rich>=14.3.2",
+    "types-pyyaml>=6.0.12.20250915",
+    "types-requests>=2.32.4.20260107",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-pydantic = "^2"
-pyyaml = "^6"
-requests = "^2"
-rich = "^13"
-types-pyyaml = "^6"
-types-requests = "^2"
-click = "^8"
+[project.urls]
+Repository = "https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8"
-tox = "^4"
-ruff = "^0"
-sphinx = "^7"
-sphinx-rtd-theme = "^2"
-sphinx-tags = "^0"
-mypy = "^1"
+[project.scripts]
+pretiac = "pretiac.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "mypy>=1.19.1",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.10.2,<0.11.0"]
+build-backend = "uv_build"
 
 [tool.ruff.format]
 docstring-code-format = true
-
-[tool.poetry.scripts]
-# must not be named pretiac.py -> import error
-"pretiac" = "pretiac.cli:main"

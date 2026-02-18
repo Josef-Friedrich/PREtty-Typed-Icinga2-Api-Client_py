@@ -232,7 +232,9 @@ class ObjectsUrlEndpoint(RequestHandler):
 
         .. code-block:: python
 
-            raw_client.objects.get("Host", "webserver01.domain", attrs=["address", "state"])
+            raw_client.objects.get(
+                "Host", "webserver01.domain", attrs=["address", "state"]
+            )
 
         Get service ``ping4`` of host ``webserver01.domain`` and the host attributes:
 
@@ -373,7 +375,9 @@ class ObjectsUrlEndpoint(RequestHandler):
 
         .. code-block:: python
 
-            raw_client.objects.delete("Service", filters='match("vhost*", service.name)')
+            raw_client.objects.delete(
+                "Service", filters='match("vhost*", service.name)'
+            )
 
         :see: `Icinga2 API documentation: doc/12-icinga2-api/#deleting-objects <https://icinga.com/docs/icinga-2/latest/doc/12-icinga2-api/#deleting-objects>`__
         """
@@ -776,7 +780,7 @@ class ActionsUrlEndpoint(RequestHandler):
 
         .. code-block:: python
 
-            remove_comment("Comment" "localhost!localhost-1458202056-25")
+            remove_comment("Commentlocalhost!localhost-1458202056-25")
 
         example 2:
 
