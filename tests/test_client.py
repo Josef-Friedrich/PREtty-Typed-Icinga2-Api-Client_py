@@ -72,6 +72,7 @@ class TestCheckCommand:
             arguments=[
                 "checkable",
                 "cr",
+                "producer",
                 "resolvedMacros",
                 "useResolvedMacros",
             ],
