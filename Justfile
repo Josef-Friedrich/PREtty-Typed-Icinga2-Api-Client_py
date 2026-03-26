@@ -45,7 +45,7 @@ docs: docs_readme_patcher docs_sphinx
 
 # Generate the README file using the readme-patcher
 docs_readme_patcher:
-	uv tool run --isolated --no-cache readme-patcher
+	uv tool run --isolated --with . --no-cache readme-patcher
 
 # Generate the HTML documentation using Sphinx
 docs_sphinx:
