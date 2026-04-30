@@ -41,8 +41,8 @@ You can start by generating a private key and a certificate signing request
         --key my-api-client.key.pem \
         --csr my-api-client.csr.pem
 
-This writes the key and CSR to the files my-api-client.key.pem and
-my-api-client.csr.pem respectively. Note that you can also use other methods to
+This writes the key and CSR to the files ``my-api-client.key.pem`` and
+``my-api-client.csr.pem`` respectively. Note that you can also use other methods to
 generate these files. It is only important that the CSR contains a meaningful
 common name (CN). This allows you to also generate the private key on a hardware
 security token for example.

@@ -45,8 +45,8 @@ You can start by generating a private key and a certificate signing request
         --key my-api-client.key.pem \
         --csr my-api-client.csr.pem
 
-This writes the key and CSR to the files my-api-client.key.pem and
-my-api-client.csr.pem respectively. Note that you can also use other methods to
+This writes the key and CSR to the files ``my-api-client.key.pem`` and
+``my-api-client.csr.pem`` respectively. Note that you can also use other methods to
 generate these files. It is only important that the CSR contains a meaningful
 common name (CN). This allows you to also generate the private key on a hardware
 security token for example.
@@ -180,7 +180,7 @@ Command line interface
       --help  Show this message and exit.
 
     Commands:
-      delete-host     Delete a host.
+      delete-host     Delete a host, along with all its associated services.
       delete-service  Delete a service.
       list            List the different configuration object types.
 
@@ -191,7 +191,7 @@ Command line interface
 
     Usage: pretiac objects delete-host [OPTIONS] HOST
 
-      Delete a host.
+      Delete a host, along with all its associated services.
 
     Options:
       --help  Show this message and exit.
