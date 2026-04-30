@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, get_args
 
 import click
 from rich import print
@@ -8,6 +8,7 @@ from pretiac.check_executor import check as execute_check
 from pretiac.config import load_config_file
 from pretiac.log import logger
 from pretiac.object_types import (
+    MonitoringObjectName,
     normalize_to_plural_snake_object_type_name,
 )
 
@@ -35,7 +36,7 @@ def objects() -> None:
 
 
 @click.command
-@click.argument("object_type")
+@click.argument("object_type", type=click.Choice(get_args(MonitoringObjectName)))
 def list_objects(object_type: str) -> None:
     """List the different configuration object types."""
     client = get_default_client()
@@ -47,6 +48,9 @@ def list_objects(object_type: str) -> None:
     )
 
 
+objects.add_command(list_objects, "list")
+
+
 @click.command
 @click.argument("host")
 @click.argument("service")
@@ -55,8 +59,17 @@ def delete_service(host: str, service: str) -> None:
     get_default_client().delete_service(host=host, service=service)
 
 
-objects.add_command(list_objects, "list")
 objects.add_command(delete_service, "delete-service")
+
+
+@click.command
+@click.argument("host")
+def delete_host(host: str) -> None:
+    """Delete a host, along with all its associated services."""
+    get_default_client().delete_host(name=host)
+
+
+objects.add_command(delete_host, "delete-host")
 
 
 # v1/actions ###########################################################################

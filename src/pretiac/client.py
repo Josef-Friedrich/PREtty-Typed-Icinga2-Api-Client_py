@@ -330,6 +330,11 @@ class Client:
         """Delete a single host.
 
         :param name: The name of the host."""
+
+        for service in self.get_services():
+            if service.host_name == name:
+                self.delete_service(service.name)
+
         self.raw_client.objects.delete(
             "Host",
             name,

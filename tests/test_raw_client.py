@@ -440,7 +440,7 @@ class TestObjects:
             error = result["results"][0]
             assert error["code"] == 500
             assert re.match(
-                r"Error: Validation failed for object 'Host1!xxx' of type 'Service'; Attribute 'check_command': Attribute must not be empty.\nLocation: in /var/lib/icinga2/api/packages/_api/.*/conf.d/services/Host1!xxx.conf:",
+                r"Error: Validation failed for object 'Host1!xxx' of type 'Service'; Attribute 'check_command': Attribute must not be empty.\nLocation: in /data/var/lib/icinga2/api/packages/_api/.*/conf.d/services/Host1!xxx.conf:",
                 error["errors"][0],
             )
             assert error["status"] == "Object could not be created."

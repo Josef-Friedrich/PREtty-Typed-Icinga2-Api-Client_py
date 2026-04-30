@@ -180,8 +180,21 @@ Command line interface
       --help  Show this message and exit.
 
     Commands:
+      delete-host     Delete a host.
       delete-service  Delete a service.
       list            List the different configuration object types.
+
+``pretiac objects delete-host``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:: 
+
+    Usage: pretiac objects delete-host [OPTIONS] HOST
+
+      Delete a host.
+
+    Options:
+      --help  Show this message and exit.
 
 ``pretiac objects delete-service``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -200,7 +213,10 @@ Command line interface
 
 :: 
 
-    Usage: pretiac objects list [OPTIONS] OBJECT_TYPE
+    Usage: pretiac objects list [OPTIONS] {ApiUser|CheckCommand|Dependency|Endpoin
+                                t|EventCommand|Host|HostGroup|Notification|Notific
+                                ationCommand|ScheduledDowntime|Service|ServiceGrou
+                                p|TimePeriod|User|UserGroup|Zone}
 
       List the different configuration object types.
 

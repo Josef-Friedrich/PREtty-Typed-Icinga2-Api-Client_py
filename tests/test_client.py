@@ -104,7 +104,7 @@ class TestEndpoint:
         assert o.type == "Endpoint"
         assert o.name == "icinga-master"
         assert o.source_location
-        assert o.source_location.path == "/etc/icinga2/zones.conf"
+        assert o.source_location.path == "/data/etc/icinga2/zones.conf"
         assert o.log_duration == 86400
 
 
@@ -141,6 +141,26 @@ class TestHost:
     def test_get_all(self, client: Client) -> None:
         o = client.get_hosts()
         assert len(o) > 2
+
+    def test_delete(self, client: Client) -> None:
+        service1 = "TestService1"
+        service2 = "TestService2"
+        host = "TestHost"
+
+        client.delete_service(host=host, service=service1)
+        client.delete_service(host=host, service=service2)
+        client.delete_host(name=host)
+
+        client.create_host(name=host)
+        client.create_service(service1, host)
+        client.create_service(service2, host)
+
+        assert client.get_service(host=host, service=service1)
+        assert client.get_service(host=host, service=service2)
+
+        client.delete_host(name=host)
+        assert client.get_service(host=host, service=service1) is None
+        assert client.get_service(host=host, service=service2) is None
 
 
 class TestService:

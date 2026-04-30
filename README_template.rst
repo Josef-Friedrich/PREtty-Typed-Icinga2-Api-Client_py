@@ -101,6 +101,11 @@ Command line interface
 
 {{ cli('pretiac objects --help') | literal }}
 
+``pretiac objects delete-host``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+{{ cli('pretiac objects delete-host --help') | literal }}
+
 ``pretiac objects delete-service``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

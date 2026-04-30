@@ -114,3 +114,6 @@ docker_create_api_certs:
 		--header 'Accept: application/json' \
 		--insecure \
 		'https://localhost:5665/v1/?pretty=1'
+
+docker_rmi:
+	sudo docker rmi icinga/icinga2
