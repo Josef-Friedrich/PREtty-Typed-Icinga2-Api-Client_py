@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.7.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/releases/tag/v0.7.0) - 2026-05-01
+
+<small>[Compare with v0.6.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/compare/v0.6.0...v0.6.0)</small>
+
+### Added
+
+- Add the command line command `pretiac objects delete-host`
+
 ## [v0.6.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/releases/tag/v0.6.0) - 2026-03-26
 
 <small>[Compare with v0.5.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/compare/v0.5.0...v0.6.0)</small>
@@ -40,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix client setup with config_file=False ([9523ee7](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/9523ee788ce207521e02439a9cdc0caec57b039b) by Josef Friedrich).
+- Fix client setup with config_file=False.
 
 ## [v0.4.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/releases/tag/v0.4.0) - 2024-09-09
 
@@ -48,24 +56,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add test ([b633b1f](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/b633b1fe29d4cb026fc700c94b4f5055a9b42bb1) by Josef Friedrich).
-- Add some docs ([99e50a1](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/99e50a16e4545aa877bcdb11708b758405417d00) by Josef Friedrich).
-- Add some object types ([325c36e](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/325c36ed110c0137a40fc5f9808c06015eab4b31) by Josef Friedrich).
-- Add more tests ([6f4b326](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/6f4b3264d301cb24e04994f054198978a3ef53fd) by Josef Friedrich).
-- Add typing ([84c07cf](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/84c07cf0a80d08da066cfd32e0dd4f8cc48af2c5) by Josef Friedrich).
-- Add links ([88255f0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/88255f083ab7b66d1513ec95e2a980fc63ed87a5) by Josef Friedrich).
+- Add test.
+- Add some docs.
+- Add some object types.
+- Add more tests.
+- Add typing.
+- Add links.
 
 ### Fixed
 
-- Fix tests ([b142b2b](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/b142b2b768aa6df5c5f741076997a70cbe68689b) by Josef Friedrich).
-- Fix config ([33452b8](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/33452b8cda07a706f79f8c8d23d1c6a752a3ebba) by Josef Friedrich).
-- Fix Timeperiod ([6874ade](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/6874ade8037b916d12390fbd909d0c8e8fe460b2) by Josef Friedrich).
-- Fix templates ([e95bd64](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/e95bd64140ba32cca182e609f8a734fdaed0b585) by Josef Friedrich).
-- Fix checks executor ([e6df91f](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/e6df91f9776d880323005baf8d65d79942684eba) by Josef Friedrich).
+- Fix tests.
+- Fix config.
+- Fix Timeperiod.
+- Fix templates.
+- Fix checks executor.
 
 ### Removed
 
-- Remove duplicate object type names ([ac782bb](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/ac782bb8c462ce7eddeb6b4e90f7f2f6a9905329) by Josef Friedrich).
+- Remove duplicate object type names.
 
 ## [v0.3.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/releases/tag/v0.3.0) - 2024-09-04
 
@@ -73,28 +81,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add docstrings ([f18e6cb](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/f18e6cbd1a9422edfadadf5c7607e9645025461e) by Josef Friedrich).
-- Add tags to the object types ([41b3614](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/41b3614503af01df9423d0e5eca495d97a79278e) by Josef Friedrich).
-- Add support for display names in the checks ([cc027b8](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/cc027b847e36fad31cbc2c93804c580a5849e742) by Josef Friedrich).
-- Add display_name for services ([5b70bde](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/5b70bde923bb5795fbdc5312fdbc0174d8677113) by Josef Friedrich).
-- Add logging support ([e5433bf](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/e5433bf6d6268d91ddc9a893c9a04ad658cb4574) by Josef Friedrich).
-- Add check_executor ([f9f9774](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/f9f9774eda5ac15ab6c69defbf5dd8eb799f002f) by Josef Friedrich).
-- Add tag support ([8820990](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/8820990314445da51de76a8a2e3c34b2fdc999ce) by Josef Friedrich).
-- Add status to the cli ([537ce4e](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/537ce4e5694b347f35a2bdd974ae98d78a72e41c) by Josef Friedrich).
-- Add docs ([213b891](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/213b891430aa513c7e1a7e9865df8705efcb85c4) by Josef Friedrich).
-- Add some object types ([0afc702](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/0afc70234b66b1e434e384cc77f26a466d996022) by Josef Friedrich).
-- Add types from https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js ([f163326](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/f1633263fd8f30259f0ec4b0a83da30da436d64f) by Josef Friedrich).
-- Add some docstrings ([124792b](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/124792bcd2b0c918f8e39f1f31791207eb7b4a47) by Josef Friedrich).
+- Add docstrings.
+- Add tags to the object types.
+- Add support for display names in the checks.
+- Add display_name for services.
+- Add logging support.
+- Add check_executor.
+- Add tag support.
+- Add status to the cli.
+- Add docs.
+- Add some object types.
+- Add types from https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js.
+- Add some docstrings.
 
 ### Fixed
 
-- Fix checks ([b400fb0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/b400fb0bea803191441d790a00c5e74e95074988) by Josef Friedrich).
-- Fix execution_end ([8e73a23](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/8e73a23e5ce117c7ed316251ec677f02c8edd751) by Josef Friedrich).
-- Fix readthedoc links ([3253b62](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/3253b629d3ecd48fd2633844293f2e13f2372e5c) by Josef Friedrich).
+- Fix checks.
+- Fix execution_end.
+- Fix readthedoc links.
 
 ### Removed
 
-- Remove logging and and __future__ imports ([8b8a422](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/8b8a422362bc78abe9cb26e7e14830d02fbe2a97) by Josef Friedrich).
+- Remove logging and and __future__ imports.
 
 ## [v0.2.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/releases/tag/v0.2.0) - 2024-08-23
 
@@ -102,13 +110,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add some tests ([17a90c0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/17a90c0286f2f5c969286e47b322badcd3a8f787) by Josef Friedrich).
-- Add first root export ([b983c95](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/b983c951f2c4afc63e1b40ebf9e4344593482a89) by Josef Friedrich).
-- Add all submodules to the docs ([6d7d33e](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/6d7d33e28a41a19e09b18ac1462ab7b24e80e2a7) by Josef Friedrich).
+- Add some tests.
+- Add first root export.
+- Add all submodules to the docs.
 
 ### Fixed
 
-- Fix readthedocs badge ([ac200cc](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/ac200cc8518f4e492c6c7de845ecc08a506578b1) by Josef Friedrich).
+- Fix readthedocs badge.
 
 ## [v0.1.0](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/releases/tag/v0.1.0) - 2024-08-21
 
@@ -116,16 +124,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add read the docs config ([df2aed6](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/df2aed6fef82ab11d77b5fe89a92912d8212881a) by Josef Friedrich).
-- Add some types ([c6e0cfa](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/c6e0cfaa99cd30c4257221d3d9066bfd4ad4baca) by Josef Friedrich).
-- Add first test ([d448f4d](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/d448f4de512b8f48e6961bb36f3bf65795816744) by Josef Friedrich).
-- Add boilerplate files ([f77e95c](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/f77e95c7c02af5c8ed1054257837ddd3631059df) by Josef Friedrich).
-- Add configs from https://github.com/Josef-Friedrich/icinga2apic-stubs ([c57c54a](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/c57c54af05847c97cc5dd4f7808c41f24d60a541) by Josef Friedrich).
-- Add resources from https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/tree/main/resources ([388dde8](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/388dde8ad19b774ea31050b8030c026af00ee727) by Josef Friedrich).
-- Add py.typed ([18f19f2](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/18f19f2647e86751ba85f38f03dd599ac21e6d48) by Josef Friedrich).
-- Add more types ([764dca9](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/764dca90e1b50f5ea3ec71e822095a396b0c48d6) by Josef Friedrich).
-- add *.pyi ([d5f1203](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/d5f12033894c33d434fcc8e1aa6db8a2b80b549d) by Josef Friedrich).
-- Add type hints ([a7e4763](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/a7e476382a20bbf20aeaa679bd82ff2e9c0a05fc) by Josef Friedrich).
+- Add read the docs config.
+- Add some types.
+- Add first test.
+- Add boilerplate files.
+- Add configs from https://github.com/Josef-Friedrich/icinga2apic-stubs.
+- Add resources from https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/tree/main/resources.
+- Add py.typed.
+- Add more types.
+- add *.pyi.
+- Add type hints.
 - add/update icinga 2 api actions to reflect new action options ([f20120c](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/f20120c888075e4e53481d8cb17c19b91c559336) by Ricardo Bartels).
 - Add install requirements to setup.py ([0a4a6e3](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/0a4a6e38cd87052a726702b32cf471b17503dd34) by Tobias von der Krone).
 - Add keywords to setup.py ([3981156](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/39811567aaf62262219ee6d6ae3ecdb12469a7b1) by Tobias von der Krone).
@@ -151,7 +159,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix version mismatch between setup.py and setup.conf ([e464d79](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/e464d795fea6f0368aac8faba5546ac970082f0d) by Josef Friedrich).
+- Fix version mismatch between setup.py and setup.conf.
 - fix(encoding): remove umlaut from name ([d964e1d](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/d964e1d978e4c8d137edd501f4aa19040d10cb8e) by Christian Jonak).
 - fix(actions): allow to remove comments based on filter ([a74120f](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/a74120f9da026bf20383d644fdc88dc15b16b309) by Christian Jonak).
 - Fixed 2 examples to use the correct function ([ea609a9](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/ea609a9a0285c003d7f36122c051a9b8a7fe1634) by Matthew Garrett).
@@ -174,7 +182,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Remove py.typed ([9645cda](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/9645cda9eb3daa59b4e062825643f870aa4328e9) by Josef Friedrich).
+- Remove py.typed.
 - Remove preceding / from path_prefix ([ba08fc6](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/ba08fc6d2be320bb85b5f1d33eb59c0af1dec6a2) by David Gillies).
 - Remove debugging print function calls ([56b70b8](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/56b70b89eef94e177e2bc8fa7a4fb546fc3bfdf8) by Tobias von der Krone).
 - Remove default values for parameters in _request function ([070a778](https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_py/commit/070a7785978a855b231df7c2776bfe4678efa7f3) by Tobias von der Krone).
