@@ -3,7 +3,7 @@ name = "pretiac"
 version = "0.7.0"
 description = "pretiac: A PREtty Typed Icinga2 Api Client."
 authors = [{ name = "Josef Friedrich", email = "josef@friedrich.rocks" }]
-requires-python = ">=3.10,<4"
+requires-python = ">=3.12,<4"
 readme = "README.rst"
 license = "GPL-3.0-only"
 classifiers = [
