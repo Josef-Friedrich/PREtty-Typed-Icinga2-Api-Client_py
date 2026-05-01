@@ -6,6 +6,7 @@ test:
 	uv run --isolated --python=3.12 pytest
 	uv run --isolated --python=3.13 pytest
 	uv run --isolated --python=3.14 pytest
+
 # Execute the quick tests
 test_quick:
 	uv run --isolated --python=3.12 pytest
@@ -120,9 +121,11 @@ docker_rmi:
 
 set script-interpreter := ['uv', 'run', '--script']
 
+# Own the resources folder by “jf”
 chown_config_file:
 	sudo chown -R jf:jf resources
 
+# Patch the config files resources/etc-icinga2/constants.conf and resources/etc-icinga2/zones.conf to avoid noise in the commit messages
 [script]
 patch_config_files:
 	from pathlib import Path
