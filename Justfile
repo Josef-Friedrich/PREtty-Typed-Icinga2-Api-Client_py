@@ -1,5 +1,5 @@
 # Run all recipes
-all: upgrade docker_stop docker_start test format docs lint type_check
+all: upgrade docker_stop docker_start test format docs lint type_check chown_config_file patch_config_files
 
 # Execute the tests
 test:
@@ -117,3 +117,37 @@ docker_create_api_certs:
 
 docker_rmi:
 	sudo docker rmi icinga/icinga2
+
+set script-interpreter := ['uv', 'run', '--script']
+
+chown_config_file:
+	sudo chown -R jf:jf resources
+
+[script]
+patch_config_files:
+	from pathlib import Path
+	import re
+
+	CONSTANTS = Path("resources/etc-icinga2/constants.conf")
+	OLD_LINE = r'const TicketSalt = ".*"'
+	NEW_LINE = 'const TicketSalt = "7d65c57877b73e0df7fccb1cc43c3ee3"'
+	content = CONSTANTS.read_text(encoding="utf-8")
+
+	if re.search(OLD_LINE, content) is None:
+		raise SystemExit(f"Expected line not found in {CONSTANTS}")
+
+	updated = re.sub(OLD_LINE, NEW_LINE, content)
+	CONSTANTS.write_text(updated, encoding="utf-8")
+	print(f"Updated {CONSTANTS}")
+
+	ZONES = Path("resources/etc-icinga2/zones.conf")
+	OLD_LINE = r' \* on .*\n'
+	NEW_LINE = ' * on 2026-04-30 20:36:53 +0000\n'
+	content = ZONES.read_text(encoding="utf-8")
+
+	if re.search(OLD_LINE, content) is None:
+		raise SystemExit(f"Expected line not found in {CONSTANTS}")
+
+	updated = re.sub(OLD_LINE, NEW_LINE, content)
+	ZONES.write_text(updated, encoding="utf-8")
+	print(f"Updated {ZONES}")
