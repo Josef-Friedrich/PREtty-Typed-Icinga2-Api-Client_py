@@ -46,10 +46,10 @@ class PretiacRequestException(PretiacException):
     Icinga 2 API Request exception class
     """
 
-    response: "Payload" = {}
+    response: "Payload"
 
     def __init__(self, message: str, response: "Payload") -> None:
-        super(PretiacRequestException, self).__init__(message)
+        super().__init__(message)
         self.response = response
 
 

@@ -1,4 +1,4 @@
-from typing import Any, Optional, get_args
+from typing import Any, get_args
 
 import click
 from rich import print
@@ -32,7 +32,6 @@ def main(debug: int) -> None:
 @click.group()
 def objects() -> None:
     """Manage configuration objects."""
-    pass
 
 
 @click.command
@@ -96,10 +95,10 @@ def actions() -> None:
 @click.argument("service")
 def send_service_check_result(
     service: str,
-    host: Optional[str] = None,
-    exit_status: Optional[Any] = None,
-    performance_data: Optional[str] = None,
-    plugin_output: Optional[str] = None,
+    host: str | None = None,
+    exit_status: Any | None = None,
+    performance_data: str | None = None,
+    plugin_output: str | None = None,
 ) -> None:
     """Send a check result for a service and create the host or the service if necessary."""
     print(
@@ -159,7 +158,7 @@ def config_show() -> None:
 @click.argument("stage", required=False)
 @click.argument("package")
 @click.command()
-def config_delete(package: str, stage: Optional[str] = None) -> None:
+def config_delete(package: str, stage: str | None = None) -> None:
     """Delete a configuration package or a configuration stage entirely."""
     print(get_default_client().delete_config(package, stage))
 

@@ -105,7 +105,7 @@ Command line interface
 
 :: 
 
-    Usage: pretiac actions [OPTIONS] COMMAND [ARGS]...
+    Usage: pretiac actions [OPTIONS] [COMMAND] [ARGS]...
 
       There are several actions available for Icinga 2 provided by the
       ``/v1/actions`` URL endpoint.
@@ -141,7 +141,7 @@ Command line interface
 
 :: 
 
-    Usage: pretiac config [OPTIONS] COMMAND [ARGS]...
+    Usage: pretiac config [OPTIONS] [COMMAND] [ARGS]...
 
       Manage configuration packages and stages.
 

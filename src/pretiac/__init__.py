@@ -31,23 +31,22 @@ pretiac is a `Python <http://www.python.org>`_ module to interact with the
 """
 
 from pathlib import Path
-from typing import Optional
 
 from pretiac.client import Client
 
-__client: Optional[Client] = None
+__client: Client | None = None
 
 
 def set_default_client(
-    config_file: Optional[str | Path] = None,
-    api_endpoint_host: Optional[str] = None,
-    api_endpoint_port: Optional[int] = None,
-    http_basic_username: Optional[str] = None,
-    http_basic_password: Optional[str] = None,
-    client_private_key: Optional[str] = None,
-    client_certificate: Optional[str] = None,
-    ca_certificate: Optional[str] = None,
-    suppress_exception: Optional[bool] = None,
+    config_file: str | Path | None = None,
+    api_endpoint_host: str | None = None,
+    api_endpoint_port: int | None = None,
+    http_basic_username: str | None = None,
+    http_basic_password: str | None = None,
+    client_private_key: str | None = None,
+    client_certificate: str | None = None,
+    ca_certificate: str | None = None,
+    suppress_exception: bool | None = None,
 ) -> Client:
     """
     Set and configure the default client.

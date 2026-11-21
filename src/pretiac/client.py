@@ -5,7 +5,7 @@ A high level client with typed return values.
 import socket
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Literal, Optional, Union
+from typing import Any, Literal
 
 from pydantic import BaseModel, TypeAdapter
 
@@ -39,9 +39,9 @@ from pretiac.request_handler import Payload, State
 
 
 def _normalize_object_config(
-    templates: Optional[Union[Sequence[str], str]] = None,
-    attrs: Optional[Payload] = None,
-    object_config: Optional[ObjectConfig] = None,
+    templates: Sequence[str] | str | None = None,
+    attrs: Payload | None = None,
+    object_config: ObjectConfig | None = None,
 ) -> ObjectConfig:
     """
     :param templates: Import existing configuration templates for this
@@ -92,16 +92,16 @@ class CheckError(BaseModel):
     status: str
 
 
-def _get_host(host: Optional[str] = None) -> str:
+def _get_host(host: str | None = None) -> str:
     if host is None:
         host = socket.gethostname()
     return host
 
 
 def _get_service_name(
-    name: Optional[str] = None,
-    service: Optional[str] = None,
-    host: Optional[str] = None,
+    name: str | None = None,
+    service: str | None = None,
+    host: str | None = None,
 ) -> str:
     if name is not None:
         return name
@@ -124,18 +124,18 @@ class Client:
 
     def __init__(
         self,
-        config: Optional[Config] = None,
-        config_file: Optional[Union[str, Path, Literal[False]]] = None,
-        api_endpoint_host: Optional[str] = None,
-        api_endpoint_port: Optional[int] = None,
-        http_basic_username: Optional[str] = None,
-        http_basic_password: Optional[str] = None,
-        client_private_key: Optional[str] = None,
-        client_certificate: Optional[str] = None,
-        ca_certificate: Optional[str] = None,
-        suppress_exception: Optional[bool] = None,
-        new_host_defaults: Optional[ObjectConfig] = None,
-        new_service_defaults: Optional[ObjectConfig] = None,
+        config: Config | None = None,
+        config_file: str | Path | Literal[False] | None = None,
+        api_endpoint_host: str | None = None,
+        api_endpoint_port: int | None = None,
+        http_basic_username: str | None = None,
+        http_basic_password: str | None = None,
+        client_private_key: str | None = None,
+        client_certificate: str | None = None,
+        ca_certificate: str | None = None,
+        suppress_exception: bool | None = None,
+        new_host_defaults: ObjectConfig | None = None,
+        new_service_defaults: ObjectConfig | None = None,
     ) -> None:
         """
         :param config: A configuration object that has already been populated.
@@ -177,31 +177,31 @@ class Client:
         self.raw_client = RawClient(self.__config)
 
     @property
-    def api_endpoint_host(self) -> Optional[str]:
+    def api_endpoint_host(self) -> str | None:
         return self.__config.api_endpoint_host
 
     @property
-    def api_endpoint_port(self) -> Optional[int]:
+    def api_endpoint_port(self) -> int | None:
         return self.__config.api_endpoint_port
 
     @property
-    def http_basic_username(self) -> Optional[str]:
+    def http_basic_username(self) -> str | None:
         return self.__config.http_basic_username
 
     @property
-    def http_basic_password(self) -> Optional[str]:
+    def http_basic_password(self) -> str | None:
         return self.__config.http_basic_password
 
     @property
-    def client_certificate(self) -> Optional[str]:
+    def client_certificate(self) -> str | None:
         return self.__config.client_certificate
 
     @property
-    def client_private_key(self) -> Optional[str]:
+    def client_private_key(self) -> str | None:
         return self.__config.client_private_key
 
     @property
-    def ca_certificate(self) -> Optional[str]:
+    def ca_certificate(self) -> str | None:
         return self.__config.ca_certificate
 
     # v1/objects #######################################################################
@@ -253,12 +253,12 @@ class Client:
     def create_host(
         self,
         name: str,
-        display_name: Optional[str] = None,
-        templates: Optional[Sequence[str]] = None,
-        attrs: Optional[Payload] = None,
-        object_config: Optional[ObjectConfig] = None,
-        suppress_exception: Optional[bool] = None,
-    ) -> Optional[Host]:
+        display_name: str | None = None,
+        templates: Sequence[str] | None = None,
+        attrs: Payload | None = None,
+        object_config: ObjectConfig | None = None,
+        suppress_exception: bool | None = None,
+    ) -> Host | None:
         """
         Create a new host. If no host configuration is specified, the template
         ``generic-host`` is assigned.
@@ -314,7 +314,7 @@ class Client:
         )
         return self.get_host(name=name)
 
-    def get_host(self, name: str) -> Optional[Host]:
+    def get_host(self, name: str) -> Host | None:
         """
         Get a single host.
 
@@ -347,12 +347,12 @@ class Client:
         self,
         name: str,
         host: str,
-        display_name: Optional[str] = None,
-        templates: Optional[Sequence[str]] = None,
-        attrs: Optional[Payload] = None,
-        object_config: Optional[ObjectConfig] = None,
-        suppress_exception: Optional[bool] = None,
-    ) -> Optional[Service]:
+        display_name: str | None = None,
+        templates: Sequence[str] | None = None,
+        attrs: Payload | None = None,
+        object_config: ObjectConfig | None = None,
+        suppress_exception: bool | None = None,
+    ) -> Service | None:
         """
         Create a new service. If no service configuration is specified, the dummy check
         command is assigned.
@@ -410,9 +410,9 @@ class Client:
 
     def get_service(
         self,
-        name: Optional[str] = None,
-        host: Optional[str] = None,
-        service: Optional[str] = None,
+        name: str | None = None,
+        host: str | None = None,
+        service: str | None = None,
     ) -> Service:
         """
         :param name: The full name of the service, for example ``host!service``.
@@ -428,9 +428,9 @@ class Client:
 
     def delete_service(
         self,
-        name: Optional[str] = None,
-        host: Optional[str] = None,
-        service: Optional[str] = None,
+        name: str | None = None,
+        host: str | None = None,
+        service: str | None = None,
     ) -> None:
         """
         :param name: The full name of the service, for example ``host!service``.
@@ -446,20 +446,20 @@ class Client:
     def send_service_check_result(
         self,
         service: str,
-        host: Optional[str] = None,
-        exit_status: Optional[State] = ServiceState.OK,
-        plugin_output: Optional[str] = None,
-        performance_data: Optional[Union[Sequence[str], str]] = None,
-        check_command: Optional[Union[Sequence[str], str]] = None,
-        check_source: Optional[str] = None,
-        execution_start: Optional[float] = None,
-        execution_end: Optional[float] = None,
-        ttl: Optional[int] = None,
+        host: str | None = None,
+        exit_status: State | None = ServiceState.OK,
+        plugin_output: str | None = None,
+        performance_data: Sequence[str] | str | None = None,
+        check_command: Sequence[str] | str | None = None,
+        check_source: str | None = None,
+        execution_start: float | None = None,
+        execution_end: float | None = None,
+        ttl: int | None = None,
         create: bool = True,
-        display_name: Optional[str] = None,
-        new_host_defaults: Optional[ObjectConfig] = None,
-        new_service_defaults: Optional[ObjectConfig] = None,
-    ) -> Union[CheckResponse, CheckError]:
+        display_name: str | None = None,
+        new_host_defaults: ObjectConfig | None = None,
+        new_service_defaults: ObjectConfig | None = None,
+    ) -> CheckResponse | CheckError:
         """
         Send a check result for a service and create the host or the service if necessary.
 
@@ -495,7 +495,7 @@ class Client:
         if plugin_output is None:
             plugin_output = f"{service}: {exit_status}"
 
-        def _send_service_check_result() -> Union[CheckResponse, CheckError]:
+        def _send_service_check_result() -> CheckResponse | CheckError:
             name = f"{host}!{service}"
             logger.info(
                 "Send service check result: %s exit_status: %s plugin_output: %s",
@@ -520,7 +520,7 @@ class Client:
                 return CheckResponse(**result["results"][0])
             return CheckError(**result)
 
-        result: Union[CheckResponse, CheckError] = _send_service_check_result()
+        result: CheckResponse | CheckError = _send_service_check_result()
 
         if isinstance(result, CheckResponse):
             return result
@@ -574,7 +574,7 @@ class Client:
         self,
         types: Sequence[EventStreamType],
         queue: str,
-        filter: Optional[str] = None,
+        filter: str | None = None,
         filter_vars: FilterVars = None,
     ):
         adapter: Any = TypeAdapter(EventStream)
@@ -640,7 +640,7 @@ class Client:
                 )
         return output
 
-    def delete_config(self, package_name: str, stage_name: Optional[str]):
+    def delete_config(self, package_name: str, stage_name: str | None):
         """
         Delete a configuration package or a configuration stage entirely.
 

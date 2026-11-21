@@ -32,11 +32,10 @@ the class ``Objects`` handles the ``v1/objects`` entpoint and so on...
 """
 
 import json
+from collections.abc import Generator
 from typing import (
     TYPE_CHECKING,
     Any,
-    Generator,
-    Optional,
 )
 from urllib.parse import urljoin
 
@@ -61,7 +60,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def normalize_state(state: State | Any) -> int:
-    if isinstance(state, ServiceState) or isinstance(state, HostState):
+    if isinstance(state, (ServiceState, HostState)):
         return state.value
     if isinstance(state, int) and 0 <= state <= 3:
         return state
@@ -77,7 +76,7 @@ class RequestHandler:
 
     api_version: str = "v1"
 
-    path_prefix: Optional[str] = None
+    path_prefix: str | None = None
     """
     for example ``objects`` for ``localhost:5665/v1/objects``
     """
@@ -130,7 +129,7 @@ class RequestHandler:
 
         return session
 
-    def __throw_exception(self, suppress_exception: Optional[bool] = None) -> bool:
+    def __throw_exception(self, suppress_exception: bool | None = None) -> bool:
         if isinstance(suppress_exception, bool):
             return not suppress_exception
         if isinstance(self.config.suppress_exception, bool):
@@ -140,11 +139,11 @@ class RequestHandler:
     def _request(
         self,
         method: RequestMethod,
-        url_relpath: Optional[str],
-        payload: Optional[dict[str, Any]] = None,
+        url_relpath: str | None,
+        payload: dict[str, Any] | None = None,
         stream: bool = False,
         plain: bool = False,
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         make the request and return the body

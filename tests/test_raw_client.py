@@ -1,6 +1,4 @@
-import re
 import time
-from typing import Optional
 
 import pytest
 
@@ -156,9 +154,9 @@ class TestConfig:
         def _create_state(
             self,
             client: RawClient,
-            files: Optional[dict[str, str]] = None,
-            reload: Optional[bool] = None,
-            activate: Optional[bool] = None,
+            files: dict[str, str] | None = None,
+            reload: bool | None = None,
+            activate: bool | None = None,
         ):
             client.config.create_package(self.package_name)
             if files is None:
@@ -254,92 +252,88 @@ class TestObjects:
             results = raw_client.objects.list("Host")
             host = results[0]
             assert host["attrs"]["address"] == "127.0.0.1"
-            assert set(host["attrs"].keys()) == set(
-                [
-                    "__name",
-                    "acknowledgement",
-                    "acknowledgement_expiry",
-                    "acknowledgement_last_change",
-                    "action_url",
-                    "active",
-                    "address",
-                    "address6",
-                    "check_attempt",
-                    "check_command",
-                    "check_interval",
-                    "check_period",
-                    "check_timeout",
-                    "command_endpoint",
-                    "display_name",
-                    "downtime_depth",
-                    "enable_active_checks",
-                    "enable_event_handler",
-                    "enable_flapping",
-                    "enable_notifications",
-                    "enable_passive_checks",
-                    "enable_perfdata",
-                    "event_command",
-                    "executions",
-                    "flapping",
-                    "flapping_current",
-                    "flapping_ignore_states",
-                    "flapping_last_change",
-                    "flapping_threshold",
-                    "flapping_threshold_high",
-                    "flapping_threshold_low",
-                    "force_next_check",
-                    "force_next_notification",
-                    "groups",
-                    "ha_mode",
-                    "handled",
-                    "icon_image",
-                    "icon_image_alt",
-                    "last_check",
-                    "last_check_result",
-                    "last_hard_state",
-                    "last_hard_state_change",
-                    "last_reachable",
-                    "last_state",
-                    "last_state_change",
-                    "last_state_down",
-                    "last_state_type",
-                    "last_state_unreachable",
-                    "last_state_up",
-                    "max_check_attempts",
-                    "name",
-                    "next_check",
-                    "next_update",
-                    "notes",
-                    "notes_url",
-                    "original_attributes",
-                    "package",
-                    "paused",
-                    "previous_state_change",
-                    "problem",
-                    "retry_interval",
-                    "severity",
-                    "source_location",
-                    "state",
-                    "state_type",
-                    "templates",
-                    "type",
-                    "vars",
-                    "version",
-                    "volatile",
-                    "zone",
-                ]
-            )
+            assert set(host["attrs"].keys()) == {
+                "__name",
+                "acknowledgement",
+                "acknowledgement_expiry",
+                "acknowledgement_last_change",
+                "action_url",
+                "active",
+                "address",
+                "address6",
+                "check_attempt",
+                "check_command",
+                "check_interval",
+                "check_period",
+                "check_timeout",
+                "command_endpoint",
+                "display_name",
+                "downtime_depth",
+                "enable_active_checks",
+                "enable_event_handler",
+                "enable_flapping",
+                "enable_notifications",
+                "enable_passive_checks",
+                "enable_perfdata",
+                "event_command",
+                "executions",
+                "flapping",
+                "flapping_current",
+                "flapping_ignore_states",
+                "flapping_last_change",
+                "flapping_threshold",
+                "flapping_threshold_high",
+                "flapping_threshold_low",
+                "force_next_check",
+                "force_next_notification",
+                "groups",
+                "ha_mode",
+                "handled",
+                "icon_image",
+                "icon_image_alt",
+                "last_check",
+                "last_check_result",
+                "last_hard_state",
+                "last_hard_state_change",
+                "last_reachable",
+                "last_state",
+                "last_state_change",
+                "last_state_down",
+                "last_state_type",
+                "last_state_unreachable",
+                "last_state_up",
+                "max_check_attempts",
+                "name",
+                "next_check",
+                "next_update",
+                "notes",
+                "notes_url",
+                "original_attributes",
+                "package",
+                "paused",
+                "previous_state_change",
+                "problem",
+                "retry_interval",
+                "severity",
+                "source_location",
+                "state",
+                "state_type",
+                "templates",
+                "type",
+                "vars",
+                "version",
+                "volatile",
+                "zone",
+            }
 
         def test_attrs(self, raw_client: RawClient) -> None:
             results = raw_client.objects.list("Host", attrs=("address", "notes"))
             host = results[0]
             assert host["attrs"]["address"] == "127.0.0.1"
-            assert set(host["attrs"].keys()) == set(
-                [
-                    "address",
-                    "notes",
-                ]
-            )
+            assert set(host["attrs"].keys()) == {
+                "address",
+                "notes",
+            }
 
         def test_commands(self, raw_client: RawClient) -> None:
             results = raw_client.objects.list("CheckCommand")
@@ -439,9 +433,9 @@ class TestObjects:
             )
             error = result["results"][0]
             assert error["code"] == 500
-            assert re.match(
-                r"Error: Validation failed for object 'Host1!xxx' of type 'Service'; Attribute 'check_command': Attribute must not be empty.\nLocation: in /data/var/lib/icinga2/api/packages/_api/.*/conf.d/services/Host1!xxx.conf:",
-                error["errors"][0],
+            assert (
+                error["errors"][0]
+                == "Validation failed for object 'Host1!xxx' of type 'Service'; Attribute 'check_command': Attribute must not be empty."
             )
             assert error["status"] == "Object could not be created."
 
@@ -454,7 +448,7 @@ class TestObjects:
             )
             assert (
                 result["results"][0]["errors"][0]
-                == "Error: Invalid attribute specified: unknown\n"
+                == "Invalid attribute specified: unknown"
             )
 
 

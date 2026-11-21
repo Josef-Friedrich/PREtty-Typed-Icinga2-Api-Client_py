@@ -1,6 +1,7 @@
 import os
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal, Optional, Sequence, Union
+from typing import Literal, Optional
 
 import yaml
 from pydantic import TypeAdapter
@@ -16,7 +17,7 @@ class ObjectConfig:
     Bundles all configuration required to create an object.
     """
 
-    templates: Optional[Sequence[str]] = None
+    templates: Sequence[str] | None = None
     """
     Import existing configuration templates for this
     object type. Note: These templates must either be statically
@@ -33,22 +34,22 @@ class Config:
     :see: `pretiac (JS) <https://github.com/Josef-Friedrich/PREtty-Typed-Icinga2-Api-Client_js/blob/722c6308d79f603a9ad7678609cd907b932c64ab/src/client.ts#L7-L15>`__
     """
 
-    config_file: Optional[Path] = None
+    config_file: Path | None = None
     """The path of the loaded configuration file."""
 
-    api_endpoint_host: Optional[str] = None
+    api_endpoint_host: str | None = None
     """
     The domain or the IP address of the API endpoint, e. g. ``icinga.example.com``,
     ``localhost`` or ``127.0.0.1``.
     """
 
-    api_endpoint_port: Optional[int] = None
+    api_endpoint_port: int | None = None
     """The TCP port of the API endpoint, for example ``5665``.
 
     :see: `Icinca Object Types (apilistener) <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apilistener>`__
     """
 
-    http_basic_username: Optional[str] = None
+    http_basic_username: str | None = None
     """
     The name of the API user used in the HTTP basic authentification, e. g. ``apiuser``.
 
@@ -61,7 +62,7 @@ class Config:
     :see: `Icinca Object Types (apiuser) <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser>`__
     """
 
-    http_basic_password: Optional[str] = None
+    http_basic_password: str | None = None
     """
     The password of the API user used in the HTTP basic authentification, e. g. ``password``.
 
@@ -74,7 +75,7 @@ class Config:
     :see: `Icinca Object Types <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#apiuser>`__
     """
 
-    client_private_key: Optional[str] = None
+    client_private_key: str | None = None
     """
     The file path of the client’s **private RSA key**, for example
     ``/etc/pretiac/api-client.key.pem``.
@@ -89,7 +90,7 @@ class Config:
             --csr api-client.csr.pem
     """
 
-    client_certificate: Optional[str] = None
+    client_certificate: str | None = None
     """
     The file path of the client **certificate**.
 
@@ -102,7 +103,7 @@ class Config:
             --cert api-client.cert.pem
     """
 
-    ca_certificate: Optional[str] = None
+    ca_certificate: str | None = None
     """
     The file path of the Icinga **CA (Certification Authority)**.
 
@@ -114,15 +115,15 @@ class Config:
         scp icinga-master:/var/lib/icinga2/certs/ca.crt .
     """
 
-    suppress_exception: Optional[bool] = None
+    suppress_exception: bool | None = None
     """
     If set to ``True``, no exceptions are thrown.
     """
 
-    new_host_defaults: Optional[ObjectConfig] = None
+    new_host_defaults: ObjectConfig | None = None
     """If a new host needs to be created, use this defaults."""
 
-    new_service_defaults: Optional[ObjectConfig] = None
+    new_service_defaults: ObjectConfig | None = None
     """If a new service needs to be created, use this defaults."""
 
     def check(self) -> None:
@@ -138,7 +139,7 @@ class Config:
             )
 
 
-def load_config_file(config_file: Optional[Union[str, Path]] = None) -> Config:
+def load_config_file(config_file: str | Path | None = None) -> Config:
     """
     Load the configuration file in YAML format.
 
@@ -179,18 +180,18 @@ def load_config_file(config_file: Optional[Union[str, Path]] = None) -> Config:
 
 
 def load_config(
-    config: Optional[Config] = None,
-    config_file: Optional[Union[str, Path, Literal[False]]] = None,
-    api_endpoint_host: Optional[str] = None,
-    api_endpoint_port: Optional[int] = None,
-    http_basic_username: Optional[str] = None,
-    http_basic_password: Optional[str] = None,
-    client_private_key: Optional[str] = None,
-    client_certificate: Optional[str] = None,
-    ca_certificate: Optional[str] = None,
-    suppress_exception: Optional[bool] = None,
-    new_host_defaults: Optional[ObjectConfig] = None,
-    new_service_defaults: Optional[ObjectConfig] = None,
+    config: Config | None = None,
+    config_file: str | Path | Literal[False] | None = None,
+    api_endpoint_host: str | None = None,
+    api_endpoint_port: int | None = None,
+    http_basic_username: str | None = None,
+    http_basic_password: str | None = None,
+    client_private_key: str | None = None,
+    client_certificate: str | None = None,
+    ca_certificate: str | None = None,
+    suppress_exception: bool | None = None,
+    new_host_defaults: ObjectConfig | None = None,
+    new_service_defaults: ObjectConfig | None = None,
 ) -> Config:
     """
     :param config: A configuration object that has already been populated.
@@ -219,7 +220,7 @@ def load_config(
     if config is not None and (config_file is not None and config_file is not False):
         raise PretiacException("Specify config OR config_file. Not both!")
 
-    c: Optional[Config] = None
+    c: Config | None = None
     if config:
         c = config
     elif config_file is False:

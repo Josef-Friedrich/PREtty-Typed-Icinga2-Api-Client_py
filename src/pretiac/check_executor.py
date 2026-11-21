@@ -8,7 +8,7 @@ import time
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import yaml
 from pydantic import TypeAdapter
@@ -30,9 +30,9 @@ class CheckExecution:
 
     plugin_output: str
 
-    performance_data: Optional[str] = None
+    performance_data: str | None = None
 
-    def __init__(self, check_command: Union[Sequence[str], str]) -> None:
+    def __init__(self, check_command: Sequence[str] | str) -> None:
         if isinstance(check_command, str):
             check_command = shlex.split(check_command)
         self.check_command = check_command
@@ -40,7 +40,7 @@ class CheckExecution:
             self.execution_start = time.time()
             self.execution_end = self.execution_start
             process = subprocess.run(
-                self.check_command, capture_output=True, encoding="utf-8"
+                self.check_command, check=False, capture_output=True, encoding="utf-8"
             )
             self.execution_end = time.time()
             self.exit_status = get_service_state(process.returncode)
@@ -77,13 +77,13 @@ class ServiceCheck:
 
     check_command: str
 
-    host: Optional[str] = None
+    host: str | None = None
     """The name of the host."""
 
-    display_name: Optional[str] = None
+    display_name: str | None = None
     """A short description of the service, if it needs to be created."""
 
-    def set_host(self, host: Optional[str]) -> None:
+    def set_host(self, host: str | None) -> None:
         if self.host is None:
             self.host = host
 
@@ -123,7 +123,7 @@ class CheckCollection:
     """
 
     checks: Sequence[ServiceCheck]
-    host: Optional[str] = None
+    host: str | None = None
 
     def run_checks(self) -> None:
         for check in self.checks:

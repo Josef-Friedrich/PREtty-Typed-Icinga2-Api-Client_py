@@ -11,9 +11,6 @@ from typing import (
     Annotated,
     Any,
     Literal,
-    Optional,
-    TypeAlias,
-    Union,
     get_args,
 )
 
@@ -30,7 +27,7 @@ def _empty_str_to_none(v: str | None) -> str | None:
 
 
 # https://github.com/pydantic/pydantic/discussions/2687#discussioncomment-9893991
-OptionalStr: TypeAlias = Annotated[Optional[str], BeforeValidator(_empty_str_to_none)]
+type OptionalStr = Annotated[str | None, BeforeValidator(_empty_str_to_none)]
 """
 An empty string is set to None by the Pydantic validator.
 """
@@ -93,7 +90,7 @@ see `doc/09-object-types.md features- <https://github.com/Icinga/icinga2/blob/2c
 """
 
 
-ObjectTypeName = Union[MonitoringObjectName, RuntimeObjectName, FeatureObjectName]
+ObjectTypeName = MonitoringObjectName | RuntimeObjectName | FeatureObjectName
 
 
 def _convert_pascal_to_snake_case(name: str) -> str:
@@ -113,9 +110,9 @@ def get_object_types_names() -> list[str]:
 
 object_type_names: list[str] = get_object_types_names()
 
-object_type_names_snake = list(
-    map(lambda name: _convert_pascal_to_snake_case(name), object_type_names)
-)
+object_type_names_snake = [
+    _convert_pascal_to_snake_case(name) for name in object_type_names
+]
 
 
 def normalize_to_plural_snake_object_type_name(object_type_name: str) -> str:
@@ -139,14 +136,14 @@ def pluralize_to_lower_object_type_name(object_type_name: ObjectTypeName) -> str
 
 HostOrService = Literal["Host", "Service"]
 
-HostServiceComment = Union[Literal["Comment"], HostOrService]
+HostServiceComment = Literal["Comment"] | HostOrService
 
-HostServiceDowntime = Union[Literal["Downtime"], HostOrService]
+HostServiceDowntime = Literal["Downtime"] | HostOrService
 
 
 Payload = dict[str, Any]
 
-FilterVars = Optional[Payload]
+FilterVars = Payload | None
 
 RequestMethod = Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
 """
@@ -253,7 +250,7 @@ class HostState(Enum):
 State = HostState | ServiceState | Literal[0, 1, 2, 3] | int
 
 
-def get_service_state(state: Union[State, Any]) -> ServiceState:
+def get_service_state(state: State | Any) -> ServiceState:
     if isinstance(state, ServiceState):
         return state
     if isinstance(state, int) and 0 <= state <= 3:
@@ -287,7 +284,7 @@ class CheckResult:
     https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L59
     """
 
-    performance_data: Optional[list[str]]
+    performance_data: list[str] | None
     """
     Array of performance data values.
 
@@ -311,14 +308,14 @@ class CheckResult:
     https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L57
     """
 
-    previous_hard_state: Union[ServiceState, int]
+    previous_hard_state: ServiceState | int
     """
     Sometimes ``99``?
 
     https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L58C1-L58C49
     """
 
-    command: Optional[Union[list[str], str]]
+    command: list[str] | str | None
     """
     Array of command with shell-escaped arguments or command line string.
 
@@ -360,7 +357,7 @@ class CheckResult:
     https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/checkresult.ti#L62-L64
     """
 
-    vars_before: Optional[dict[str, Any]]
+    vars_before: dict[str, Any] | None
     """
     Internal attribute used for calculations.
 
@@ -394,40 +391,40 @@ class ConfigObject:
     :see: `lib/base/configobject.ti L57-L92 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L57-L92>`__
     """
 
-    name: Optional[str] = None
+    name: str | None = None
     """:see: `lib/base/configobject.ti L59-L68 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L59-L68>`__"""
 
-    type: Optional[str] = None
+    type: str | None = None
 
     zone: OptionalStr = None
     """:see: `lib/base/configobject.ti L69 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L69>`__"""
 
-    package: Optional[str] = None
+    package: str | None = None
     """for example ``_etc``
 
     :see: `lib/base/configobject.ti L70 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L70>`__"""
 
-    templates: Optional[Sequence[str]] = None
+    templates: Sequence[str] | None = None
     """:see: `lib/base/configobject.ti L71 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L71>`__"""
 
-    source_location: Optional[SourceLocation] = None
+    source_location: SourceLocation | None = None
     """
     :see: `lib/base/configobject.ti L72-L74 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L72-L74>`__
     """
 
-    active: Optional[bool] = None
+    active: bool | None = None
     """:see: `lib/base/configobject.ti L75 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L75>`__"""
 
-    paused: Optional[bool] = None
+    paused: bool | None = None
     """:see: `lib/base/configobject.ti L76-L78 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L76-L78>`__"""
 
-    ha_mode: Optional[HAMode] = None
+    ha_mode: HAMode | None = None
     """:see: `lib/base/configobject.ti L83 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L83>`__"""
 
-    original_attributes: Optional[dict[str, Any]] = None
+    original_attributes: dict[str, Any] | None = None
     """:see: `lib/base/configobject.ti L87 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L87>`__"""
 
-    version: Optional[float] = None
+    version: float | None = None
     """:see: `lib/base/configobject.ti L88-L90 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/base/configobject.ti#L88-L90>`__"""
 
 
@@ -437,7 +434,7 @@ class CustomVarObject(ConfigObject):
     :see: `lib/icinga/customvarobject.ti L10 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/customvarobject.ti#L10>`__
     """
 
-    vars: Optional[dict[str, Any]] = None
+    vars: dict[str, Any] | None = None
     """
     :see: `lib/icinga/customvarobject.ti L12 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/customvarobject.ti#L12>`__
     """
@@ -449,21 +446,21 @@ class Checkable(CustomVarObject):
     :see: `lib/icinga/checkable.ti <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/checkable.ti>`__
     """
 
-    check_command: Optional[str] = None
+    check_command: str | None = None
     """
     The name of the check command.
 
     :see: `doc/09-object-types.md L717 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L717>`__
     """
 
-    max_check_attempts: Optional[int] = None
+    max_check_attempts: int | None = None
     """
     The float of times a service is re-checked before changing into a hard state. Defaults to 3.
 
     :see: `doc/09-object-types.md L718 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L718>`__
     """
 
-    check_period: Optional[str] = None
+    check_period: str | None = None
     """
     The name of a time period which determines when this service should be checked. Not set by default (effectively 24x7).
 
@@ -471,50 +468,50 @@ class Checkable(CustomVarObject):
 
     """
 
-    check_timeout: Optional[Value] = None
+    check_timeout: Value | None = None
     """
     Check command timeout in seconds. Overrides the CheckCommand's `timeout` attribute.
 
     :see: `doc/09-object-types.md L720 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L720>`__
     """
 
-    check_interval: Optional[float] = None
+    check_interval: float | None = None
     """
     The check interval (in seconds). This interval is used for checks when the service is in a `HARD` state. Defaults to `5m`.
 
     :see: `doc/09-object-types.md L721 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L721>`__
     """
 
-    retry_interval: Optional[float] = None
+    retry_interval: float | None = None
     """
     This interval is used for checks when the service is in a `SOFT` state. Defaults to `1m`. Note: This does not affect the scheduling `after a passive check result <08-advanced-topics.md#check-result-freshness>`__.
     """
 
-    event_command: Optional[str] = None
+    event_command: str | None = None
 
-    volatile: Optional[bool] = None
+    volatile: bool | None = None
 
-    enable_active_checks: Optional[bool] = None
+    enable_active_checks: bool | None = None
 
-    enable_passive_checks: Optional[bool] = None
+    enable_passive_checks: bool | None = None
 
-    enable_event_handler: Optional[bool] = None
+    enable_event_handler: bool | None = None
 
-    enable_notifications: Optional[bool] = None
+    enable_notifications: bool | None = None
 
-    enable_flapping: Optional[bool] = None
+    enable_flapping: bool | None = None
 
-    enable_perfdata: Optional[bool] = None
+    enable_perfdata: bool | None = None
 
-    flapping_ignore_states: Optional[Sequence[str]] = None
+    flapping_ignore_states: Sequence[str] | None = None
 
-    flapping_threshold: Optional[float] = None
+    flapping_threshold: float | None = None
     """
     deprecated
     """
-    flapping_threshold_low: Optional[float] = None
+    flapping_threshold_low: float | None = None
 
-    flapping_threshold_high: Optional[float] = None
+    flapping_threshold_high: float | None = None
 
     notes: OptionalStr = None
     """ Optional. Notes for the checkable."""
@@ -531,57 +528,57 @@ class Checkable(CustomVarObject):
     icon_image_alt: OptionalStr = None
     """Optional. Icon image description for the checkable. Used by external interface only."""
 
-    next_check: Optional[Timestamp] = None
+    next_check: Timestamp | None = None
 
-    check_attempt: Optional[int] = None
+    check_attempt: int | None = None
 
-    state_type: Optional[StateType] = None
+    state_type: StateType | None = None
 
-    last_state_type: Optional[StateType] = None
+    last_state_type: StateType | None = None
 
-    last_reachable: Optional[bool] = None
+    last_reachable: bool | None = None
 
-    last_check_result: Optional[CheckResult] = None
+    last_check_result: CheckResult | None = None
 
-    last_state_change: Optional[Timestamp] = None
+    last_state_change: Timestamp | None = None
 
-    last_hard_state_change: Optional[Timestamp] = None
+    last_hard_state_change: Timestamp | None = None
 
-    last_state_unreachable: Optional[Timestamp] = None
+    last_state_unreachable: Timestamp | None = None
 
-    previous_state_change: Optional[Timestamp] = None
+    previous_state_change: Timestamp | None = None
 
-    severity: Optional[int] = None
+    severity: int | None = None
 
-    problem: Optional[bool] = None
+    problem: bool | None = None
 
-    handled: Optional[bool] = None
+    handled: bool | None = None
 
-    next_update: Optional[Timestamp] = None
+    next_update: Timestamp | None = None
 
-    force_next_check: Optional[bool] = None
+    force_next_check: bool | None = None
 
-    acknowledgement: Optional[int] = None
+    acknowledgement: int | None = None
 
-    acknowledgement_expiry: Optional[Timestamp] = None
+    acknowledgement_expiry: Timestamp | None = None
 
-    acknowledgement_last_change: Optional[Timestamp] = None
+    acknowledgement_last_change: Timestamp | None = None
 
-    force_next_notification: Optional[bool] = None
+    force_next_notification: bool | None = None
 
-    last_check: Optional[Timestamp] = None
+    last_check: Timestamp | None = None
 
-    downtime_depth: Optional[int] = None
+    downtime_depth: int | None = None
 
-    flapping_current: Optional[float] = None
+    flapping_current: float | None = None
 
-    flapping_last_change: Optional[Timestamp] = None
+    flapping_last_change: Timestamp | None = None
 
-    flapping: Optional[bool] = None
+    flapping: bool | None = None
 
-    command_endpoint: Optional[str] = None
+    command_endpoint: str | None = None
 
-    executions: Optional[Dictionary] = None
+    executions: Dictionary | None = None
 
 
 ########################################################################################
@@ -613,14 +610,14 @@ class ApiUser(ConfigObject):
     :see: `doc/09-object-types.md L41-L63 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L41-L63>`__
     """
 
-    password: Optional[str] = None
+    password: str | None = None
     """
     Password string. Note: This attribute is hidden in API responses.
 
     :see: `lib/remote/apiuser.ti L14 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L14>`__
     """
 
-    client_cn: Optional[str] = None
+    client_cn: str | None = None
     """
     Client Common Name (CN).
 
@@ -629,7 +626,7 @@ class ApiUser(ConfigObject):
     :see: `lib/remote/apiuser.ti L16 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/remote/apiuser.ti#L16>`__
     """
 
-    permissions: Optional[Sequence[str]] = None
+    permissions: Sequence[str] | None = None
     """
     Array of permissions. Either as string or dictionary with the keys `permission` and `filter`. The latter must be specified as function.
 
@@ -678,15 +675,15 @@ class CheckCommandArguments:
     :see: `lib/icinga/command.ti L33-L45 <https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/icinga/command.ti#L33-L45>`__
     """
 
-    key: Optional[str] = None
-    value: Optional[str | Function | Any] = None
-    description: Optional[str] = None
-    required: Optional[bool] = None
-    skip_key: Optional[bool] = None
-    repeat_key: Optional[bool] = None
-    set_if: Optional[str | Function] = None
-    order: Optional[float] = None
-    separator: Optional[str] = None
+    key: str | None = None
+    value: str | Function | Any | None = None
+    description: str | None = None
+    required: bool | None = None
+    skip_key: bool | None = None
+    repeat_key: bool | None = None
+    set_if: str | Function | None = None
+    order: float | None = None
+    separator: str | None = None
 
 
 @dataclass(config={"extra": "forbid"})
@@ -738,19 +735,19 @@ class CheckCommand(CustomVarObject):
     .. tags:: Object type, Monitoring object type
     """
 
-    timeout: Optional[int] = None
+    timeout: int | None = None
     """
     **Optional.** The command timeout in seconds.  Defaults to `1m`.
 
     https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L15-L17
     """
 
-    execute: Optional[Union[str, Function]] = None
+    execute: str | Function | None = None
     """
     https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L19
     """
 
-    command: Optional[Union[Sequence[str], Payload]] = None
+    command: Sequence[str] | Payload | None = None
     """
     **Required.** The command. This can either be an array of individual
     command arguments. Alternatively a string can be specified in which case
@@ -761,16 +758,16 @@ class CheckCommand(CustomVarObject):
     https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L25-L28
     """
 
-    arguments: Optional[
-        Union[dict[str, Union[CheckCommandArguments, str, Sequence[str], Payload]], str]
-    ] = None
+    arguments: (
+        dict[str, CheckCommandArguments | str | Sequence[str] | Payload] | str | None
+    ) = None
     """
     **Optional.** A dictionary of command arguments.
 
     https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/command.ti#L30-L46
     """
 
-    env: Optional[Any] = None
+    env: Any | None = None
     """
     **Optional.** A dictionary of macros which should be exported as environment variables prior to executing the command.
 
@@ -825,14 +822,14 @@ class Dependency(CustomVarObject):
     .. tags:: Object type, Monitoring object type
     """
 
-    parent_host_name: Optional[str] = None
+    parent_host_name: str | None = None
     """Required. The parent host."""
 
     parent_service_name: OptionalStr = None
     """Optional. The parent service. If omitted, this dependency object is
     treated as host dependency."""
 
-    child_host_name: Optional[str] = None
+    child_host_name: str | None = None
     """Required. The child host."""
 
     child_service_name: OptionalStr = None
@@ -843,22 +840,22 @@ class Dependency(CustomVarObject):
     """Optional. Puts the dependency into a group of mutually redundant
     ones."""
 
-    disable_checks: Optional[bool] = None
+    disable_checks: bool | None = None
     """Optional. Whether to disable checks (i.e., don’t schedule active checks
     and drop passive results) when this dependency fails. Defaults to false."""
 
-    disable_notifications: Optional[bool] = None
+    disable_notifications: bool | None = None
     """Optional. Whether to disable notifications when this dependency fails.
     Defaults to true."""
 
-    ignore_soft_states: Optional[bool] = None
+    ignore_soft_states: bool | None = None
     """Optional. Whether to ignore soft states for the reachability calculation.
     Defaults to true."""
 
     period: OptionalStr = None
     """Optional. Time period object during which this dependency is enabled."""
 
-    states: Optional[Sequence[str]] = None
+    states: Sequence[str] | None = None
     """Optional. A list of state filters when this dependency should be OK.
     Defaults to [ OK, Warning ] for services and [ Up ] for hosts."""
 
@@ -899,44 +896,44 @@ class Endpoint(ConfigObject):
     host: OptionalStr = None
     """The hostname/IP address of the remote Icinga 2 instance."""
 
-    port: Optional[int] = None
+    port: int | None = None
     """The service name/port of the remote Icinga 2 instance. Defaults to 5665."""
 
-    log_duration: Optional[Union[str, int]] = None
+    log_duration: str | int | None = None
     """Optional. Duration for keeping replay logs on connection loss. Defaults to
     1d (86400 seconds). Attribute is specified in seconds. If log_duration is
     set to 0, replaying logs is disabled. You could also specify the value in
     human readable format like 10m for 10 minutes or 1h for one hour."""
 
-    local_log_position: Optional[Timestamp] = None
+    local_log_position: Timestamp | None = None
 
-    remote_log_position: Optional[Timestamp] = None
+    remote_log_position: Timestamp | None = None
 
-    icinga_version: Optional[int] = None
+    icinga_version: int | None = None
 
-    capabilities: Optional[int] = None
+    capabilities: int | None = None
 
-    connecting: Optional[bool] = None
+    connecting: bool | None = None
 
-    syncing: Optional[bool] = None
+    syncing: bool | None = None
 
-    connected: Optional[bool] = None
+    connected: bool | None = None
 
-    last_message_sent: Optional[Timestamp] = None
+    last_message_sent: Timestamp | None = None
 
-    last_message_received: Optional[Timestamp] = None
+    last_message_received: Timestamp | None = None
 
-    messages_sent_per_second: Optional[float] = None
+    messages_sent_per_second: float | None = None
 
-    messages_received_per_second: Optional[float] = None
+    messages_received_per_second: float | None = None
 
-    bytes_sent_per_second: Optional[float] = None
+    bytes_sent_per_second: float | None = None
 
-    bytes_received_per_second: Optional[float] = None
+    bytes_received_per_second: float | None = None
 
-    messages_received_per_type: Optional[dict[Any, Any]] = None
+    messages_received_per_type: dict[Any, Any] | None = None
 
-    seconds_processing_messages: Optional[float] = None
+    seconds_processing_messages: float | None = None
 
 
 @dataclass(config={"extra": "forbid"})
@@ -982,7 +979,7 @@ class Host(Checkable):
     .. tags:: Object type, Monitoring object type
     """
 
-    groups: Optional[Sequence[str]] = None
+    groups: Sequence[str] | None = None
     """
 
      A list of host groups this host belongs to.
@@ -990,28 +987,28 @@ class Host(Checkable):
      :see: `lib/icinga/host.ti L18-L20 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L18-L20>`__
     """
 
-    display_name: Optional[str] = None
+    display_name: str | None = None
     """
     A short description of the host (e.g. displayed by external interfaces instead of the name if set).
 
     :see: `lib/icinga/host.ti L22-L30 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L22-L30>`__
     """
 
-    address: Optional[str] = None
+    address: str | None = None
     """
     The host's IPv4 address. Available as command runtime macro ``$address$`` if set.
 
     :see: `lib/icinga/host.ti L32 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L32>`__
     """
 
-    address6: Optional[str] = None
+    address6: str | None = None
     """
     The host's IPv6 address. Available as command runtime macro ``$address6$`` if set.
 
     :see: `lib/icinga/host.ti L33 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L33>`__
     """
 
-    state: Optional[HostState] = None
+    state: HostState | None = None
     """
 
     The current state (0 = UP, 1 = DOWN).
@@ -1019,28 +1016,28 @@ class Host(Checkable):
     :see: `lib/icinga/host.ti L35-L37 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L35-L37>`__
     """
 
-    last_state: Optional[HostState] = None
+    last_state: HostState | None = None
     """
     The previous state (0 = UP, 1 = DOWN).
 
     :see: `lib/icinga/host.ti L38-L40 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L38-L40>`__
     """
 
-    last_hard_state: Optional[HostState] = None
+    last_hard_state: HostState | None = None
     """
     The last hard state (0 = UP, 1 = DOWN).
 
     :see: `lib/icinga/host.ti L41-L43 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L41-L43>`__
     """
 
-    last_state_up: Optional[Timestamp] = None
+    last_state_up: Timestamp | None = None
     """
     When the last UP state occurred (as a UNIX timestamp).
 
     :see: `lib/icinga/host.ti L44 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/lib/icinga/host.ti#L44>`__
     """
 
-    last_state_down: Optional[Timestamp] = None
+    last_state_down: Timestamp | None = None
     """
     When the last DOWN state occurred (as a UNIX timestamp).
 
@@ -1256,12 +1253,12 @@ class Service(Checkable):
     :see: `doc/09-object-types.md L677-L781 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L677-L781>`__
     """
 
-    groups: Optional[Sequence[str]] = None
+    groups: Sequence[str] | None = None
     """
     The service groups this service belongs to.
     """
 
-    display_name: Optional[str] = None
+    display_name: str | None = None
     """
     A short description of the service.
 
@@ -1269,44 +1266,44 @@ class Service(Checkable):
     :see: `lib/icinga/service.ti L34-L42 <https://github.com/Icinga/icinga2/blob/0951230ce1be27c9957ef8801be258524524dc01/lib/icinga/service.ti#L34-L42>`__
     """
 
-    host_name: Optional[str] = None
+    host_name: str | None = None
     """
     The host this service belongs to. There must be a `Host` object with that name.
     """
 
-    host: Optional[Host] = None
+    host: Host | None = None
 
-    state: Optional[ServiceState] = None
+    state: ServiceState | None = None
     """
     The current state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
     """
 
-    last_state: Optional[ServiceState] = None
+    last_state: ServiceState | None = None
     """
     The previous state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
     """
 
-    last_hard_state: Optional[ServiceState] = None
+    last_hard_state: ServiceState | None = None
     """
     The last hard state (0 = OK, 1 = WARNING, 2 = CRITICAL, 3 = UNKNOWN).
     """
 
-    last_state_ok: Optional[Timestamp] = None
+    last_state_ok: Timestamp | None = None
     """
     When the last OK state occurred (as a UNIX timestamp).
     """
 
-    last_state_warning: Optional[Timestamp] = None
+    last_state_warning: Timestamp | None = None
     """
     When the last WARNING state occurred (as a UNIX timestamp).
     """
 
-    last_state_critical: Optional[Timestamp] = None
+    last_state_critical: Timestamp | None = None
     """
     When the last CRITICAL state occurred (as a UNIX timestamp).
     """
 
-    last_state_unknown: Optional[Timestamp] = None
+    last_state_unknown: Timestamp | None = None
     """
     When the last UNKNOWN state occurred (as a UNIX timestamp).
     """
@@ -1396,62 +1393,62 @@ class TimePeriod(CustomVarObject):
     :see: `lib/icinga/timeperiod.ti L11-L39 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L11-L39>`__
     """
 
-    display_name: Optional[str] = None
+    display_name: str | None = None
     """
     A short description of the time period.
 
     :see: `lib/icinga/timeperiod.ti L13-L21 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L13-L21>`__
     """
 
-    ranges: Optional[dict[str, str]] = None
+    ranges: dict[str, str] | None = None
     """
     A dictionary containing information which days and durations apply to this timeperiod.
 
     :see: `lib/icinga/timeperiod.ti L22 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L22>`__
     """
 
-    update: Optional[Payload] = None
+    update: Payload | None = None
     """
     :see: `lib/icinga/timeperiod.ti L23 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L23>`__
     """
 
-    prefer_includes: Optional[bool] = None
+    prefer_includes: bool | None = None
     """
     Whether to prefer timeperiods ``includes`` or ``excludes``. Default to true.
 
     :see: `lib/icinga/timeperiod.ti L24-L26 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L24-L26>`__
     """
 
-    excludes: Optional[Sequence[str]] = None
+    excludes: Sequence[str] | None = None
     """
     An array of timeperiods, which should exclude from your timerange.
 
     :see: `lib/icinga/timeperiod.ti L27-L29 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L27-L29>`__
     """
 
-    includes: Optional[Sequence[str]] = None
+    includes: Sequence[str] | None = None
     """
     An array of timeperiods, which should include into your timerange.
 
     :see: `lib/icinga/timeperiod.ti L30-L32 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L30-L32>`__
     """
 
-    valid_begin: Optional[Timestamp] = None
+    valid_begin: Timestamp | None = None
     """
     :see: `lib/icinga/timeperiod.ti L33 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L33>`__
     """
 
-    valid_end: Optional[Timestamp] = None
+    valid_end: Timestamp | None = None
     """
     :see: `lib/icinga/timeperiod.ti L34 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L34>`__
     """
 
-    segments: Optional[Sequence[TimePeriodSegment]] = None
+    segments: Sequence[TimePeriodSegment] | None = None
     """
     :see: `lib/icinga/timeperiod.ti L35 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L35>`__
     """
 
-    is_inside: Optional[bool] = None
+    is_inside: bool | None = None
     """
     :see: `lib/icinga/timeperiod.ti L36-L38 <https://github.com/Icinga/icinga2/blob/894d6aa290e83797d001fcc2887611b23707dbf9/lib/icinga/timeperiod.ti#L36-L38>`__
     """
@@ -1513,7 +1510,7 @@ class User(CustomVarObject):
     :see: `doc/09-object-types.md L872-L937 <https://github.com/Icinga/icinga2/blob/2c9117b4f71e00b2072e7dbe6c4ea4e48c882a87/doc/09-object-types.md?plain=1#L872-L937>`__
     """
 
-    display_name: Optional[str] = None
+    display_name: str | None = None
     """
     A short description of the user.
 
@@ -1522,7 +1519,7 @@ class User(CustomVarObject):
 
     """
 
-    groups: Optional[Sequence[str]] = None
+    groups: Sequence[str] | None = None
     """
     An array of group names.
 
@@ -1531,7 +1528,7 @@ class User(CustomVarObject):
 
     """
 
-    period: Optional[str] = None
+    period: str | None = None
     """
     The name of a time period which determines when a notification for this user should be triggered. Not set by default (effectively 24x7).
 
@@ -1540,7 +1537,7 @@ class User(CustomVarObject):
 
     """
 
-    types: Optional[Sequence[str]] = None
+    types: Sequence[str] | None = None
     """
     A set of type filters when a notification for this user should be triggered. By default everything is matched.
 
@@ -1549,7 +1546,7 @@ class User(CustomVarObject):
 
     """
 
-    states: Optional[Sequence[str]] = None
+    states: Sequence[str] | None = None
     """
     A set of state filters when a notification for this should be triggered. By default everything is matched.
 
@@ -1558,7 +1555,7 @@ class User(CustomVarObject):
 
     """
 
-    email: Optional[str] = None
+    email: str | None = None
     """
     An email string for this user. Useful for notification commands.
 
@@ -1567,7 +1564,7 @@ class User(CustomVarObject):
 
     """
 
-    pager: Optional[str] = None
+    pager: str | None = None
     """
     A pager str for this user. Useful for notification commands.
 
@@ -1576,7 +1573,7 @@ class User(CustomVarObject):
 
     """
 
-    enable_notifications: Optional[bool] = None
+    enable_notifications: bool | None = None
     """
     Whether notifications are enabled for this user. Defaults to true.
 
@@ -1585,7 +1582,7 @@ class User(CustomVarObject):
 
     """
 
-    last_notification: Optional[float] = None
+    last_notification: float | None = None
     """
     When the last notification was sent for this user (as a UNIX timestamp).
 
@@ -1618,7 +1615,7 @@ class UserGroup(CustomVarObject):
     display_name: OptionalStr = None
     """Optional. A short description of the user group."""
 
-    groups: Optional[Sequence[str]] = None
+    groups: Sequence[str] | None = None
     """Optional. An array of nested group names."""
 
 
@@ -1647,15 +1644,15 @@ class Zone(ConfigObject):
     https://github.com/Icinga/icinga2/blob/c0b047b1aab6de3c5e51fdeb63d3bf4236f7fa6d/lib/remote/zone.ti#L10-L23
     """
 
-    endpoints: Optional[Sequence[str]] = None
+    endpoints: Sequence[str] | None = None
     """Optional. Array of endpoint names located in this zone."""
 
     parent: OptionalStr = None
     """Optional. The name of the parent zone. (Do not specify a global zone)"""
 
-    all_parents: Optional[Sequence[str]] = None
+    all_parents: Sequence[str] | None = None
 
-    is_global: Optional[bool] = None
+    is_global: bool | None = None
     """Optional. Whether configuration files for this zone should be synced to all endpoints. Defaults to false."""
 
 
@@ -1695,37 +1692,37 @@ class Downtime:
     :see: `doc/09-object-types/#downtime <https://icinga.com/docs/icinga-2/latest/doc/09-object-types/#downtime>`__
     """
 
-    host_name: Optional[str] = None
+    host_name: str | None = None
     """Required. The name of the host this downtime belongs to."""
 
-    service_name: Optional[str] = None
+    service_name: str | None = None
     """Optional. The short name of the service this downtime belongs to. If
     omitted, this downtime object is treated as host downtime."""
 
-    author: Optional[str] = None
+    author: str | None = None
     """Required. The author’s name."""
 
-    comment: Optional[str] = None
+    comment: str | None = None
     """Required. The comment text."""
 
-    start_time: Optional[Timestamp] = None
+    start_time: Timestamp | None = None
     """ 	Required. The start time as UNIX timestamp."""
 
-    end_time: Optional[Timestamp] = None
+    end_time: Timestamp | None = None
     """Timestamp 	Required. The end time as UNIX timestamp."""
 
-    duration: Optional[int] = None
+    duration: int | None = None
     """Number 	Optional. The duration as number."""
 
-    entry_time: Optional[Timestamp] = None
+    entry_time: Timestamp | None = None
     """Timestamp 	Optional. The UNIX timestamp when this downtime was
     added."""
 
-    fixed: Optional[bool] = None
+    fixed: bool | None = None
     """Boolean 	Optional. Whether the downtime is fixed (true) or flexible
     (false). Defaults to flexible. Details in the advanced topics chapter."""
 
-    triggers: Optional[Sequence[str]] = None
+    triggers: Sequence[str] | None = None
     """Array of object names"""
 
 
@@ -1929,7 +1926,7 @@ class EventStreamTypeCheckResult:
     acknowledgement: bool
     """Whether the object is acknowledged."""
 
-    service: Optional[str] = None
+    service: str | None = None
     """Service name. Optional if this is a host check result."""
 
 
@@ -2028,14 +2025,13 @@ class EventStreamTypeDowntimeTriggered(_EventStreamTypeDowntime):
     type: Literal["DowntimeTriggered"]
 
 
-EventStream = Union[
-    EventStreamTypeCheckResult,
-    EventStreamTypeDowntimeAdded,
-    EventStreamTypeDowntimeStarted,
-    EventStreamTypeDowntimeRemoved,
-    EventStreamTypeDowntimeTriggered,
-]
-
+EventStream = (
+    EventStreamTypeCheckResult
+    | EventStreamTypeDowntimeAdded
+    | EventStreamTypeDowntimeStarted
+    | EventStreamTypeDowntimeRemoved
+    | EventStreamTypeDowntimeTriggered
+)
 
 ########################################################################################
 # v1/status
@@ -2074,10 +2070,10 @@ class PerfdataValue:
     value: float
     counter: bool
     unit: str
-    crit: Optional[Value] = None
-    warn: Optional[Value] = None
-    min: Optional[Value] = None
-    max: Optional[Value] = None
+    crit: Value | None = None
+    warn: Value | None = None
+    min: Value | None = None
+    max: Value | None = None
 
 
 @dataclass
@@ -2090,7 +2086,7 @@ class StatusMessage:
 
     status: dict[str, Any]
 
-    perfdata: Optional[Sequence[PerfdataValue]]
+    perfdata: Sequence[PerfdataValue] | None
 
 
 ########################################################################################
@@ -2178,9 +2174,9 @@ class TypeFieldInfo:
 
     attributes: TypeFieldAttributeInfo
 
-    ref_type: Optional[str] = None
+    ref_type: str | None = None
 
-    navigation_name: Optional[str] = None
+    navigation_name: str | None = None
 
 
 @dataclass(config={"extra": "forbid"})
@@ -2199,7 +2195,7 @@ class TypeInfo:
 
     prototype_keys: Sequence[str]
 
-    base: Optional[str] = None
+    base: str | None = None
 
 
 ########################################################################################

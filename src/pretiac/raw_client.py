@@ -34,9 +34,9 @@ programmatic way using HTTP requests.
 
 import urllib
 import urllib.parse
-from collections.abc import Sequence
+from collections.abc import Generator, Sequence
 from importlib.metadata import version as get_version
-from typing import Any, Generator, Optional, Union
+from typing import Any
 
 from pydantic.dataclasses import dataclass
 
@@ -100,12 +100,12 @@ class ObjectsUrlEndpoint(RequestHandler):
     def list(
         self,
         object_type: ObjectTypeName,
-        name: Optional[str] = None,
-        attrs: Optional[Sequence[str]] = None,
-        filters: Optional[str] = None,
+        name: str | None = None,
+        attrs: Sequence[str] | None = None,
+        filters: str | None = None,
         filter_vars: FilterVars = None,
-        joins: Optional[Union[bool, Sequence[str]]] = None,
-        suppress_exception: Optional[bool] = None,
+        joins: bool | Sequence[str] | None = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         get object by type or name
@@ -200,9 +200,9 @@ class ObjectsUrlEndpoint(RequestHandler):
         self,
         object_type: ObjectTypeName,
         name: str,
-        attrs: Optional[Sequence[str]] = None,
-        joins: Optional[Union[bool, Sequence[str]]] = None,
-        suppress_exception: Optional[bool] = None,
+        attrs: Sequence[str] | None = None,
+        joins: bool | Sequence[str] | None = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         Get a single object (``Host``, ``Service``, ...).
@@ -254,9 +254,9 @@ class ObjectsUrlEndpoint(RequestHandler):
         self,
         object_type: ObjectTypeName,
         name: str,
-        templates: Optional[Sequence[str]] = None,
-        attrs: Optional[Payload] = None,
-        suppress_exception: Optional[bool] = None,
+        templates: Sequence[str] | None = None,
+        attrs: Payload | None = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         Create an object using ``templates`` and specify attributes (``attrs``).
@@ -311,7 +311,7 @@ class ObjectsUrlEndpoint(RequestHandler):
         object_type: ObjectTypeName,
         name: str,
         attrs: dict[str, Any],
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         Update an object with the specified attributes.
@@ -348,11 +348,11 @@ class ObjectsUrlEndpoint(RequestHandler):
     def delete(
         self,
         object_type: ObjectTypeName,
-        name: Optional[str] = None,
-        filters: Optional[str] = None,
+        name: str | None = None,
+        filters: str | None = None,
         filter_vars: FilterVars = None,
         cascade: bool = True,
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """Delete an object.
 
@@ -426,15 +426,15 @@ class ActionsUrlEndpoint(RequestHandler):
         name: str,
         exit_status: State,
         plugin_output: str,
-        performance_data: Optional[Sequence[str] | str] = None,
-        check_command: Optional[Sequence[str] | str] = None,
-        check_source: Optional[str] = None,
-        execution_start: Optional[float] = None,
-        execution_end: Optional[float] = None,
-        ttl: Optional[int] = None,
-        filter: Optional[str] = None,
+        performance_data: Sequence[str] | str | None = None,
+        check_command: Sequence[str] | str | None = None,
+        check_source: str | None = None,
+        execution_start: float | None = None,
+        execution_end: float | None = None,
+        ttl: int | None = None,
+        filter: str | None = None,
         filter_vars: FilterVars = None,
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """Process a check result for a host or a service.
 
@@ -525,8 +525,8 @@ class ActionsUrlEndpoint(RequestHandler):
         object_type: HostOrService,
         filters: str,
         filter_vars: FilterVars = None,
-        next_check: Optional[int] = None,
-        force_check: Optional[bool] = True,
+        next_check: int | None = None,
+        force_check: bool | None = True,
     ) -> Any:
         """
         Reschedule a check for hosts and services.
@@ -573,7 +573,7 @@ class ActionsUrlEndpoint(RequestHandler):
         author: str,
         comment: str,
         filter_vars: FilterVars = None,
-        force: Optional[int] = False,
+        force: int | None = False,
     ) -> Any:
         """
         Send a custom notification for hosts and services.
@@ -653,10 +653,10 @@ class ActionsUrlEndpoint(RequestHandler):
         author: str,
         comment: str,
         filter_vars: FilterVars = None,
-        expiry: Optional[int] = None,
-        sticky: Optional[bool] = None,
-        notify: Optional[bool] = None,
-        persistent: Optional[bool] = None,
+        expiry: int | None = None,
+        sticky: bool | None = None,
+        notify: bool | None = None,
+        persistent: bool | None = None,
     ) -> Any:
         """
         Acknowledge a Service or Host problem.
@@ -769,8 +769,8 @@ class ActionsUrlEndpoint(RequestHandler):
     def remove_comment(
         self,
         object_type: HostOrService,
-        name: Optional[str] = None,
-        filters: Optional[str] = None,
+        name: str | None = None,
+        filters: str | None = None,
         filter_vars: FilterVars = None,
     ) -> Any:
         """
@@ -821,10 +821,10 @@ class ActionsUrlEndpoint(RequestHandler):
         end_time: int,
         duration: int,
         filter_vars: FilterVars = None,
-        fixed: Optional[bool] = None,
-        all_services: Optional[bool] = None,
-        trigger_name: Optional[str] = None,
-        child_options: Optional[str] = None,
+        fixed: bool | None = None,
+        all_services: bool | None = None,
+        trigger_name: str | None = None,
+        child_options: str | None = None,
     ) -> Any:
         """
         Schedule a downtime for hosts and services.
@@ -899,8 +899,8 @@ class ActionsUrlEndpoint(RequestHandler):
     def remove_downtime(
         self,
         object_type: HostOrService,
-        name: Optional[str] = None,
-        filters: Optional[str] = None,
+        name: str | None = None,
+        filters: str | None = None,
         filter_vars: FilterVars = None,
     ) -> Any:
         """
@@ -999,7 +999,7 @@ class EventsUrlEndpoint(RequestHandler):
         self,
         types: Sequence[EventStreamType],
         queue: str,
-        filter: Optional[str] = None,
+        filter: str | None = None,
         filter_vars: FilterVars = None,
     ) -> Generator[str | Any, Any, None]:
         """
@@ -1049,8 +1049,7 @@ class EventsUrlEndpoint(RequestHandler):
             ),
             stream=True,
         )
-        for event in self._get_message_from_stream(stream):
-            yield event
+        yield from self._get_message_from_stream(stream)
 
 
 class StatusUrlEndpoint(RequestHandler):
@@ -1062,7 +1061,7 @@ class StatusUrlEndpoint(RequestHandler):
 
     path_prefix = "status"
 
-    def list(self, status_type: Optional[StatusType | str] = None) -> Any:
+    def list(self, status_type: StatusType | str | None = None) -> Any:
         """
         Retrieve status information and statistics for Icinga 2.
 
@@ -1105,7 +1104,7 @@ class ConfigUrlEndpoint(RequestHandler):
     def create_package(
         self,
         package_name: str,
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         Create a new empty configuration package.
@@ -1129,9 +1128,9 @@ class ConfigUrlEndpoint(RequestHandler):
         self,
         package_name: str,
         files: dict[str, str],
-        reload: Optional[bool] = None,
-        activate: Optional[bool] = None,
-        suppress_exception: Optional[bool] = None,
+        reload: bool | None = None,
+        activate: bool | None = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         Configuration files in packages are managed in stages. Stages provide
@@ -1190,7 +1189,7 @@ class ConfigUrlEndpoint(RequestHandler):
 
     def list_packages(
         self,
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         List packages and their stages.
@@ -1210,7 +1209,7 @@ class ConfigUrlEndpoint(RequestHandler):
         self,
         package_name: str,
         stage_name: str,
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         List packages and their stages.
@@ -1237,7 +1236,7 @@ class ConfigUrlEndpoint(RequestHandler):
         package_name: str,
         stage_name: str,
         relpath: str,
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> str:
         """
         Fetch the content of a specific configuration file
@@ -1265,7 +1264,7 @@ class ConfigUrlEndpoint(RequestHandler):
         self,
         package_name: str,
         stage_name: str,
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> str:
         """
         Check for validation errors.
@@ -1292,7 +1291,7 @@ class ConfigUrlEndpoint(RequestHandler):
         self,
         package_name: str,
         stage_name: str,
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         Send a delete request in order to purge a configuration stage.
@@ -1317,7 +1316,7 @@ class ConfigUrlEndpoint(RequestHandler):
     def delete_package(
         self,
         package_name: str,
-        suppress_exception: Optional[bool] = None,
+        suppress_exception: bool | None = None,
     ) -> Any:
         """
         Delete the configuration package entirely.
@@ -1341,7 +1340,7 @@ class ConfigUrlEndpoint(RequestHandler):
 class TypesUrlEndpoint(RequestHandler):
     path_prefix = "types"
 
-    def list(self, object_type: Optional[ObjectTypeName] = None) -> Any:
+    def list(self, object_type: ObjectTypeName | None = None) -> Any:
         """Retrieve the configuration object types.
 
         :param object_type: The type of the object, for example ``Service``,
@@ -1359,7 +1358,7 @@ class TemplatesUrlEndpoint(RequestHandler):
 
     path_prefix = "templates"
 
-    def list(self, object_type: ObjectTypeName, filter: Optional[str] = None) -> Any:
+    def list(self, object_type: ObjectTypeName, filter: str | None = None) -> Any:
         """Request information about configuration templates.
 
         :param object_type: The type of the object, for example ``Service``,
